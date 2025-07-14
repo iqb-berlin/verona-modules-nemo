@@ -1,0 +1,91 @@
+{
+  "name": "iqb-player-stars",
+  "version": "0.2.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iqb-berlin/verona-modules/stars"
+  },
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --configuration production --output-hashing=none",
+    "postbuild": "node projects/tools/distpacker.js dist/stars-player index_packed.html"
+  },
+  "dependencies": {
+    "@angular/animations": "^19.1.7",
+    "@angular/cdk": "^19.1.5",
+    "@angular/common": "^19.1.7",
+    "@angular/compiler": "^19.1.7",
+    "@angular/core": "^19.1.7",
+    "@angular/platform-browser": "^19.1.7",
+    "@angular/platform-browser-dynamic": "^19.1.7",
+    "@iqbspecs/response": "~1.5.0",
+    "rxjs": "~7.8.1"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^19.1.8",
+    "@angular-eslint/builder": "^19.1.0",
+    "@angular-eslint/eslint-plugin": "^19.1.0",
+    "@angular-eslint/eslint-plugin-template": "^19.1.0",
+    "@angular-eslint/schematics": "^19.1.0",
+    "@angular-eslint/template-parser": "^19.1.0",
+    "@angular/cli": "~19.1.8",
+    "@angular/compiler-cli": "^19.1.7",
+    "@iqb/eslint-config": "^2.0.0",
+    "@types/jasmine": "~3.6.0",
+    "@types/jasminewd2": "~2.0.10",
+    "@types/karma": "~6.3.3",
+    "@types/karma-jasmine": "~4.0.2",
+    "@types/node": "^22.13.4",
+    "@typescript-eslint/parser": "7.18.0",
+    "@typescript-eslint/utils": "^7.16.0",
+    "chromedriver": "119.0.1",
+    "eslint": "8.57.1",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-prettier": "10.1.5",
+    "eslint-plugin-cypress": "2.15.1",
+    "eslint-plugin-html": "^7.1.0",
+    "eslint-plugin-import": "^2.27.5",
+    "htmlhint": "^1.1.4",
+    "jasmine": "^3.6.4",
+    "jasmine-core": "~4.5.0",
+    "jasmine-spec-reporter": "~5.0.2",
+    "karma": "^6.4.1",
+    "karma-chrome-launcher": "~3.1.1",
+    "karma-coverage-istanbul-reporter": "~3.0.3",
+    "karma-jasmine": "^4.0.2",
+    "karma-jasmine-html-reporter": "^1.7.0",
+    "protractor": "~7.0.0",
+    "selenium-webdriver": "^4.29.0",
+    "ts-node": "~10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "eslintConfig": {
+    "extends": "@iqb/eslint-config",
+    "parserOptions": {
+      "project": "./tsconfig.base.json"
+    },
+    "overrides": [
+      {
+        "files": [
+          "e2e-tests/**/*.ts"
+        ],
+        "rules": {
+          "@typescript-eslint/no-unused-expressions": [
+            "error",
+            {
+              "allowTaggedTemplates": true
+            }
+          ],
+          "newline-per-chained-call": [
+            "off"
+          ]
+        },
+        "plugins": [
+          "html"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+<div>
+  @if (isStandalone) {
+    <stars-standalone-menu></stars-standalone-menu>
+  }
+  @if (unitService.mainAudio) {
+    <stars-main-audio></stars-main-audio>
+  }
+  @if (responsesService.showContinueButton) {
+    <stars-continue-button
+      (navigate)="veronaPostService.sendVopUnitNavigationRequestedNotification('next')"></stars-continue-button>
+  }
+
+  @if (unitService.interaction === 'buttons') {
+    <stars-interaction-buttons
+      [parameters]="unitService.parameters"
+      (responses)="responsesService.newResponses($event, isStandalone ? null : veronaPostService)"></stars-interaction-buttons>
+  } @else if (unitService.interaction === 'syllabify') {
+    <stars-interaction-syllabify
+      [parameters]="unitService.parameters"
+      (responses)="responsesService.newResponses($event, isStandalone ? null : veronaPostService)"></stars-interaction-syllabify>
+  } @else if (unitService.interaction === 'word-select') {
+    <stars-interaction-word-select
+      [parameters]="unitService.parameters"
+      (responses)="responsesService.newResponses($event, isStandalone ? null : veronaPostService)"></stars-interaction-word-select>
+  } @else {
+    <div>Unbekannter Interaktionstyp "{{unitService.interaction}}"</div>
+  }
+</div>
