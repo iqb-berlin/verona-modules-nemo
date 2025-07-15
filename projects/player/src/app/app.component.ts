@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
   constructor(
     public unitService: UnitService,
     public responsesService: ResponsesService,
-    private veronaPostService: VeronaPostService,
+    public veronaPostService: VeronaPostService,
     private veronaSubscriptionService: VeronaSubscriptionService,
     private metadataService: MetadataService
   ) { }

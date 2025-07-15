@@ -26,7 +26,10 @@ export class UnitService {
     this.reset();
     if (unitDefinition['main-audio']) this.mainAudio = unitDefinition['main-audio'];
     if (unitDefinition['main-text']) this.mainText = unitDefinition['main-text'];
-    if (unitDefinition['background-color']) this.backgroundColor = unitDefinition['background-color'];
+    const pattern = /^#([a-f0-9]{3}|[a-f0-9]{6})$/i;
+    if (unitDefinition['background-color'] && pattern.test(unitDefinition['background-color'])) {
+      this.backgroundColor = unitDefinition['background-color'];
+    }
     if (unitDefinition['continue-button']) this.continueButton = unitDefinition['continue-button'];
     if (unitDefinition['interaction']) this.interaction = unitDefinition['interaction'];
     if (unitDefinition['parameters']) this.parameters = unitDefinition['parameters'];
