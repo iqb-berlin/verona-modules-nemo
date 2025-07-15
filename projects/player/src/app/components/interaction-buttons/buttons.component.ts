@@ -4,7 +4,7 @@ import { InteractionComponentDirective } from '../../directives/interaction-comp
 @Component({
   selector: 'stars-interaction-buttons',
   template: `
-    <div>buttons component</div>
+    <div [style.flex]="'flex'">buttons component</div>
   `,
   standalone: false
 })

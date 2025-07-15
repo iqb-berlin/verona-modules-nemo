@@ -3,7 +3,6 @@ import { Component, EventEmitter, Output } from '@angular/core';
 @Component({
   selector: 'stars-continue-button',
   standalone: true,
-  imports: [],
   template: `
     <div class="unit-nav-next fx-row-end-center">
       <span class="svg-container" (click)="handleClick()">

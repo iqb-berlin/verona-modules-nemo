@@ -3,7 +3,7 @@ import {
   CdkMenu, CdkMenuBar, CdkMenuItem, CdkMenuTrigger
 } from '@angular/cdk/menu';
 import { FileService } from '../../services/file.service';
-import {UnitService} from "../../services/unit.service";
+import { UnitService } from '../../services/unit.service';
 
 @Component({
   selector: 'stars-standalone-menu',

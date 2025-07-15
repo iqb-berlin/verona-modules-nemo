@@ -15,6 +15,10 @@ import { MetadataService } from './services/metadata.service';
 import { ContinueButtonComponent } from './components/continue-button.component';
 import { StandaloneMenuComponent } from './components/standalone-menu/standalone-menu.component';
 import { MainAudioComponent } from './components/main-audio/main-audio.component';
+import { SafeResourceUrlPipe } from './pipes/safe-resource-url.pipe';
+import { LinebreaksHtmlPipe } from './pipes/linebreaks-html.pipe';
+import { ClickLayerComponent } from './components/main-audio/click-layer.component';
+import { MediaPlayerComponent } from './components/main-audio/media-player.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +34,11 @@ import { MainAudioComponent } from './components/main-audio/main-audio.component
     NgOptimizedImage,
     ContinueButtonComponent,
     StandaloneMenuComponent,
+    SafeResourceUrlPipe,
+    LinebreaksHtmlPipe,
+    MainAudioComponent,
+    ClickLayerComponent,
+    MediaPlayerComponent,
     MainAudioComponent
   ],
   providers: [

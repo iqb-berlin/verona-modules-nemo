@@ -2,24 +2,24 @@
   @if (isStandalone) {
     <stars-standalone-menu></stars-standalone-menu>
   }
-  @if (unitService.mainAudio) {
-    <stars-main-audio></stars-main-audio>
+  @if (unitService.mainAudio()) {
+    <stars-main-audio [audioSource]="unitService.mainAudio()" playerId="mainAudio"></stars-main-audio>
   }
-  @if (responsesService.showContinueButton) {
+  @if (unitService.continueButton() === "show" || unitService.continueButton() === "on-full-credit" && responsesService.maxScoreReached()) {
     <stars-continue-button
       (navigate)="veronaPostService.sendVopUnitNavigationRequestedNotification('next')"></stars-continue-button>
   }
 
-  @if (unitService.interaction === 'buttons') {
-    <stars-interaction-buttons
+  @if (unitService.interaction() === 'buttons') {
+    <stars-interaction-buttons class="interaction"
       [parameters]="unitService.parameters"
       (responses)="responsesService.newResponses($event, isStandalone ? null : veronaPostService)"></stars-interaction-buttons>
-  } @else if (unitService.interaction === 'syllabify') {
-    <stars-interaction-syllabify
+  } @else if (unitService.interaction() === 'syllabify') {
+    <stars-interaction-syllabify class="interaction"
       [parameters]="unitService.parameters"
       (responses)="responsesService.newResponses($event, isStandalone ? null : veronaPostService)"></stars-interaction-syllabify>
-  } @else if (unitService.interaction === 'word-select') {
-    <stars-interaction-word-select
+  } @else if (unitService.interaction() === 'word-select') {
+    <stars-interaction-word-select class="interaction"
       [parameters]="unitService.parameters"
       (responses)="responsesService.newResponses($event, isStandalone ? null : veronaPostService)"></stars-interaction-word-select>
   } @else {

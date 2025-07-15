@@ -1,0 +1,11 @@
+@if (image()) {
+  <div class="custom-audio-button" (click)="play()">
+    <img [src]="audioIconSrc" [alt]="isPlaying() ? 'Audio playing' : 'Play audio'" />
+  </div>
+} @else {
+  <div class="custom-audio-button" (click)="play()">
+    <img [src]="audioIconSrc"
+         [alt]="isPlaying() ? 'Audio playing' : 'Play audio'"
+         class="speaker-icon" />
+  </div>
+}
