@@ -10,7 +10,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --configuration production --output-hashing=none",
-    "postbuild": "node projects/tools/distpacker.js dist/stars-player index_packed.html"
+    "postbuild": "node projects/tools/distpacker.js dist/stars-player/browser index_packed.html"
   },
   "dependencies": {
     "@angular/animations": "^20.1.0",
