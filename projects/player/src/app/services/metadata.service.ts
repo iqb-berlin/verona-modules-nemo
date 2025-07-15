@@ -1,7 +1,6 @@
-import { Inject, Injectable } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
-import { VopMetaData } from "../models/verona";
+import { Inject, Injectable, DOCUMENT } from '@angular/core';
 
+import { VopMetaData } from '../models/verona';
 
 @Injectable({
   providedIn: 'root'

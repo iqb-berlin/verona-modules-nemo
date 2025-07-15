@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { NgModule, provideZonelessChangeDetection } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 
@@ -33,7 +33,7 @@ import { MainAudioComponent } from './components/main-audio/main-audio.component
     MainAudioComponent
   ],
   providers: [
-    provideExperimentalZonelessChangeDetection(),
+    provideZonelessChangeDetection(),
     UnitService,
     ResponsesService,
     VeronaPostService,
