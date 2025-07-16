@@ -9,7 +9,7 @@ export class UnitService {
   mainAudio = signal('');
   mainText = signal('');
   backgroundColor = signal('#FFF');
-  continueButton = signal<ContinueButtonEnum>('show');
+  continueButton = signal<ContinueButtonEnum>('hide');
   interaction = signal<InteractionEnum>('buttons');
   parameters = signal<unknown>({});
 
@@ -17,7 +17,7 @@ export class UnitService {
     this.mainAudio.set('');
     this.mainText.set('');
     this.backgroundColor.set('#FFF');
-    this.continueButton.set('show');
+    this.continueButton.set('hide');
     this.interaction.set('buttons');
     this.parameters.set({});
   }
@@ -30,7 +30,11 @@ export class UnitService {
     if (unitDefinition['background-color'] && pattern.test(unitDefinition['background-color'])) {
       this.backgroundColor.set(unitDefinition['background-color']);
     }
-    if (unitDefinition['continue-button']) this.continueButton.set(unitDefinition['continue-button']);
+    if (unitDefinition['continue-button']) {
+      this.continueButton.set(unitDefinition['continue-button']);
+    } else {
+      this.continueButton.set('show');
+    }
     if (unitDefinition['interaction']) this.interaction.set(unitDefinition['interaction']);
     if (unitDefinition['parameters']) this.parameters.set(unitDefinition['parameters']);
     console.log(this.parameters());

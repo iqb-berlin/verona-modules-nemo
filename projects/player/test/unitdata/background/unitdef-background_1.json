@@ -1,0 +1,18 @@
+{
+  "type": "stars-unit-definition",
+  "version": "0.2.0",
+  "background-color": "#3c0",
+  "continue-button": "show",
+  "main-audio": "",
+  "interaction": "buttons",
+  "parameters": {
+    "options": [
+      {
+        "text": "A"
+      },
+      {
+        "text": "B"
+      }
+    ]
+  }
+}
