@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
-import {SelectionOption} from "../../models/unit-definition";
 
 @Component({
   selector: 'stars-interaction-syllabify',
