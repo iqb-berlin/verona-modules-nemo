@@ -19,6 +19,7 @@ import { SafeResourceUrlPipe } from './pipes/safe-resource-url.pipe';
 import { LinebreaksHtmlPipe } from './pipes/linebreaks-html.pipe';
 import { ClickLayerComponent } from './components/main-audio/click-layer.component';
 import { MediaPlayerComponent } from './components/main-audio/media-player.component';
+import { StandardButtonComponent } from './components/standard-button.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,9 @@ import { MediaPlayerComponent } from './components/main-audio/media-player.compo
     MainAudioComponent,
     ClickLayerComponent,
     MediaPlayerComponent,
-    MainAudioComponent
+    MainAudioComponent,
+    ContinueButtonComponent,
+    StandardButtonComponent
   ],
   providers: [
     provideZonelessChangeDetection(),

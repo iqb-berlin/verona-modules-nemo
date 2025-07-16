@@ -33,5 +33,6 @@ export class UnitService {
     if (unitDefinition['continue-button']) this.continueButton.set(unitDefinition['continue-button']);
     if (unitDefinition['interaction']) this.interaction.set(unitDefinition['interaction']);
     if (unitDefinition['parameters']) this.parameters.set(unitDefinition['parameters']);
+    console.log(this.parameters());
   }
 }

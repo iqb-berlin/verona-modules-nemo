@@ -1,21 +1,32 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
+import { SelectionOption } from '../../models/unit-definition';
 
 @Component({
   selector: 'stars-interaction-buttons',
   template: `
-    <div [style.flex]="'flex'">buttons component</div>
+    <div class="container">
+      @for (b of options; track b) {
+        <stars-standard-button [text]="b.text" [image]="b.image"></stars-standard-button>
+      }
+    </div>
   `,
-  standalone: false
+  standalone: false,
+  styles: [`
+    .container {
+      flex: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  `
+  ]
 })
 
-export class ButtonsComponent extends InteractionComponentDirective implements OnInit, OnDestroy {
-  ngOnInit() {
-    console.log(this.parameters.toString());
-  }
-
-  ngOnDestroy(): void {
-    console.log(this.parameters.toString());
-    console.log('ButtonsComponent ngOnDestroy');
+export class ButtonsComponent extends InteractionComponentDirective {
+  get options(): SelectionOption[] {
+    // @ts-ignore
+    return this.parameters().options;
   }
 }
