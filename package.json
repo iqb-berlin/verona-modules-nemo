@@ -1,10 +1,10 @@
 {
-  "name": "iqb-player-stars",
+  "name": "verona-modules-nemo",
   "version": "0.2.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iqb-berlin/verona-modules/stars"
+    "url": "https://github.com/iqb-berlin/verona-modules-nemo"
   },
   "scripts": {
     "ng": "ng",
