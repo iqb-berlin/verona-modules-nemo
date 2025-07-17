@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, OnDestroy, OnInit } from '@angular/core';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { SelectionOption, StandardButtonParams } from '../../models/unit-definition';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
@@ -12,8 +12,22 @@ import { UnitService } from '../../services/unit.service';
   standalone: true
 })
 
-export class InteractionButtonsComponent extends InteractionComponentDirective {
+export class InteractionButtonsComponent extends InteractionComponentDirective implements OnInit, OnDestroy {
   private unitService = inject(UnitService);
+  selectedValues = signal<number[]>([]);
+
+  ngOnInit(): void {
+    this.resetSelection();
+  }
+
+  ngOnDestroy(): void {
+    this.resetSelection();
+  }
+
+  private resetSelection(): void {
+    this.selectedValues.set([]);
+  }
+
 
   get options(): SelectionOption[] {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -21,11 +35,14 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     return this.parameters().options;
   }
 
+  get isMultiselect(): boolean {
+    const params = this.unitService.parameters() as StandardButtonParams;
+    return !!params?.multiselect;
+  }
+
   get params(): string {
     const params = this.unitService.parameters() as StandardButtonParams;
     const classes = ['buttons-container'];
-
-    console.log('INSIDE INTERACTION BUTTON COMPONENT PARAMS', params);
 
     if (params?.multiselect) {
       classes.push('multiselect');
@@ -35,5 +52,28 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     }
 
     return classes.join(' ');
+  }
+
+  isSelected(index: number): boolean {
+    return this.selectedValues().includes(index);
+  }
+
+  onButtonClick(index: number): void {
+    const currentSelected = this.selectedValues();
+
+    if (this.isMultiselect) {
+      if (currentSelected.includes(index)) {
+        /* Remove if already selected */
+        this.selectedValues.set(currentSelected.filter(i => i !== index));
+      } else {
+        /* Add to selection */
+        this.selectedValues.set([...currentSelected, index]);
+      }
+    } else {
+      /* Handle single selection */
+      this.selectedValues.set([index]);
+    }
+
+    // Emit the response
   }
 }

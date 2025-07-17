@@ -1,3 +1,6 @@
+@use 'colors';
+@use 'variables';
+
 .buttons-container {
   display: flex;
   flex-direction: row;
@@ -7,4 +10,31 @@
 
 .wrap {
   flex-wrap: wrap;
+}
+
+.button-option {
+  cursor: pointer;
+  @include variables.square-size;
+  border-radius: variables.$border-radius;
+  margin: 0 20px 20px 0;
+  border: 8px solid transparent;
+  transition: all 0.2s ease;
+
+  &.selected {
+    border-color: colors.$highlight;
+    box-shadow: none ;
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.multiselect {
+  .button-option {
+    &.selected {
+      border-color: colors.$highlight;
+      box-shadow: none ;
+    }
+  }
 }
