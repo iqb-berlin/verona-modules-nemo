@@ -1,0 +1,7 @@
+<div class="button-wrapper">
+  @if (image()) {
+    <img [src]="image()" [alt]="text()">
+  } @else {
+    <span class="text">{{text()}}</span>
+  }
+</div>

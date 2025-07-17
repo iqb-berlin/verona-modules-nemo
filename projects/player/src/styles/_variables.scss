@@ -12,6 +12,12 @@ $breakpoint-large: 1200px;
 
 /* Mixins */
 
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 @mixin default-box-shadow {
   box-shadow: 12px 10px 8px 5px rgba(0, 0, 0, 0.2);
 

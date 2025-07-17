@@ -11,3 +11,9 @@ export interface Coding {
   code: number;
   score: number;
 }
+
+export interface StandardButtonParams {
+  options: SelectionOption;
+  multiselect?: boolean;
+  wrap?: boolean;
+}
