@@ -20,6 +20,7 @@ import { LinebreaksHtmlPipe } from './pipes/linebreaks-html.pipe';
 import { ClickLayerComponent } from './components/main-audio/click-layer.component';
 import { MediaPlayerComponent } from './components/main-audio/media-player.component';
 import { StandardButtonComponent } from './components/standard-button.component';
+import { PhoneticsComponent } from './components/interaction-phonetics/interaction-phonetics.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { StandardButtonComponent } from './components/standard-button.component'
     MediaPlayerComponent,
     MainAudioComponent,
     ContinueButtonComponent,
-    StandardButtonComponent
+    StandardButtonComponent,
+    PhoneticsComponent
   ],
   providers: [
     provideZonelessChangeDetection(),

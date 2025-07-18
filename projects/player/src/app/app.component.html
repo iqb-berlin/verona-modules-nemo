@@ -25,7 +25,13 @@
       [style.background-color]="unitService.backgroundColor()"
       [parameters]="unitService.parameters()"
       (responses)="responsesService.newResponses($event, isStandalone ? null : veronaPostService)"></stars-interaction-word-select>
-  } @else {
+  }  @else if (unitService.interaction() === 'phonetics') {
+    <stars-interaction-phonetics class="interaction"
+      [style.background-color]="unitService.backgroundColor()"
+      [parameters]="unitService.parameters()"
+      (responses)="responsesService.newResponses($event, isStandalone ? null : veronaPostService)"></stars-interaction-phonetics>
+  }
+  @else {
     <div>Unbekannter Interaktionstyp "{{unitService.interaction}}"</div>
   }
 </div>
