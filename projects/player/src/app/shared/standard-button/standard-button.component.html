@@ -1,0 +1,11 @@
+<button
+  type="button"
+  class="button-wrapper"
+  [attr.aria-label]="text()">
+  @if (image()) {
+    <img [src]="image()" [alt]="text()">
+  } @else {
+    <span class="text">{{text()}}</span>
+  }
+</button>
+
