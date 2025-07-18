@@ -2,12 +2,11 @@
 @use 'variables';
 
 .button-wrapper {
-  @include variables.default-box-shadow;
   @include variables.flex-center;
   @include variables.square-size;
-  border: none;
   padding: 0;
-  border-radius: variables.$border-radius;
+  border-radius: 10px;
+  border: 8px solid colors.$white;
   font-size: 20px;
   background-color: colors.$white;
 
@@ -15,7 +14,6 @@
     outline: 2px solid colors.$highlight;
     outline-offset: 2px;
   }
-
 
   img {
     width: 147px;

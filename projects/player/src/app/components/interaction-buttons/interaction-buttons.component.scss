@@ -13,28 +13,19 @@
 }
 
 .button-option {
-  cursor: pointer;
+  @include variables.default-box-shadow;
   @include variables.square-size;
+  cursor: pointer;
+  border: 8px solid colors.$white;
   border-radius: variables.$border-radius;
   margin: 0 20px 20px 0;
-  border: 8px solid transparent;
-  transition: all 0.2s ease;
+
+
 
   &.selected {
+    border-radius: variables.$border-radius;
     border-color: colors.$highlight;
+    transition: all 0.2s ease;
     box-shadow: none ;
-  }
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.04);
-  }
-}
-
-.multiselect {
-  .button-option {
-    &.selected {
-      border-color: colors.$highlight;
-      box-shadow: none ;
-    }
   }
 }

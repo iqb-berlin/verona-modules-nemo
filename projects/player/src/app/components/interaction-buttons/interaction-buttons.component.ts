@@ -1,8 +1,13 @@
-import { Component, inject, signal, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component, inject, signal, OnInit, OnChanges, OnDestroy
+} from '@angular/core';
+import { Response } from '@iqbspecs/response/response.interface';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { SelectionOption, StandardButtonParams } from '../../models/unit-definition';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
 import { UnitService } from '../../services/unit.service';
+import { ResponsesService } from '../../services/responses.service';
+import { VeronaPostService } from '../../services/verona-post.service';
 
 @Component({
   selector: 'stars-interaction-buttons',
@@ -12,9 +17,17 @@ import { UnitService } from '../../services/unit.service';
   standalone: true
 })
 
-export class InteractionButtonsComponent extends InteractionComponentDirective implements OnInit, OnDestroy {
+export class InteractionButtonsComponent extends InteractionComponentDirective implements OnInit, OnChanges, OnDestroy {
   private unitService = inject(UnitService);
+  private responsesService = inject(ResponsesService);
+  private veronaPostService = inject(VeronaPostService);
+
   selectedValues = signal<number[]>([]);
+
+  ngOnChanges(): void {
+    /* Reset selection when parameters change (i.e., when loading a new file) */
+    this.resetSelection();
+  }
 
   ngOnInit(): void {
     this.resetSelection();
@@ -74,6 +87,13 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
       this.selectedValues.set([index]);
     }
 
-    // Emit the response
+    const response: Response = {
+      id: 'RESPONSE_INTERACTION_BUTTONS',
+      status: 'VALUE_CHANGED',
+      value: this.selectedValues()
+    };
+
+    this.responsesService.newResponses([response], this.veronaPostService);
+    this.responses.emit([response]);
   }
 }
