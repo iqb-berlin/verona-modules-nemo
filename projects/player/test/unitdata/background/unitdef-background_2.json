@@ -1,5 +1,5 @@
 {
-  "type": "stars-unit-definition",
+  "id": "nemo-player-unit-definition",
   "version": "0.2.0",
   "background-color": "#3cx0",
   "continue-button": "show",
