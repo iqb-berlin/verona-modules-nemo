@@ -1,0 +1,31 @@
+@use 'colors';
+@use 'variables';
+
+.buttons-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+.button-option {
+  @include variables.default-box-shadow;
+  @include variables.square-size;
+  cursor: pointer;
+  border: 8px solid colors.$white;
+  border-radius: variables.$border-radius;
+  margin: 0 20px 20px 0;
+
+
+
+  &.selected {
+    border-radius: variables.$border-radius;
+    border-color: colors.$highlight;
+    transition: all 0.2s ease;
+    box-shadow: none ;
+  }
+}

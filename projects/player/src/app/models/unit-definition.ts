@@ -15,6 +15,12 @@ export interface Coding {
   score: number;
 }
 
+export interface StandardButtonParams {
+  options: SelectionOption;
+  multiselect?: boolean;
+  wrap?: boolean;
+}
+
 export interface mainAudio {
   audioSource: string;
   firstClickLayer: boolean;
