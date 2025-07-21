@@ -9,6 +9,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "validate-data": "validate-json projects/player/test/unitdata/buttons/multiselect nemo-player-unit-definition 0.5",
     "build": "ng build --configuration production --output-hashing=none",
     "postbuild": "node projects/tools/distpacker.js dist/stars-player/browser index_packed.html"
   },
@@ -33,6 +34,7 @@
     "@angular/cli": "~20.1.0",
     "@angular/compiler-cli": "^20.1.0",
     "@iqb/eslint-config": "^2.0.0",
+    "@iqbspecs/validate-json": "^0.1.0",
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.10",
     "@types/karma": "~6.3.3",
