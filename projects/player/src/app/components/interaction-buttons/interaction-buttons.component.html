@@ -1,4 +1,4 @@
-<div [class]="params" role="group" [attr.aria-multiselectable]="isMultiselect">
+<div [class]="params" role="group" [attr.aria-multiselectable]="parameters().multiSelect">
   @for (option of options; track option; let i = $index) {
     <div
       class="button-option"
@@ -6,10 +6,16 @@
       [attr.aria-selected]="isSelected(i)"
       role="option"
       (click)="onButtonClick(i)">
-      <stars-standard-button
-        [text]="option.text"
-        [image]="option.image">
-      </stars-standard-button>
+      <button
+        type="button"
+        class="button-wrapper"
+        [attr.aria-label]="option.text">
+        @if (option.image) {
+          <img [src]="option.image" [alt]="option.text  ">
+        } @else {
+          <span class="text">{{option.text}}</span>
+        }
+      </button>
     </div>
   }
 </div>

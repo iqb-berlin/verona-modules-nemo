@@ -1,5 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {Component, input, OnDestroy, OnInit} from '@angular/core';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
+import {SyllabifyParams, WordSelectParams} from "../../models/unit-definition";
 
 @Component({
   selector: 'stars-interaction-word-select',
@@ -10,12 +11,14 @@ import { InteractionComponentDirective } from '../../directives/interaction-comp
 })
 
 export class WordSelectComponent extends InteractionComponentDirective implements OnInit, OnDestroy {
+  parameters = input.required<WordSelectParams>();
+
   ngOnInit() {
-    console.log(this.parameters.toString());
+    console.log(this.parameters());
   }
 
   ngOnDestroy(): void {
-    console.log(this.parameters.toString());
+    console.log(this.parameters());
     console.log('WordSelectComponent ngOnDestroy');
   }
 }

@@ -20,12 +20,38 @@
   border-radius: variables.$border-radius;
   margin: 0 20px 20px 0;
 
-
-
   &.selected {
     border-radius: variables.$border-radius;
     border-color: colors.$highlight;
     transition: all 0.2s ease;
     box-shadow: none ;
+  }
+}
+
+.button-wrapper {
+  @include variables.flex-center;
+  @include variables.square-size;
+  padding: 0;
+  border-radius: 10px;
+  border: 8px solid colors.$white;
+  font-size: 20px;
+  background-color: colors.$white;
+
+  &:focus-visible {
+    outline: 2px solid colors.$highlight;
+    outline-offset: 2px;
+  }
+
+  img {
+    width: 147px;
+    height: 147px;
+    padding: 10px;
+  }
+
+  .text {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: colors.$black;
   }
 }

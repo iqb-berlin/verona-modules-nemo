@@ -13,18 +13,18 @@
   @if (unitService.interaction() === 'BUTTONS') {
     <stars-interaction-buttons class="interaction"
       [style.background-color]="unitService.backgroundColor()"
-      [parameters]="unitService.parameters()"
-      (responses)="responsesService.newResponses($event, isStandalone ? null : veronaPostService)"></stars-interaction-buttons>
+      [parameters]="paramsAsInteractionButtonParams"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-buttons>
   } @else if (unitService.interaction() === 'SYLLABIFY') {
     <stars-interaction-syllabify class="interaction"
       [style.background-color]="unitService.backgroundColor()"
-      [parameters]="unitService.parameters()"
-      (responses)="responsesService.newResponses($event, isStandalone ? null : veronaPostService)"></stars-interaction-syllabify>
+      [parameters]="paramsAsSyllabifyParams"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-syllabify>
   } @else if (unitService.interaction() === 'WORD_SELECT') {
     <stars-interaction-word-select class="interaction"
       [style.background-color]="unitService.backgroundColor()"
-      [parameters]="unitService.parameters()"
-      (responses)="responsesService.newResponses($event, isStandalone ? null : veronaPostService)"></stars-interaction-word-select>
+      [parameters]="paramsAsWordSelectParams"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-word-select>
   } @else {
     <div>Unbekannter Interaktionstyp "{{unitService.interaction}}"</div>
   }
