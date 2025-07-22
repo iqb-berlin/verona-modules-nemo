@@ -1,4 +1,4 @@
-import {Injectable, signal} from '@angular/core';
+import {inject, Injectable, signal} from '@angular/core';
 import { Response } from '@iqbspecs/response/response.interface';
 import { UnitState, UnitStateDataType } from '../models/verona';
 import { VeronaPostService } from './verona-post.service';
@@ -12,6 +12,7 @@ export class ResponsesService {
   firstResponseGiven = signal(false);
   maxScoreReached = signal(false);
   allResponses: Response[] = [];
+  veronaPostService = inject(VeronaPostService);
 
   reset() {
     this.firstInteractionDone.set(false);
@@ -20,10 +21,11 @@ export class ResponsesService {
     this.allResponses = [];
   }
 
-  newResponses(responses: Response[], veronaPostService: VeronaPostService | null) {
+  newResponses(responses: Response[]) {
     this.allResponses.push(...responses);
     this.firstResponseGiven.set(true);
-    if (veronaPostService) {
+
+    if (this.veronaPostService) {
       const unitState: UnitState = {
         unitStateDataType: UnitStateDataType,
         dataParts: {
@@ -31,7 +33,7 @@ export class ResponsesService {
         },
         responseProgress: 'complete'
       };
-      veronaPostService.sendVopStateChangedNotification({ unitState });
+      this.veronaPostService.sendVopStateChangedNotification({ unitState });
     }
   }
 }
