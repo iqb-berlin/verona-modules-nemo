@@ -1,5 +1,5 @@
 import {
-  Component, OnInit, output, signal, ViewChild
+  Component, OnInit, output, ViewChild
 } from '@angular/core';
 
 @Component({
@@ -27,11 +27,13 @@ export class ClickLayerComponent implements OnInit {
   click = output();
 
   ngOnInit() {
-    this.layerElement.addEventListener('click', this.handleClick, { capture: true });
-    this.layerElement.addEventListener('touchstart', this.handleClick, { capture: true });
-    this.layerElement.addEventListener('touchend', this.handleClick, { capture: true });
-    this.layerElement.addEventListener('pointerdown', this.handleClick, { capture: true });
-    this.layerElement.addEventListener('mousedown', this.handleClick, { capture: true });
+    if (this.layerElement) {
+      this.layerElement.addEventListener('click', this.handleClick, {capture: true});
+      this.layerElement.addEventListener('touchstart', this.handleClick, {capture: true});
+      this.layerElement.addEventListener('touchend', this.handleClick, {capture: true});
+      this.layerElement.addEventListener('pointerdown', this.handleClick, {capture: true});
+      this.layerElement.addEventListener('mousedown', this.handleClick, {capture: true});
+    }
   }
 
   handleClick() {

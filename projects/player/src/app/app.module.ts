@@ -23,9 +23,7 @@ import { StandardButtonComponent } from './shared/standard-button/standard-butto
 
 @NgModule({
   declarations: [
-    AppComponent,
-    WordSelectComponent,
-    SyllabifyComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
@@ -42,7 +40,9 @@ import { StandardButtonComponent } from './shared/standard-button/standard-butto
     MainAudioComponent,
     InteractionButtonsComponent,
     ContinueButtonComponent,
-    StandardButtonComponent
+    StandardButtonComponent,
+    WordSelectComponent,
+    SyllabifyComponent
   ],
   providers: [
     provideZonelessChangeDetection(),

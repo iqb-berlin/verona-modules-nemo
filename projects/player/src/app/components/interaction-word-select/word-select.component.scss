@@ -1,0 +1,46 @@
+@use 'colors';
+@use 'variables';
+
+.word-select-wrapper {
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  .stimulus-wrapper, .interaction-wrapper {
+    width: 45%;
+  }
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-option {
+  @include variables.default-box-shadow;
+  @include variables.word-size;
+  cursor: pointer;
+  margin: 0 20px 20px 0;
+  border-radius: 10px;
+}
+
+.button-wrapper {
+  @include variables.default-box-shadow;
+  @include variables.word-size;
+  cursor: pointer;
+  margin: 0 20px 20px 0;
+  border-radius: 10px;
+  border: none;
+  font-size: 32px;
+
+  &.selected  {
+    background-color: colors.$highlight;
+    color: white;
+
+    transition: all 0.2s ease;
+  }
+}

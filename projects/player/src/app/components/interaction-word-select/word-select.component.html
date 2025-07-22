@@ -1,0 +1,26 @@
+<div class="word-select-wrapper" [class.top-stimulus]="parameters().buttonsAsRow">
+
+  <div class="stimulus-wrapper">
+    @if (parameters().imageSource) {
+      <img [src]="parameters().imageSource" [alt]="parameters().text || ''">
+    }
+  </div>
+
+  <div class="interaction-wrapper">
+    <div class="buttons-container" [class.row-buttons]="parameters().buttonsAsRow" role="group">
+      @for (option of parameters().options; track $index; let i = $index) {
+        <button
+          type="button"
+          class="button-wrapper"
+          [class.selected]="isSelected(i)"
+          [attr.aria-selected]="isSelected(i)"
+          role="option"
+          (click)="onButtonClick(i)"
+          [attr.aria-label]="option.text">
+          <span class="text">{{option.text}}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+</div>

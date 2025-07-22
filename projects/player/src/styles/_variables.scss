@@ -18,6 +18,11 @@ $breakpoint-large: 1200px;
   height: 170px;
 }
 
+@mixin word-size {
+  height: 100px;
+  min-width: 300px ;
+}
+
 @mixin flex-center {
   display: flex;
   justify-content: center;
