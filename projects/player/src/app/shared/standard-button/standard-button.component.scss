@@ -1,30 +1,56 @@
 @use 'colors';
 @use 'variables';
 
-.button-wrapper {
-  @include variables.flex-center;
-  @include variables.square-size;
-  padding: 0;
-  border-radius: 10px;
-  border: 8px solid colors.$white;
-  font-size: 20px;
-  background-color: colors.$white;
-
-  &:focus-visible {
-    outline: 2px solid colors.$highlight;
-    outline-offset: 2px;
-  }
+.button-option {
 
   img {
-    width: 147px;
-    height: 147px;
-    padding: 10px;
+    @include variables.responsive-image;
   }
 
-  .text {
-    font-family: 'Quicksand', sans-serif;
-    font-size: 32px;
-    font-weight: 600;
-    color: colors.$black;
+    &.small-text {
+      @include variables.text;
+      font-size: variables.$small-text-font-size;
+    }
+
+    &.big-text {
+      @include variables.text;
+      font-size: variables.$big-text-font-size;
+    }
+
+  &.selected {
+    border-radius: variables.$border-radius;
+    border-color: colors.$highlight;
+    transition: all 0.2s ease;
+    box-shadow: none ;
   }
+
+  & {
+    cursor: pointer;
+    background-color: colors.$white;
+    border: 8px solid colors.$white;
+    border-radius: variables.$border-radius;
+  }
+
+  @include variables.default-box-shadow;
+  @include variables.flex-center;
+}
+
+.big-size {
+  @include variables.big-button-size;
+}
+
+.medium-size {
+  @include variables.medium-button-size;
+}
+
+.small-size {
+  @include variables.small-button-size;
+}
+
+.big-gap {
+  margin: 0 variables.$big-gap-margin variables.$big-gap-margin 0;
+}
+
+.small-gap {
+  margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
 }

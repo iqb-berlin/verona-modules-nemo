@@ -1,21 +1,17 @@
 <div [class]="params" role="group" [attr.aria-multiselectable]="parameters().multiSelect">
-  @for (option of parameters().options; track option; let i = $index) {
-    <div
-      class="button-option"
-      [class.selected]="isSelected(i)"
-      [attr.aria-selected]="isSelected(i)"
-      role="option"
-      (click)="onButtonClick(i)">
-      <button
-        type="button"
-        class="button-wrapper"
-        [attr.aria-label]="option.text">
-        @if (option.imageSource) {
-          <img [src]="option.imageSource" [alt]="option.text  ">
-        } @else {
-          <span class="text">{{option.text}}</span>
-        }
-      </button>
+  @for (row of getRowsOptions(); track $index) {
+    <div class="row">
+      @for (option of row; track option.index) {
+        <stars-standard-button
+          [text]="option.text"
+          [image]="option.imageSource"
+          [selected]="isSelected(option.index)"
+          [size]="parameters().size"
+          [gap]="parameters().gap"
+          (buttonClick)="onButtonClick(option.index)">
+        </stars-standard-button>
+      }
     </div>
   }
 </div>
+

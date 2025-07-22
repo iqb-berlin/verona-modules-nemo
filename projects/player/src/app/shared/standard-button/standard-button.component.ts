@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'stars-standard-button',
@@ -9,4 +9,29 @@ import { Component, input } from '@angular/core';
 export class StandardButtonComponent {
   image = input<string>();
   text = input<string>();
+  selected = input<boolean>();
+  isSmallText = input<boolean>(false);
+  size = input<string>();
+  gap = input<string>();
+  buttonClick = output<void>();
+
+  onClick(): void {
+    this.buttonClick.emit();
+  }
+
+  get buttonClasses(): string {
+    const classes = ['button-option'];
+
+    if (this.selected()) {
+      classes.push('selected');
+    }
+    if (this.size()) {
+      classes.push(`${this.size().toLowerCase()}-size`);
+    }
+    if (this.gap()) {
+      classes.push(`${this.gap().toLowerCase()}-gap`);
+    }
+
+    return classes.join(' ');
+  }
 }
