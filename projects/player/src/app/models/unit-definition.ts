@@ -4,7 +4,7 @@ export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED';
 
 export interface SelectionOption {
   text: string;
-  image: string;
+  imageSource: string;
   icon: IconButtonTypeEnum;
 }
 
@@ -16,7 +16,7 @@ export interface Coding {
 
 export interface InteractionButtonParams {
   variableId: string;
-  options: SelectionOption;
+  options: SelectionOption[];
   multiSelect?: boolean;
   numberOfRows?: number;
   size: "BIG" | "MEDIUM" | "SMALL";
@@ -25,7 +25,7 @@ export interface InteractionButtonParams {
 
 export interface WordSelectParams {
   variableId: string;
-  options: SelectionOption;
+  options: SelectionOption[];
   imageSource: string;
   text: string;
   buttonsAsRow: boolean;

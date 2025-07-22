@@ -10,8 +10,7 @@ import { ResponsesService } from '../../services/responses.service';
 @Component({
   selector: 'stars-interaction-buttons',
   templateUrl: './interaction-buttons.component.html',
-  styleUrls: ['./interaction-buttons.component.scss'],
-  standalone: true
+  styleUrls: ['./interaction-buttons.component.scss']
 })
 
 export class InteractionButtonsComponent extends InteractionComponentDirective implements OnInit, OnChanges, OnDestroy {
@@ -34,13 +33,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
 
   private resetSelection(): void {
     this.selectedValues.set([]);
-  }
-
-
-  get options(): SelectionOption[] {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    return this.parameters().options;
   }
 
   get params(): string {
@@ -75,8 +67,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
       /* Handle single selection */
       this.selectedValues.set([index]);
     }
-
-    console.log(this.selectedValues());
 
     const response: Response = {
       id: 'RESPONSE_INTERACTION_BUTTONS',
