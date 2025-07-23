@@ -4,7 +4,7 @@ import {
 import { Response } from '@iqbspecs/response/response.interface';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
-import { InteractionButtonParams } from '../../models/unit-definition';
+import {InteractionButtonParams, SelectionOption} from '../../models/unit-definition';
 import { ResponsesService } from '../../services/responses.service';
 import { UnitService } from '../../services/unit.service';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
@@ -24,13 +24,17 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
   responsesService = inject(ResponsesService);
   unitService = inject(UnitService);
 
+  optionRows: Array<Array<RowOption>> = null;
+
   ngOnChanges(): void {
     /* Reset selection when parameters change (i.e., when loading a new file) */
     this.resetSelection();
+    this.optionRows = this.getRowsOptions();
   }
 
   ngOnInit(): void {
     this.resetSelection();
+    this.optionRows = this.getRowsOptions();
   }
 
   ngOnDestroy(): void {
@@ -47,102 +51,34 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
     if (this.parameters().multiSelect) {
       classes.push('multiselect');
     }
-    if (this.parameters().numberOfRows) {
-      classes.push(`rows-${this.parameters().numberOfRows}`);
-    }
 
     return classes.join(' ');
   }
 
-  getRowsOptions():ButtonRow[] {
+  getRowsOptions():Array<Array<RowOption>> {
     if (!this.parameters().options) return [];
 
     const totalOptions = this.parameters().options.length;
     const numberOfRows = this.parameters().numberOfRows || 1;
-    const rows: Array<Array<ButtonOption>> = [];
+    const rows: Array<Array<RowOption>> = [];
 
-    if (numberOfRows === 2) {
-      /* Handle 2 rows case: 4 options 2-2 split, 6 options 3-3 split,
-        7 options 4-3 split, 8 options 4-4 split,
-        9 options 5-4 split, 10 options 5-5 split
-      */
-      const firstRowCount = Math.ceil(totalOptions / 2);
-      const isUnevenSplit = totalOptions === 9; // 5-4 split case
+    let options = this.parameters().options;
 
-      /* First row */
-      rows[0] = this.parameters().options
-        .slice(0, firstRowCount)
-        .map((option, index) => ({ ...option, index }));
+    let numberOfOptionsPerRow = Math.min(Math.ceil(totalOptions/numberOfRows), 5);
 
-      /* Second row */
-      rows[1] = this.parameters().options
-        .slice(firstRowCount)
-        .map((option, index) => ({ ...option, index: index + firstRowCount }));
-      /* Add a property to indicate if this is the 5-4 uneven split case  */
-      return rows.map((row: ButtonOption[], i) => ({ options: row, isUneven: isUnevenSplit && i === 1 }));
-    } if (numberOfRows === 3) {
-      /* Handle 3 rows case: 6 options 2-2-2 split,
-        11 options: 5-5-1 split
-      */
-      if (totalOptions === 11) {
-        /* Special case for 11 options */
-        rows[0] = this.parameters()
-          .options
-          .slice(0, 5)
-          .map((option, index) => ({
-            ...option,
-            index
-          }));
+    let i = 0;
+    while (options.length > 0) {
+      let singleRowOptions = options.splice(0, numberOfOptionsPerRow);
 
-        rows[1] = this.parameters()
-          .options
-          .slice(5, 10)
-          .map((option, index) => ({
-            ...option,
-            index: index + 5
-          }));
+      let singleRowOptionsIndexed = [];
+      singleRowOptions.forEach((singleRowOption)=> {
+        singleRowOptionsIndexed.push({option: singleRowOption, index: i++})
+      });
 
-        rows[2] = this.parameters()
-          .options
-          .slice(10)
-          .map((option, index) => ({
-            ...option,
-            index: index + 10
-          }));
-      } else {
-        const itemsPerRow = Math.ceil(totalOptions / 3);
-
-        /* First row */
-        rows[0] = this.parameters().options
-          .slice(0, itemsPerRow)
-          .map((option, index) => ({ ...option, index }));
-
-        /* Second row */
-        rows[1] = this.parameters().options
-          .slice(itemsPerRow, itemsPerRow * 2)
-          .map((option, index) => ({ ...option, index: index + itemsPerRow }));
-
-        /* Third row */
-        rows[2] = this.parameters().options
-          .slice(itemsPerRow * 2)
-          .map((option, index) => ({
-            ...option,
-            index: index + (itemsPerRow * 2)
-          }));
-      }
-      return rows.map(row => ({
-        options: row,
-        isUneven: false
-      }));
+      rows.push(singleRowOptionsIndexed);
     }
-    /* Single row case */
-    rows[0] = this.parameters().options
-      .map((option, index) => ({ ...option, index }));
 
-    return rows.map(row => ({
-      options: row,
-      isUneven: false
-    }));
+    return rows;
   }
 
   isSelected(index: number): boolean {
@@ -179,13 +115,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
   }
 }
 
-interface ButtonOption {
-  text: string;
-  imageSource: string;
+interface RowOption {
+  option: SelectionOption;
   index: number;
-}
-
-interface ButtonRow {
-  options: ButtonOption[];
-  isUneven: boolean;
 }

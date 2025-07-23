@@ -1,4 +1,5 @@
-import {inject, Injectable, signal} from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
+
 import { Response } from '@iqbspecs/response/response.interface';
 import { UnitState, UnitStateDataType } from '../models/verona';
 import { VeronaPostService } from './verona-post.service';
@@ -25,14 +26,17 @@ export class ResponsesService {
     this.allResponses.push(...responses);
     this.firstResponseGiven.set(true);
 
-    if (this.veronaPostService) {
-      const unitState: UnitState = {
-        unitStateDataType: UnitStateDataType,
-        dataParts: {
-          responses: JSON.stringify(this.allResponses)
-        },
-        responseProgress: 'complete'
-      };
+    const unitState: UnitState = {
+      unitStateDataType: UnitStateDataType,
+      dataParts: {
+        responses: JSON.stringify(this.allResponses)
+      },
+      responseProgress: 'complete'
+    };
+
+    if (window === window.parent) {
+      console.log("state changed: ", unitState);
+    } else if (this.veronaPostService) {
       this.veronaPostService.sendVopStateChangedNotification({ unitState });
     }
   }

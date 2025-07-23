@@ -1,10 +1,10 @@
 <div [class]="params" role="group" [attr.aria-multiselectable]="parameters().multiSelect">
-  @for (row of getRowsOptions(); track $index) {
-    <div class="row" [class.flex-start]="row.isUneven">
-      @for (option of row.options; track option.index) {
+  @for (row of optionRows; track $index) {
+    <div class="row">
+      @for (option of row; track $index) {
         <stars-standard-button
-          [text]="option.text"
-          [image]="option.imageSource"
+          [text]="option.option.text"
+          [image]="option.option.imageSource"
           [selected]="isSelected(option.index)"
           [size]="parameters().size"
           [gap]="parameters().gap"

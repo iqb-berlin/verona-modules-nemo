@@ -3,7 +3,7 @@
 
 .buttons-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
@@ -19,11 +19,3 @@
     justify-content: flex-start;
   }
 }
-
-.rows-2, .rows-3 {
-  flex-direction: column;
-}
-
-
-
-
