@@ -3,7 +3,7 @@ import { Injectable, signal } from '@angular/core';
 import {
   ContinueButtonEnum,
   InteractionEnum,
-  mainAudio
+  MainAudio, UnitDefinition
 } from '../models/unit-definition';
 
 
@@ -12,7 +12,7 @@ import {
 })
 
 export class UnitService {
-  mainAudio = signal<mainAudio>(null);
+  mainAudio = signal<MainAudio>(null);
   backgroundColor = signal('#FFF');
   continueButton = signal<ContinueButtonEnum>('ALWAYS');
   interaction = signal<InteractionEnum>('BUTTONS');
@@ -26,18 +26,18 @@ export class UnitService {
     this.parameters.set({});
   }
 
-  setNewData(unitDefinition: unknown) {
+  setNewData(unitDefinition: UnitDefinition) {
     this.reset();
-    if (unitDefinition['mainAudio']) this.mainAudio.set(unitDefinition['mainAudio']);
+    if (unitDefinition.mainAudio) this.mainAudio.set(unitDefinition.mainAudio);
     const pattern = /^#([a-f0-9]{3}|[a-f0-9]{6})$/i;
-    if (unitDefinition['backgroundColor'] && pattern.test(unitDefinition['backgroundColor'])) {
-      this.backgroundColor.set(unitDefinition['backgroundColor']);
+    if (unitDefinition.backgroundColor && pattern.test(unitDefinition.backgroundColor)) {
+      this.backgroundColor.set(unitDefinition.backgroundColor);
     }
-    if (unitDefinition['continueButtonShow']) {
-      this.continueButton.set(unitDefinition['continueButtonShow']);
+    if (unitDefinition.continueButtonShow) {
+      this.continueButton.set(unitDefinition.continueButtonShow);
     }
-    if (unitDefinition['interactionType']) this.interaction.set(unitDefinition['interactionType']);
-    if (unitDefinition['interactionParameters']) this.parameters.set(unitDefinition['interactionParameters']);
+    if (unitDefinition.interactionType) this.interaction.set(unitDefinition.interactionType);
+    if (unitDefinition.interactionParameters) this.parameters.set(unitDefinition.interactionParameters);
     console.log(this.mainAudio());
     console.log(this.parameters());
   }

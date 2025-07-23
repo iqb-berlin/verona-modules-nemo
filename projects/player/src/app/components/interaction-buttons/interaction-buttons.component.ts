@@ -66,12 +66,14 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
       */
       const firstRowCount = Math.ceil(totalOptions / 2);
 
-      // First row
+      console.log('FIRST ROW COUNT IS', firstRowCount);
+
+      /* First row */
       rows[0] = this.parameters().options
         .slice(0, firstRowCount)
         .map((option, index) => ({ ...option, index }));
 
-      // Second row
+      /* Second row */
       rows[1] = this.parameters().options
         .slice(firstRowCount)
         .map((option, index) => ({ ...option, index: index + firstRowCount }));
@@ -80,7 +82,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
         11 options: 5-5-1 split
       */
       if (totalOptions === 11) {
-        // Special case for 11 options
+        /* Special case for 11 options */
         rows[0] = this.parameters()
           .options
           .slice(0, 5)
@@ -107,17 +109,17 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
       } else {
         const itemsPerRow = Math.ceil(totalOptions / 3);
 
-        // First row
+        /* First row */
         rows[0] = this.parameters().options
           .slice(0, itemsPerRow)
           .map((option, index) => ({ ...option, index }));
 
-        // Second row
+        /* Second row */
         rows[1] = this.parameters().options
           .slice(itemsPerRow, itemsPerRow * 2)
           .map((option, index) => ({ ...option, index: index + itemsPerRow }));
 
-        // Third row
+        /* Third row */
         rows[2] = this.parameters().options
           .slice(itemsPerRow * 2)
           .map((option, index) => ({
@@ -126,7 +128,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
           }));
       }
     } else {
-      // Single row case
+      /* Single row case */
       rows[0] = this.parameters().options
         .map((option, index) => ({ ...option, index }));
     }
@@ -154,8 +156,10 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
       this.selectedValues.set([index]);
     }
 
+    const id = this.parameters().variableId || 'INTERACTION_BUTTONS';
+
     const response: Response = {
-      id: 'RESPONSE_INTERACTION_BUTTONS',
+      id: id,
       status: 'VALUE_CHANGED',
       value: this.selectedValues()
     };
