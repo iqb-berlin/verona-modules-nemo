@@ -17,6 +17,7 @@ export class UnitService {
   continueButton = signal<ContinueButtonEnum>('ALWAYS');
   interaction = signal<InteractionEnum>('BUTTONS');
   parameters = signal<unknown>({});
+  hasInteraction = signal(false);
 
   reset() {
     this.mainAudio.set(null);
@@ -24,6 +25,7 @@ export class UnitService {
     this.continueButton.set('ALWAYS');
     this.interaction.set('BUTTONS');
     this.parameters.set({});
+    this.hasInteraction.set(false);
   }
 
   setNewData(unitDefinition: UnitDefinition) {

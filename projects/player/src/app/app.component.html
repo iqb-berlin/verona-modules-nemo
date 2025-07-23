@@ -5,7 +5,9 @@
   @if (unitService.mainAudio()?.audioSource) {
     <stars-main-audio [audioSource]="unitService.mainAudio().audioSource" playerId="mainAudio"></stars-main-audio>
   }
-  @if (unitService.continueButton() === "ALWAYS" || unitService.continueButton() === "ON_FULL_CREDIT" && responsesService.maxScoreReached()) {
+  @if (unitService.continueButton() === "ALWAYS" ||
+    unitService.continueButton() === "ON_FULL_CREDIT" && responsesService.maxScoreReached() ||
+    unitService.continueButton() === "ON_INTERACTION" && unitService.hasInteraction()) {
     <stars-continue-button
       (navigate)="veronaPostService.sendVopUnitNavigationRequestedNotification('next')"></stars-continue-button>
   }
