@@ -2,6 +2,16 @@ export type ContinueButtonEnum = 'ALWAYS' | 'NO' | 'ON_ANY_RESPONSE' | 'ON_FULL_
 export type InteractionEnum = 'BUTTONS' | 'SYLLABIFY' | 'WORD_SELECT' | 'DROP' | 'PHONETICS' | 'WRITE' | 'FIND_ON_IMAGE';
 export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED';
 
+export interface UnitDefinition {
+  id: string;
+  version?: string;
+  backgroundColor?: string;
+  continueButtonShow?: ContinueButtonEnum;
+  mainAudio?: MainAudio;
+  interactionType: InteractionEnum;
+  interactionParameters: InteractionButtonParams | SyllabifyParams | WordSelectParams | undefined;
+}
+
 export interface SelectionOption {
   text: string;
   imageSource: string;
@@ -19,8 +29,8 @@ export interface InteractionButtonParams {
   options: SelectionOption[];
   multiSelect?: boolean;
   numberOfRows?: number;
-  size: "BIG" | "MEDIUM" | "SMALL";
-  gap: "BIG" | "MEDIUM" | "SMALL";
+  size: 'BIG' | 'MEDIUM' | 'SMALL';
+  gap: 'BIG' | 'MEDIUM' | 'SMALL';
 }
 
 export interface WordSelectParams {
@@ -38,7 +48,7 @@ export interface SyllabifyParams {
   numberOfOptions: number;
 }
 
-export interface mainAudio {
+export interface MainAudio {
   audioSource: string;
   firstClickLayer: boolean;
   animateButton: boolean;
