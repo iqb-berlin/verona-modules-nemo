@@ -1,0 +1,16 @@
+<div [class]="params" role="group" [attr.aria-multiselectable]="parameters().multiSelect">
+  @for (row of optionRows; track $index) {
+    <div class="row">
+      @for (option of row; track $index) {
+        <stars-standard-button
+          [text]="option.option.text"
+          [image]="option.option.imageSource"
+          [selected]="isSelected(option.index)"
+          [size]="parameters().size"
+          (buttonClick)="onButtonClick(option.index)">
+        </stars-standard-button>
+      }
+    </div>
+  }
+</div>
+
