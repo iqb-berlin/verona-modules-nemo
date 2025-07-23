@@ -12,7 +12,6 @@ export class StandardButtonComponent {
   selected = input<boolean>();
   isSmallText = input<boolean>(false);
   size = input<string>();
-  gap = input<string>();
   buttonClick = output<void>();
 
   onClick(): void {
@@ -27,9 +26,6 @@ export class StandardButtonComponent {
     }
     if (this.size()) {
       classes.push(`${this.size().toLowerCase()}-size`);
-    }
-    if (this.gap()) {
-      classes.push(`${this.gap().toLowerCase()}-gap`);
     }
 
     return classes.join(' ');

@@ -7,15 +7,15 @@
     @include variables.responsive-image;
   }
 
-    &.small-text {
-      @include variables.text;
-      font-size: variables.$small-text-font-size;
-    }
+  span.small-text {
+    @include variables.text;
+    font-size: variables.$small-text-font-size;
+  }
 
-    &.big-text {
-      @include variables.text;
-      font-size: variables.$big-text-font-size;
-    }
+  span.big-text {
+    @include variables.text;
+    font-size: variables.$big-text-font-size;
+  }
 
   &.selected {
     border-radius: variables.$border-radius;
@@ -37,20 +37,15 @@
 
 .big-size {
   @include variables.big-button-size;
+  margin: 0 variables.$big-gap-margin variables.$big-gap-margin 0;
 }
 
 .medium-size {
   @include variables.medium-button-size;
+  margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
 }
 
 .small-size {
   @include variables.small-button-size;
-}
-
-.big-gap {
-  margin: 0 variables.$big-gap-margin variables.$big-gap-margin 0;
-}
-
-.small-gap {
   margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
 }

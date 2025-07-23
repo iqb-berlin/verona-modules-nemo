@@ -4,7 +4,7 @@ import {
 import { Response } from '@iqbspecs/response/response.interface';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
-import {InteractionButtonParams, SelectionOption} from '../../models/unit-definition';
+import { InteractionButtonParams, SelectionOption } from '../../models/unit-definition';
 import { ResponsesService } from '../../services/responses.service';
 import { UnitService } from '../../services/unit.service';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
@@ -64,18 +64,20 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
 
     let options = this.parameters().options;
 
-    let numberOfOptionsPerRow = Math.min(Math.ceil(totalOptions/numberOfRows), 5);
+    /* If the calculation results more than 5 options in a row, cap it at 5 */
+    const numberOfOptionsPerRow = Math.min(Math.ceil(totalOptions / numberOfRows), 5);
 
-    let i = 0;
     while (options.length > 0) {
-      let singleRowOptions = options.splice(0, numberOfOptionsPerRow);
-
-      let singleRowOptionsIndexed = [];
-      singleRowOptions.forEach((singleRowOption)=> {
-        singleRowOptionsIndexed.push({option: singleRowOption, index: i++})
-      });
+      const startIndex = rows.length * numberOfOptionsPerRow;
+      const singleRowOptionsIndexed: RowOption[] = options
+        .slice(0, numberOfOptionsPerRow)
+        .map((option, i) => ({
+          option,
+          index: startIndex + i
+        }));
 
       rows.push(singleRowOptionsIndexed);
+      options = options.slice(numberOfOptionsPerRow); // Move to the next chunk of options
     }
 
     return rows;
