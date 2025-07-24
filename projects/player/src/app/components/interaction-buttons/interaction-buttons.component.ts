@@ -45,16 +45,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
     this.selectedValues.set([]);
   }
 
-  get params(): string {
-    const classes = ['buttons-container'];
-
-    if (this.parameters().multiSelect) {
-      classes.push('multiselect');
-    }
-
-    return classes.join(' ');
-  }
-
   getRowsOptions():Array<Array<RowOption>> {
     if (!this.parameters().options) return [];
 

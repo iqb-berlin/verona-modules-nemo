@@ -49,8 +49,10 @@ html {
 body {
   margin: 0;
   font-family: 'Quicksand', sans-serif;
+  font-weight: normal;
+  color: black;
+  font-size: 28px;
 }
-
 
 player-sub-form {
   display: block;

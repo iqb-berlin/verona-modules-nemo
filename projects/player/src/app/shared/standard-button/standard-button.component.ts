@@ -17,17 +17,4 @@ export class StandardButtonComponent {
   onClick(): void {
     this.buttonClick.emit();
   }
-
-  get buttonClasses(): string {
-    const classes = ['button-option'];
-
-    if (this.selected()) {
-      classes.push('selected');
-    }
-    if (this.size()) {
-      classes.push(`${this.size().toLowerCase()}-size`);
-    }
-
-    return classes.join(' ');
-  }
 }

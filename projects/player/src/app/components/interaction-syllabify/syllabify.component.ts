@@ -6,8 +6,7 @@ import {SyllabifyParams} from "../../models/unit-definition";
   selector: 'stars-interaction-syllabify',
   template: `
     <div>syllabify component; length: {{length}}</div>
-  `,
-  standalone: false
+  `
 })
 
 export class SyllabifyComponent extends InteractionComponentDirective implements OnInit, OnDestroy {

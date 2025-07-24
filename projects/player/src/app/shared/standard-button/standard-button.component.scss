@@ -35,6 +35,17 @@
   @include variables.flex-center;
 }
 
+.button-option.word-size {
+  border: none;
+
+  &.selected {
+    background-color: colors.$highlight;
+    color: white;
+    border: none;
+    @include variables.default-box-shadow;
+  }
+}
+
 .big-size {
   @include variables.big-button-size;
   margin: 0 variables.$big-gap-margin variables.$big-gap-margin 0;
@@ -47,5 +58,10 @@
 
 .small-size {
   @include variables.small-button-size;
+  margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
+}
+
+.word-size {
+  @include variables.word-button-size;
   margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
 }
