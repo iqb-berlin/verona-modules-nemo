@@ -1,0 +1,67 @@
+@use 'colors';
+@use 'variables';
+
+.button-option {
+
+  img {
+    @include variables.responsive-image;
+  }
+
+  span.small-text {
+    @include variables.text;
+    font-size: variables.$small-text-font-size;
+  }
+
+  span.big-text {
+    @include variables.text;
+    font-size: variables.$big-text-font-size;
+  }
+
+  &.selected {
+    border-radius: variables.$border-radius;
+    border-color: colors.$highlight;
+    transition: all 0.2s ease;
+    box-shadow: none ;
+  }
+
+  & {
+    cursor: pointer;
+    background-color: colors.$white;
+    border: 8px solid colors.$white;
+    border-radius: variables.$border-radius;
+  }
+
+  @include variables.default-box-shadow;
+  @include variables.flex-center;
+}
+
+.button-option.word-size {
+  border: none;
+
+  &.selected {
+    background-color: colors.$highlight;
+    color: white;
+    border: none;
+    @include variables.default-box-shadow;
+  }
+}
+
+.big-size {
+  @include variables.big-button-size;
+  margin: 0 variables.$big-gap-margin variables.$big-gap-margin 0;
+}
+
+.medium-size {
+  @include variables.medium-button-size;
+  margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
+}
+
+.small-size {
+  @include variables.small-button-size;
+  margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
+}
+
+.word-size {
+  @include variables.word-button-size;
+  margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
+}

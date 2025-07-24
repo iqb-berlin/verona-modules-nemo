@@ -7,6 +7,11 @@ import { UnitService } from './services/unit.service';
 import { MetadataService } from './services/metadata.service';
 import { ResponsesService } from './services/responses.service';
 import { VopStartCommand } from './models/verona';
+import {
+  InteractionButtonParams,
+  SyllabifyParams,
+  WordSelectParams
+} from "./models/unit-definition";
 
 @Component({
   selector: 'stars-player',
@@ -44,5 +49,17 @@ export class AppComponent implements OnInit {
   @HostListener('window:focus')
   onFocus(): void {
     this.veronaPostService.sendVopWindowFocusChangedNotification(true);
+  }
+
+  get paramsAsInteractionButtonParams() {
+    return this.unitService.parameters() as InteractionButtonParams;
+  }
+
+  get paramsAsWordSelectParams() {
+    return this.unitService.parameters() as WordSelectParams;
+  }
+
+  get paramsAsSyllabifyParams() {
+    return this.unitService.parameters() as SyllabifyParams;
   }
 }

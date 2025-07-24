@@ -1,42 +1,46 @@
 import { Injectable, signal } from '@angular/core';
-import { ContinueButtonEnum, InteractionEnum } from '../models/unit-definition';
+
+import {
+  ContinueButtonEnum,
+  InteractionEnum,
+  MainAudio, UnitDefinition
+} from '../models/unit-definition';
+
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class UnitService {
-  mainAudio = signal('');
-  mainText = signal('');
+  mainAudio = signal<MainAudio>(null);
   backgroundColor = signal('#FFF');
-  continueButton = signal<ContinueButtonEnum>('hide');
-  interaction = signal<InteractionEnum>('buttons');
+  continueButton = signal<ContinueButtonEnum>('ALWAYS');
+  interaction = signal<InteractionEnum>('BUTTONS');
   parameters = signal<unknown>({});
+  hasInteraction = signal(false);
 
   reset() {
-    this.mainAudio.set('');
-    this.mainText.set('');
+    this.mainAudio.set(null);
     this.backgroundColor.set('#FFF');
-    this.continueButton.set('hide');
-    this.interaction.set('buttons');
+    this.continueButton.set('ALWAYS');
+    this.interaction.set('BUTTONS');
     this.parameters.set({});
+    this.hasInteraction.set(false);
   }
 
-  setNewData(unitDefinition: unknown) {
+  setNewData(unitDefinition: UnitDefinition) {
     this.reset();
-    if (unitDefinition['main-audio']) this.mainAudio.set(unitDefinition['main-audio']);
-    if (unitDefinition['main-text']) this.mainText.set(unitDefinition['main-text']);
+    if (unitDefinition.mainAudio) this.mainAudio.set(unitDefinition.mainAudio);
     const pattern = /^#([a-f0-9]{3}|[a-f0-9]{6})$/i;
-    if (unitDefinition['background-color'] && pattern.test(unitDefinition['background-color'])) {
-      this.backgroundColor.set(unitDefinition['background-color']);
+    if (unitDefinition.backgroundColor && pattern.test(unitDefinition.backgroundColor)) {
+      this.backgroundColor.set(unitDefinition.backgroundColor);
     }
-    if (unitDefinition['continue-button']) {
-      this.continueButton.set(unitDefinition['continue-button']);
-    } else {
-      this.continueButton.set('show');
+    if (unitDefinition.continueButtonShow) {
+      this.continueButton.set(unitDefinition.continueButtonShow);
     }
-    if (unitDefinition['interaction']) this.interaction.set(unitDefinition['interaction']);
-    if (unitDefinition['parameters']) this.parameters.set(unitDefinition['parameters']);
+    if (unitDefinition.interactionType) this.interaction.set(unitDefinition.interactionType);
+    if (unitDefinition.interactionParameters) this.parameters.set(unitDefinition.interactionParameters);
+    console.log(this.mainAudio());
     console.log(this.parameters());
   }
 }

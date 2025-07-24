@@ -1,0 +1,17 @@
+<button
+  type="button"
+  class="button-option"
+  [class.selected]="selected()"
+  [class]="size().toLowerCase()+'-size'"
+  [attr.aria-selected]="selected()"
+  role="option"
+  (click)="onClick()"
+  [attr.aria-label]="text()">
+  @if (image()) {
+    <img [src]="image()" [alt]="text()  ">
+  } @else {
+    <span [class.small-text]="isSmallText()" [class.big-text]="!isSmallText()"
+    >{{text()}}</span>
+  }
+</button>
+

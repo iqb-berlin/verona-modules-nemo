@@ -4,7 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 
 import { AppComponent } from './app.component';
-import { ButtonsComponent } from './components/interaction-buttons/buttons.component';
+import { InteractionButtonsComponent } from './components/interaction-buttons/interaction-buttons.component';
 import { WordSelectComponent } from './components/interaction-word-select/word-select.component';
 import { SyllabifyComponent } from './components/interaction-syllabify/syllabify.component';
 import { ResponsesService } from './services/responses.service';
@@ -19,15 +19,12 @@ import { SafeResourceUrlPipe } from './pipes/safe-resource-url.pipe';
 import { LinebreaksHtmlPipe } from './pipes/linebreaks-html.pipe';
 import { ClickLayerComponent } from './components/main-audio/click-layer.component';
 import { MediaPlayerComponent } from './components/main-audio/media-player.component';
-import { StandardButtonComponent } from './components/standard-button.component';
+import { StandardButtonComponent } from './shared/standard-button/standard-button.component';
 import { PhoneticsComponent } from './components/interaction-phonetics/interaction-phonetics.component';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    ButtonsComponent,
-    WordSelectComponent,
-    SyllabifyComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
@@ -42,8 +39,11 @@ import { PhoneticsComponent } from './components/interaction-phonetics/interacti
     ClickLayerComponent,
     MediaPlayerComponent,
     MainAudioComponent,
+    InteractionButtonsComponent,
     ContinueButtonComponent,
     StandardButtonComponent,
+    WordSelectComponent,
+    SyllabifyComponent,
     PhoneticsComponent
   ],
   providers: [

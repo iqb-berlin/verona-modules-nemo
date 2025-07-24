@@ -2,34 +2,36 @@
   @if (isStandalone) {
     <stars-standalone-menu></stars-standalone-menu>
   }
-  @if (unitService.mainAudio()) {
-    <stars-main-audio [audioSource]="unitService.mainAudio()" playerId="mainAudio"></stars-main-audio>
+  @if (unitService.mainAudio()?.audioSource) {
+    <stars-main-audio [audioSource]="unitService.mainAudio().audioSource" playerId="mainAudio"></stars-main-audio>
   }
-  @if (unitService.continueButton() === "show" || unitService.continueButton() === "on-full-credit" && responsesService.maxScoreReached()) {
+  @if (unitService.continueButton() === "ALWAYS" ||
+    unitService.continueButton() === "ON_FULL_CREDIT" && responsesService.maxScoreReached() ||
+    unitService.continueButton() === "ON_INTERACTION" && unitService.hasInteraction()) {
     <stars-continue-button
       (navigate)="veronaPostService.sendVopUnitNavigationRequestedNotification('next')"></stars-continue-button>
   }
 
-  @if (unitService.interaction() === 'buttons') {
+  @if (unitService.interaction() === 'BUTTONS') {
     <stars-interaction-buttons class="interaction"
       [style.background-color]="unitService.backgroundColor()"
-      [parameters]="unitService.parameters()"
-      (responses)="responsesService.newResponses($event, isStandalone ? null : veronaPostService)"></stars-interaction-buttons>
-  } @else if (unitService.interaction() === 'syllabify') {
+      [parameters]="paramsAsInteractionButtonParams"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-buttons>
+  } @else if (unitService.interaction() === 'SYLLABIFY') {
     <stars-interaction-syllabify class="interaction"
       [style.background-color]="unitService.backgroundColor()"
-      [parameters]="unitService.parameters()"
-      (responses)="responsesService.newResponses($event, isStandalone ? null : veronaPostService)"></stars-interaction-syllabify>
-  } @else if (unitService.interaction() === 'word-select') {
+      [parameters]="paramsAsSyllabifyParams"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-syllabify>
+  } @else if (unitService.interaction() === 'WORD_SELECT') {
     <stars-interaction-word-select class="interaction"
       [style.background-color]="unitService.backgroundColor()"
-      [parameters]="unitService.parameters()"
-      (responses)="responsesService.newResponses($event, isStandalone ? null : veronaPostService)"></stars-interaction-word-select>
-  }  @else if (unitService.interaction() === 'phonetics') {
+      [parameters]="paramsAsWordSelectParams"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-word-select>
+  } @else if (unitService.interaction() === 'PHONETICS') {
     <stars-interaction-phonetics class="interaction"
-      [style.background-color]="unitService.backgroundColor()"
-      [parameters]="unitService.parameters()"
-      (responses)="responsesService.newResponses($event, isStandalone ? null : veronaPostService)"></stars-interaction-phonetics>
+       [style.background-color]="unitService.backgroundColor()"
+       [parameters]="unitService.parameters()"
+       (responses)="responsesService.newResponses($event)"></stars-interaction-phonetics>
   }
   @else {
     <div>Unbekannter Interaktionstyp "{{unitService.interaction}}"</div>
