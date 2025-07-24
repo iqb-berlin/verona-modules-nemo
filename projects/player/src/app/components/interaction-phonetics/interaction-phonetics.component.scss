@@ -1,28 +1,10 @@
 @use '_colors.scss';
 @use '_variables.scss';
 
-.interaction-phonetics-wrapper {
+.phonetics-wrapper {
   width: 100%;
   height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  .button-wrapper {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    margin: 0 20px 20px 0;
-    border: none;
-    background-color: colors.$white;
-    cursor: pointer;
-    transition: border-color 0.2s ease;
-    -webkit-tap-highlight-color: transparent;
-    @include variables.circle-box-shadow;
-
-    &.selected {
-      background-color: colors.$highlight;
-      box-shadow: none;
-    }
-  }
 }

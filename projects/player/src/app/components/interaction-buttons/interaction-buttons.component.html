@@ -10,6 +10,8 @@
           [text]="option.option.text"
           [image]="option.option.imageSource"
           [selected]="isSelected(option.index)"
+          [isMultiselect]="parameters().multiSelect"
+          [isSmallText]="false"
           [size]="parameters().size"
           (buttonClick)="onButtonClick(option.index)">
         </stars-standard-button>

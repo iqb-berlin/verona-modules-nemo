@@ -13,6 +13,7 @@
           [text]="option.text"
           [image]="option.imageSource"
           [selected]="isSelected($index)"
+          [isMultiselect]="false"
           [size]="'WORD'"
           [isSmallText]="true"
           (buttonClick)="onButtonClick($index)">

@@ -6,12 +6,15 @@
   [attr.aria-selected]="selected()"
   role="option"
   (click)="onClick()"
-  [attr.aria-label]="text()">
+  [attr.aria-label]="isMultiselect() ? 'Multiselect button group option ' + text(): 'Single select button group option ' + text()">
   @if (image()) {
     <img [src]="image()" [alt]="text()  ">
   } @else {
-    <span [class.small-text]="isSmallText()" [class.big-text]="!isSmallText()"
-    >{{text()}}</span>
+    @if (size().toLowerCase() !== 'phonetics') {
+      <span [class.small-text]="isSmallText()" [class.big-text]="!isSmallText()">
+      {{text()}}
+    </span>
+    }
   }
 </button>
 

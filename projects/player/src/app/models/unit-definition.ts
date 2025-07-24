@@ -48,6 +48,11 @@ export interface SyllabifyParams {
   numberOfOptions: number;
 }
 
+export interface PhoneticsParams {
+  variableId: string;
+  numberOfOptions: number;
+}
+
 export interface MainAudio {
   audioSource: string;
   firstClickLayer: boolean;
