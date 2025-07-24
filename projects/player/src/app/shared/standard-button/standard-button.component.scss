@@ -2,22 +2,16 @@
 @use 'variables';
 
 .button-option {
+  // Base button styles
+  cursor: pointer;
+  background-color: colors.$white;
+  border: 8px solid colors.$white;
+  border-radius: variables.$border-radius;
+  @include variables.default-box-shadow;
+  @include variables.flex-center;
 
-  img {
-    @include variables.responsive-image;
-  }
-
-  span.small-text {
-    @include variables.text;
-    font-size: variables.$small-text-font-size;
-  }
-
-  span.big-text {
-    @include variables.text;
-    font-size: variables.$big-text-font-size;
-  }
-
-  &:focus, &:active {
+  &:focus,
+  &:active {
     outline: none;
   }
 
@@ -25,65 +19,73 @@
     border-radius: variables.$border-radius;
     border-color: colors.$highlight;
     transition: all 0.2s ease;
-    box-shadow: none ;
-  }
-
-  & {
-    cursor: pointer;
-    background-color: colors.$white;
-    border: 8px solid colors.$white;
-    border-radius: variables.$border-radius;
-  }
-
-  @include variables.default-box-shadow;
-  @include variables.flex-center;
-}
-
-.button-option.word-size {
-  border: none;
-
-  &.selected {
-    background-color: colors.$highlight;
-    color: white;
-    border: none;
-    @include variables.default-box-shadow;
-  }
-}
-
-.big-size {
-  @include variables.big-button-size;
-  margin: 0 variables.$big-gap-margin variables.$big-gap-margin 0;
-}
-
-.medium-size {
-  @include variables.medium-button-size;
-  margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
-}
-
-.small-size {
-  @include variables.small-button-size;
-  margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
-}
-
-.word-size {
-  @include variables.word-button-size;
-  margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
-}
-
-.phonetics-size {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin: 0 20px 20px 0;
-  border: none;
-  background-color: colors.$white;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  @include variables.circle-box-shadow;
-
-  &.selected {
-    background-color: colors.$highlight;
-    border-radius: 50%;
     box-shadow: none;
+  }
+
+  // Content styles
+  img {
+    @include variables.responsive-image;
+
+    &.accept-icon {
+      @include variables.accept-icon-size;
+    }
+
+    &.reject-icon {
+      @include variables.reject-icon-size;
+    }
+  }
+
+  span {
+    &.small-text {
+      @include variables.text;
+      font-size: variables.$small-text-font-size;
+    }
+
+    &.big-text {
+      @include variables.text;
+      font-size: variables.$big-text-font-size;
+    }
+  }
+}
+
+// Size modifiers
+.button-option {
+  &.big-size {
+    @include variables.big-button-size;
+    margin: 0 variables.$big-gap-margin variables.$big-gap-margin 0;
+  }
+
+  &.medium-size {
+    @include variables.medium-button-size;
+    margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
+  }
+
+  &.small-size {
+    @include variables.small-button-size;
+    margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
+  }
+
+  &.word-size {
+    @include variables.word-button-size;
+    margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
+    border: none;
+
+    &.selected {
+      background-color: colors.$highlight;
+      color: white;
+      border: none;
+      @include variables.default-box-shadow;
+    }
+  }
+
+  &.phonetics-size {
+   @include variables.phonetics-circles-styles;
+    @include variables.circle-box-shadow;
+
+    &.selected {
+      background-color: colors.$highlight;
+      border-radius: 50%;
+      box-shadow: none;
+    }
   }
 }

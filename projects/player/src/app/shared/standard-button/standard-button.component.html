@@ -6,13 +6,19 @@
   [attr.aria-selected]="selected()"
   role="option"
   (click)="onClick()"
-  [attr.aria-label]="isMultiselect() ? 'Multiselect button group option ' + text(): 'Single select button group option ' + text()">
+  [attr.aria-label]="text()">
   @if (image()) {
-    <img [src]="image()" [alt]="text()  ">
-  } @else {
+    <img [src]="image()" [alt]="text()?.trim() || 'Button with image'">
+  } @else if (icon()) {
+    @if (icon() === 'CHECK_GREEN') {
+      <img src="assets/images/accept-icon.svg" alt="Accept icon" class="accept-icon">
+    } @else if (icon() === 'CLOSE_RED') {
+      <img src="assets/images/reject-icon.svg" alt="Reject icon" class="reject-icon">
+    }
+  } @else if (text()) {
     @if (size().toLowerCase() !== 'phonetics') {
       <span [class.small-text]="isSmallText()" [class.big-text]="!isSmallText()">
-      {{text()}}
+      {{ text() }}
     </span>
     }
   }
