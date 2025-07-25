@@ -8,10 +8,19 @@
   (click)="onClick()"
   [attr.aria-label]="text()">
   @if (image()) {
-    <img [src]="image()" [alt]="text()  ">
-  } @else {
-    <span [class.small-text]="isSmallText()" [class.big-text]="!isSmallText()"
-    >{{text()}}</span>
+    <img [src]="image()" [alt]="text()?.trim() || 'Button with image'">
+  } @else if (icon()) {
+    @if (icon() === 'CHECK_GREEN') {
+      <img src="assets/images/accept-icon.svg" alt="Accept icon" class="accept-icon">
+    } @else if (icon() === 'CLOSE_RED') {
+      <img src="assets/images/reject-icon.svg" alt="Reject icon" class="reject-icon">
+    }
+  } @else if (text()) {
+    @if (size() !== 'ROUND') {
+      <span [class.small-text]="isSmallText()" [class.big-text]="!isSmallText()">
+      {{ text() }}
+    </span>
+    }
   }
 </button>
 

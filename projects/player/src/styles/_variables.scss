@@ -35,7 +35,7 @@ $small-text-font-size: 32px;
   box-shadow: 12px 10px 8px 5px rgba(0, 0, 0, 0.2);
 }
 
-@mixin circle-box-shadow {
+@mixin rounded-box-shadow {
   box-shadow: 5px 5px 0 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -61,4 +61,25 @@ $small-text-font-size: 32px;
   height: 100px;
   min-width: 300px;
   overflow: hidden;
+}
+
+@mixin accept-icon-size {
+  width: 76px;
+  height: 62px;
+}
+
+@mixin reject-icon-size {
+  width: 68px;
+  height: 68px;
+}
+
+@mixin rounded-styles {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: 0 20px 20px 0;
+  border: none;
+  background-color: colors.$white;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
