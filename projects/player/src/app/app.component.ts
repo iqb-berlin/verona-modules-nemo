@@ -8,10 +8,10 @@ import { MetadataService } from './services/metadata.service';
 import { ResponsesService } from './services/responses.service';
 import { VopStartCommand } from './models/verona';
 import {
-  InteractionButtonParams,
+  InteractionButtonParams, PhoneticsParams,
   SyllabifyParams,
   WordSelectParams
-} from "./models/unit-definition";
+} from './models/unit-definition';
 
 @Component({
   selector: 'stars-player',
@@ -61,5 +61,9 @@ export class AppComponent implements OnInit {
 
   get paramsAsSyllabifyParams() {
     return this.unitService.parameters() as SyllabifyParams;
+  }
+
+  get paramsAsPhoneticsParams() {
+    return this.unitService.parameters() as PhoneticsParams;
   }
 }

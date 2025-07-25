@@ -30,7 +30,7 @@
   } @else if (unitService.interaction() === 'PHONETICS') {
     <stars-interaction-phonetics class="interaction"
        [style.background-color]="unitService.backgroundColor()"
-       [parameters]="unitService.parameters()"
+       [parameters]="paramsAsPhoneticsParams"
        (responses)="responsesService.newResponses($event)"></stars-interaction-phonetics>
   }
   @else {
