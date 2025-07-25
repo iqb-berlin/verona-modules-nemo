@@ -48,6 +48,13 @@ export interface SyllabifyParams {
   numberOfOptions: number;
 }
 
+export interface InteractionDropParams {
+  variableId: string;
+  options: SelectionOption[];
+  imageSource: string;
+  text: string;
+}
+
 export interface MainAudio {
   audioSource: string;
   firstClickLayer: boolean;

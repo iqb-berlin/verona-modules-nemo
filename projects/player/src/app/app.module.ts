@@ -5,7 +5,7 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 
 import { AppComponent } from './app.component';
 import { InteractionButtonsComponent } from './components/interaction-buttons/interaction-buttons.component';
-import { WordSelectComponent } from './components/interaction-word-select/word-select.component';
+import { InteractionWordSelectComponent } from './components/interaction-word-select/word-select.component';
 import { SyllabifyComponent } from './components/interaction-syllabify/syllabify.component';
 import { ResponsesService } from './services/responses.service';
 import { UnitService } from './services/unit.service';
@@ -20,6 +20,7 @@ import { LinebreaksHtmlPipe } from './pipes/linebreaks-html.pipe';
 import { ClickLayerComponent } from './components/main-audio/click-layer.component';
 import { MediaPlayerComponent } from './components/main-audio/media-player.component';
 import { StandardButtonComponent } from './shared/standard-button/standard-button.component';
+import { InteractionDropComponent } from "./components/interaction-drop/interaction-drop.component";
 
 @NgModule({
   declarations: [
@@ -41,8 +42,9 @@ import { StandardButtonComponent } from './shared/standard-button/standard-butto
     InteractionButtonsComponent,
     ContinueButtonComponent,
     StandardButtonComponent,
-    WordSelectComponent,
-    SyllabifyComponent
+    InteractionWordSelectComponent,
+    SyllabifyComponent,
+    InteractionDropComponent,
   ],
   providers: [
     provideZonelessChangeDetection(),
