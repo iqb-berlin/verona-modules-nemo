@@ -16,7 +16,7 @@
       <img src="assets/images/reject-icon.svg" alt="Reject icon" class="reject-icon">
     }
   } @else if (text()) {
-    @if (size() !== 'ROUND') {
+    @if (size() !== 'ROUND' || 'SQUARE') {
       <span [class.small-text]="isSmallText()" [class.big-text]="!isSmallText()">
       {{ text() }}
     </span>

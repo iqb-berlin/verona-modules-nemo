@@ -1,0 +1,12 @@
+<div class="syllabify-wrapper" role="group" aria-label="Phonetic options">
+  @for (option of options(); track $index) {
+    <stars-standard-button
+      [text]="option.text"
+      [image]="option.imageSource"
+      [selected]="isSelected($index)"
+      [size]="'SQUARE'"
+      [isSmallText]="true"
+      (buttonClick)="onButtonClick($index)">
+    </stars-standard-button>
+  }
+</div>

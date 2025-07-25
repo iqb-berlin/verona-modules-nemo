@@ -1,26 +1,26 @@
 import {
-  Component, signal, OnInit, input
+  Component, input, OnInit, signal
 } from '@angular/core';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
-import { NumberedOption, PhoneticsParams } from '../../models/unit-definition';
+import { NumberedOption, SyllabifyParams } from '../../models/unit-definition';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
 
 @Component({
-  selector: 'stars-interaction-phonetics',
-  templateUrl: './interaction-phonetics.component.html',
-  styleUrls: ['./interaction-phonetics.component.scss'],
+  selector: 'stars-interaction-syllabify',
+  templateUrl: './interaction-syllabify.component.html',
+  styleUrls: ['./interaction-syllabify.component.scss'],
   imports: [
     StandardButtonComponent
   ],
   standalone: true
 })
 
-export class InteractionPhoneticsComponent extends InteractionComponentDirective implements OnInit {
-  parameters = input.required<PhoneticsParams>();
+export class InteractionSyllabifyComponent extends InteractionComponentDirective implements OnInit {
+  parameters = input.required<SyllabifyParams>();
   options = signal<NumberedOption[]>([]);
 
   ngOnInit() {
-    const circleOptions: NumberedOption[] = Array.from(
+    const squareOptions: NumberedOption[] = Array.from(
       { length: this.parameters().numberOfOptions },
       (_, index) => ({
         id: index,
@@ -28,14 +28,14 @@ export class InteractionPhoneticsComponent extends InteractionComponentDirective
       })
     );
 
-    this.options.set(circleOptions);
+    this.options.set(squareOptions);
 
     /* Initialize the selectedValues with all 0 */
     this.initializeBinarySelection(this.parameters().numberOfOptions);
   }
 
   onButtonClick(optionId: number): void {
-    this.toggleBinarySelection(optionId, this.parameters().variableId, 'PHONETICS_BUTTONS');
+    this.toggleBinarySelection(optionId, this.parameters().variableId, 'SYLLABIFY_BUTTONS');
   }
 
   isSelected(optionId: number): boolean {
