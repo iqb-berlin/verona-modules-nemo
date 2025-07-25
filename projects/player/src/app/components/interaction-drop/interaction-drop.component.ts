@@ -50,9 +50,7 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
 
     let style = "";
     let offset = 0;
-    if (this.parameters().options.length == 4) {
-      offset = 305 - (index * 192);
-    }
+    offset = ((194 * this.parameters().options.length) / 2) - 87 - (index * 194);
     style += "translate(" + offset + "px,270px)";
 
     console.log(style);
