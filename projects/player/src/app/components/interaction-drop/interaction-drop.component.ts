@@ -4,7 +4,7 @@ import {
 import { Response } from '@iqbspecs/response/response.interface';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
-import { InteractionDropParams, SelectionOption } from '../../models/unit-definition';
+import { InteractionDropParams } from '../../models/unit-definition';
 import { ResponsesService } from '../../services/responses.service';
 import { UnitService } from '../../services/unit.service';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
@@ -43,6 +43,20 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
 
   isSelected(index: number): boolean {
     return this.selectedValues() == index;
+  }
+
+  animateStyle(index: number): string {
+    if (!this.isSelected(index)) return '';
+
+    let style = "";
+    let offset = 0;
+    if (this.parameters().options.length == 4) {
+      offset = 305 - (index * 192);
+    }
+    style += "translate(" + offset + "px,270px)";
+
+    console.log(style);
+    return style;
   }
 
   onButtonClick(index: number): void {

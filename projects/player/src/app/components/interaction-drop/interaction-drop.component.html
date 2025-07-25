@@ -3,13 +3,15 @@
   <div class="interaction-wrapper">
     <div class="buttons-container" role="group">
       @for (option of parameters().options; track $index) {
-        <stars-standard-button
-                [text]="option.text"
-                [image]="option.imageSource"
-                [selected]="isSelected($index)"
-                [size]="'SMALL'"
-                (buttonClick)="onButtonClick($index)">
-        </stars-standard-button>
+        <div class="animate-wrapper" [style.transform]="animateStyle($index)">
+          <stars-standard-button
+                  [text]="option.text"
+                  [image]="option.imageSource"
+                  [selected]="isSelected($index)"
+                  [size]="'SMALL'"
+                  (buttonClick)="onButtonClick($index)">
+          </stars-standard-button>
+        </div>
       }
     </div>
   </div>
