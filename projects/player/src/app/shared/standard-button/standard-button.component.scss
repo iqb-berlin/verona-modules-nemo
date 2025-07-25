@@ -78,9 +78,9 @@
     }
   }
 
-  &.phonetics-size {
-   @include variables.phonetics-circles-styles;
-    @include variables.circle-box-shadow;
+  &.round-size {
+   @include variables.rounded-styles;
+    @include variables.rounded-box-shadow;
 
     &.selected {
       background-color: colors.$highlight;
