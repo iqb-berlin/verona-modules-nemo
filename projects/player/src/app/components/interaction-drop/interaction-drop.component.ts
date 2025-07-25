@@ -48,13 +48,10 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   animateStyle(index: number): string {
     if (!this.isSelected(index)) return '';
 
-    let style = "";
-    let offset = 0;
-    offset = ((194 * this.parameters().options.length) / 2) - 87 - (index * 194);
-    style += "translate(" + offset + "px,270px)";
-
-    console.log(style);
-    return style;
+    // each button has 170px plus 24px gap/shadow
+    // minus half it's size to set target to the center of div
+    const offset = ((194 * this.parameters().options.length) / 2) - 87 - (index * 194);
+    return "translate(" + offset + "px,270px)";
   }
 
   onButtonClick(index: number): void {
