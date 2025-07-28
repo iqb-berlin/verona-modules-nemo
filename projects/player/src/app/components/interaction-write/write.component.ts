@@ -1,12 +1,11 @@
 import {
-  Component, inject, input, OnChanges, OnDestroy, OnInit, signal
+  Component, inject, input, OnChanges, OnDestroy, OnInit
 } from '@angular/core';
 import { Response } from '@iqbspecs/response/response.interface';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { WriteParams } from '../../models/unit-definition';
 import { ResponsesService } from '../../services/responses.service';
-import { UnitService } from "../../services/unit.service";
 
 
 @Component({
@@ -17,9 +16,8 @@ import { UnitService } from "../../services/unit.service";
 
 export class InteractionWriteComponent extends InteractionComponentDirective implements OnInit, OnDestroy, OnChanges {
   parameters = input<WriteParams>();
-  selectedValues = signal<number[]>([]);
+  isDisabled: boolean = false;
   responsesService = inject(ResponsesService);
-  unitService = inject(UnitService);
 
   currentText: string = '';
   // @ts-ignore
@@ -30,13 +28,13 @@ export class InteractionWriteComponent extends InteractionComponentDirective imp
 
 
   ngOnChanges() {
-    this.resetSelected();
+    this.currentText = '';
+    this.isDisabled = false;
   }
 
   ngOnInit() {
     console.log(this.parameters());
     if (this.parameters().keysToAdd) this.graphemeList = this.parameters().keysToAdd;
-    this.resetSelected();
   }
 
   ngOnDestroy(): void {
@@ -44,17 +42,8 @@ export class InteractionWriteComponent extends InteractionComponentDirective imp
     console.log('WriteComponent ngOnDestroy');
   }
 
-  private resetSelected(): void {
-    this.selectedValues.set([]);
-  }
-
   capitalize(s: string): string {
     return String(s[0].toUpperCase() + s.slice(1));
-  }
-
-  isDisabled(): boolean {
-    return this.parameters().maxInputLength !== null &&
-              this.currentText.length >= this.parameters().maxInputLength;
   }
 
   addChar(button: string) {
@@ -65,12 +54,18 @@ export class InteractionWriteComponent extends InteractionComponentDirective imp
 
     const charToAdd = this.currentText.length === 0 ? this.capitalize(button) : button;
     this.currentText += charToAdd;
+
+    this.isDisabled = this.parameters().maxInputLength !== null &&
+        this.currentText.length >= this.parameters().maxInputLength;
+
     this.valueChanged();
   }
 
   deleteChar() {
     if (this.currentText.length > 0) {
       this.currentText = this.currentText.slice(0, -1);
+      this.isDisabled = this.parameters().maxInputLength !== null &&
+        this.currentText.length >= this.parameters().maxInputLength;
       this.valueChanged();
     }
   }

@@ -3,20 +3,14 @@
     <img [src]="parameters().imageSource" [alt]="parameters().text || ''">
   </div>
 
-
   <div class="text-wrapper">
-    <div class="move-left">
-      <div class="text-display">
-        <div class="text-content" [attr.aria-label]="'Eingegebener Text'">
-          @if (currentText) {
-            <span>{{ currentText }}</span>
-          } @else {
-            <span class="placeholder">{{ parameters().placeholder || "" }}</span>
-          }
-        </div>
+    <div class="text-display">
+      <div class="text-content" [attr.aria-label]="'Eingegebener Text'">
+        @if (currentText) {
+          <span>{{ currentText }}</span>
+        }
       </div>
     </div>
-    <div class="placeholder"></div>
   </div>
 
   <div class="keyboard-buttons">
@@ -25,9 +19,9 @@
         @for (button of characterList; track $index) {
           <button type="button"
                   class="keyboard-button"
-                  [attr.aria-label]="textIsEmpty ? button.toUpperCase() : button"
+                  [attr.aria-label]="currentText.length === 0 ? button.toUpperCase() : button"
                   (click)="addChar(button)"
-                  [disabled]="isDisabled()">
+                  [disabled]="isDisabled">
             {{ currentText.length === 0 ? button.toUpperCase() : button }}
           </button>
         }
@@ -40,7 +34,7 @@
                     class="keyboard-button"
                     [attr.aria-label]="currentText.length === 0 ? button.toUpperCase() : button"
                     (click)="addChar(button)"
-                    [disabled]="isDisabled()">
+                    [disabled]="isDisabled">
               {{ currentText.length === 0  ? button.toUpperCase() : button }}
             </button>
           }
@@ -50,7 +44,7 @@
                   class="keyboard-button"
                   [attr.aria-label]="currentText.length === 0 ? capitalize(button) : button"
                   (click)="addChar(button)"
-                  [disabled]="isDisabled()">
+                  [disabled]="isDisabled">
             {{ currentText.length === 0  ? capitalize(button) : button }}
           </button>
         }
@@ -59,7 +53,7 @@
 
     @if (parameters().addBackspaceKey) {
       <button type="button"
-              class="keyboard-button special backspace-button"
+              class="keyboard-button backspace-button"
               [attr.aria-label]="'Backspace'"
               (click)="deleteChar()"
               [disabled]="currentText.length === 0">
