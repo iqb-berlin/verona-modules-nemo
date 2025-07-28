@@ -78,6 +78,7 @@
     }
   }
 
+  /* Styles for phonetics circles */
   &.round-size {
    @include variables.rounded-styles;
     @include variables.rounded-box-shadow;

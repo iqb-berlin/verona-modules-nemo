@@ -1,3 +1,5 @@
+<script src="standard-button.component.ts"></script>
+<link rel="stylesheet" href="standard-button.component.scss">
 <button
   type="button"
   class="button-option"
@@ -16,7 +18,7 @@
       <img src="assets/images/reject-icon.svg" alt="Reject icon" class="reject-icon">
     }
   } @else if (text()) {
-    @if (size() !== 'ROUND' || 'SQUARE') {
+    @if (size() !== 'ROUND') {
       <span [class.small-text]="isSmallText()" [class.big-text]="!isSmallText()">
       {{ text() }}
     </span>

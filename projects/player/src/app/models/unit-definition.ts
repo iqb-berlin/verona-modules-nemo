@@ -63,5 +63,4 @@ export interface MainAudio {
 export interface NumberedOption {
   id: number;
   text: string;
-  imageSource?: string;
 }
