@@ -27,6 +27,11 @@
       [style.background-color]="unitService.backgroundColor()"
       [parameters]="paramsAsWordSelectParams"
       (responses)="responsesService.newResponses($event)"></stars-interaction-word-select>
+  } @else if (unitService.interaction() === 'DROP') {
+    <stars-interaction-drop class="interaction"
+                                   [style.background-color]="unitService.backgroundColor()"
+                                   [parameters]="paramsAsWordSelectParams"
+                                   (responses)="responsesService.newResponses($event)"></stars-interaction-drop>
   } @else if (unitService.interaction() === 'PHONETICS') {
     <stars-interaction-phonetics class="interaction"
        [style.background-color]="unitService.backgroundColor()"
