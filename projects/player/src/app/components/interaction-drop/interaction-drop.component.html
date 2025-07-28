@@ -1,0 +1,28 @@
+<div class="drop-select-wrapper">
+
+  <div class="interaction-wrapper">
+    <div class="buttons-container" role="group">
+      @for (option of parameters().options; track $index) {
+        <div
+            class="animate-wrapper"
+            [style.transform]="animateStyle($index)"
+            [class.no-transition]="disabledTransition()">
+          <stars-standard-button
+                  [text]="option.text"
+                  [image]="option.imageSource"
+                  [selected]="isSelected($index)"
+                  [size]="'SMALL'"
+                  (buttonClick)="onButtonClick($index)">
+          </stars-standard-button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="stimulus-wrapper">
+    @if (parameters().imageSource) {
+      <img [src]="parameters().imageSource" [alt]="parameters().text || ''">
+    }
+  </div>
+
+</div>

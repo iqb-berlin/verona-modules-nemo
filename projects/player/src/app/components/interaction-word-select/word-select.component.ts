@@ -18,7 +18,7 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
   styleUrls: ['word-select.component.scss']
 })
 
-export class WordSelectComponent extends InteractionComponentDirective implements OnInit, OnDestroy, OnChanges {
+export class InteractionWordSelectComponent extends InteractionComponentDirective implements OnInit, OnDestroy, OnChanges {
   parameters = input<WordSelectParams>();
   selectedValues = signal<number>(null);
   responsesService = inject(ResponsesService);
