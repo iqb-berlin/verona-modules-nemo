@@ -23,6 +23,7 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   selectedValues = signal<number>(null);
   responsesService = inject(ResponsesService);
   unitService = inject(UnitService);
+  disabledTransition = signal<boolean>(false);
 
   ngOnChanges(): void {
     /* Reset selection when parameters change (i.e., when loading a new file) */
@@ -38,7 +39,11 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   }
 
   private resetSelection(): void {
+    this.disabledTransition.set(true);
     this.selectedValues.set(null);
+    setTimeout(()=>{
+      this.disabledTransition.set(false);
+    }, 500);
   }
 
   isSelected(index: number): boolean {
