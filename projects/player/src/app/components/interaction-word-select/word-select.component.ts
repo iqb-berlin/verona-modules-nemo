@@ -1,12 +1,12 @@
 import {
   Component, inject, input, OnChanges, OnDestroy, OnInit, signal
 } from '@angular/core';
-import { Response } from "@iqbspecs/response/response.interface";
+import { Response } from '@iqbspecs/response/response.interface';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
-import { WordSelectParams } from "../../models/unit-definition";
-import { ResponsesService } from "../../services/responses.service";
-import { StandardButtonComponent } from "../../shared/standard-button/standard-button.component";
+import { WordSelectParams } from '../../models/unit-definition';
+import { ResponsesService } from '../../services/responses.service';
+import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
 
 
 @Component({
@@ -33,7 +33,7 @@ export class InteractionWordSelectComponent extends InteractionComponentDirectiv
     if (this.formerState()?.length > 0) {
       // TODO: last or first element of formerState?
       const state = this.formerState()[0];
-      if (state.id === this.parameters().variableId || state.id === "INTERACTION_WORD_SELECT") {
+      if (state.id === this.parameters().variableId || state.id === 'INTERACTION_WORD_SELECT') {
         if (state.value && typeof state.value === 'number') {
           this.selectedValues.set(state.value as number);
         }
@@ -57,7 +57,7 @@ export class InteractionWordSelectComponent extends InteractionComponentDirectiv
   onButtonClick(index: number): void {
     this.selectedValues.set(index);
 
-    let id = this.parameters().variableId || "INTERACTION_WORD_SELECT";
+    const id = this.parameters().variableId || 'INTERACTION_WORD_SELECT';
 
     const response: Response = {
       id: id,

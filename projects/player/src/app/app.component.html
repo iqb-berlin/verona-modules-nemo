@@ -32,7 +32,13 @@
                                    [style.background-color]="unitService.backgroundColor()"
                                    [parameters]="paramsAsWordSelectParams"
                                    (responses)="responsesService.newResponses($event)"></stars-interaction-drop>
-  } @else {
+  } @else if (unitService.interaction() === 'PHONETICS') {
+    <stars-interaction-phonetics class="interaction"
+       [style.background-color]="unitService.backgroundColor()"
+       [parameters]="paramsAsPhoneticsParams"
+       (responses)="responsesService.newResponses($event)"></stars-interaction-phonetics>
+  }
+  @else {
     <div>Unbekannter Interaktionstyp "{{unitService.interaction}}"</div>
   }
 </div>

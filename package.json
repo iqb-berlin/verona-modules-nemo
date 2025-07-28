@@ -68,6 +68,9 @@
     "parserOptions": {
       "project": "./tsconfig.base.json"
     },
+    "rules": {
+      "@typescript-eslint/quotes": ["error", "single"]
+    },
     "overrides": [
       {
         "files": [

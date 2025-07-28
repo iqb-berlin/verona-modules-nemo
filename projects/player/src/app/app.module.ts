@@ -20,6 +20,7 @@ import { LinebreaksHtmlPipe } from './pipes/linebreaks-html.pipe';
 import { ClickLayerComponent } from './components/main-audio/click-layer.component';
 import { MediaPlayerComponent } from './components/main-audio/media-player.component';
 import { StandardButtonComponent } from './shared/standard-button/standard-button.component';
+import { PhoneticsComponent } from './components/interaction-phonetics/interaction-phonetics.component';
 import { InteractionDropComponent } from "./components/interaction-drop/interaction-drop.component";
 
 @NgModule({
@@ -45,6 +46,8 @@ import { InteractionDropComponent } from "./components/interaction-drop/interact
     InteractionWordSelectComponent,
     SyllabifyComponent,
     InteractionDropComponent,
+    SyllabifyComponent,
+    PhoneticsComponent
   ],
   providers: [
     provideZonelessChangeDetection(),

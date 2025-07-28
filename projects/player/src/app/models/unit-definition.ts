@@ -55,6 +55,11 @@ export interface InteractionDropParams {
   text: string;
 }
 
+export interface PhoneticsParams {
+  variableId: string;
+  numberOfOptions: number;
+}
+
 export interface MainAudio {
   audioSource: string;
   firstClickLayer: boolean;

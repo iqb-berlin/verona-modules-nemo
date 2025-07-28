@@ -9,6 +9,7 @@ import { Component, input, output } from '@angular/core';
 export class StandardButtonComponent {
   image = input<string>();
   text = input<string>();
+  icon = input<string>();
   selected = input<boolean>();
   isSmallText = input<boolean>(false);
   size = input<string>();
