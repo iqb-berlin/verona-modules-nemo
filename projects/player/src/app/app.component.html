@@ -33,6 +33,12 @@
        [parameters]="paramsAsPhoneticsParams"
        (responses)="responsesService.newResponses($event)"></stars-interaction-phonetics>
   }
+  @else if (unitService.interaction() === 'WRITE') {
+    <stars-interaction-write class="interaction"
+                                 [style.background-color]="unitService.backgroundColor()"
+                                 [parameters]="paramsAsWriteParams"
+                                 (responses)="responsesService.newResponses($event)"></stars-interaction-write>
+  }
   @else {
     <div>Unbekannter Interaktionstyp "{{unitService.interaction}}"</div>
   }

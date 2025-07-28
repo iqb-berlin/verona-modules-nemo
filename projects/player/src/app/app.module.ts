@@ -21,6 +21,7 @@ import { ClickLayerComponent } from './components/main-audio/click-layer.compone
 import { MediaPlayerComponent } from './components/main-audio/media-player.component';
 import { StandardButtonComponent } from './shared/standard-button/standard-button.component';
 import { PhoneticsComponent } from './components/interaction-phonetics/interaction-phonetics.component';
+import { InteractionWriteComponent } from "./components/interaction-write/write.component";
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { PhoneticsComponent } from './components/interaction-phonetics/interacti
     StandardButtonComponent,
     WordSelectComponent,
     SyllabifyComponent,
-    PhoneticsComponent
+    PhoneticsComponent,
+    InteractionWriteComponent
   ],
   providers: [
     provideZonelessChangeDetection(),
