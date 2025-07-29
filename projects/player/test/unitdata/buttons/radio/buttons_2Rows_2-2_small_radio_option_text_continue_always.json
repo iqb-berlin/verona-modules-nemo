@@ -1,6 +1,6 @@
 {
   "id": "nemo-player-unit-definition",
-  "version": "0.5",
+  "version": "0.6",
   "backgroundColor": "#3cf",
   "continueButtonShow": "ALWAYS",
   "mainAudio": {
@@ -12,23 +12,27 @@
   "interactionType": "BUTTONS",
   "interactionParameters": {
     "variableId": "BUTTONS",
-    "size": "SMALL",
-    "gap": "SMALL",
+    "imageSource": "",
+    "imagePosition": "LEFT",
+    "text": "",
+    "buttonType": "SMALL_SQUARE",
     "multiSelect": false,
     "numberOfRows": 2,
-    "options": [
-      {
-        "text": "A"
-      },
-      {
-        "text": "B"
-      },
-      {
-        "text": "C"
-      },
-      {
-        "text": "D"
-      }
-    ]
+    "options": {
+      "buttons": [
+        {
+          "text": "A"
+        },
+        {
+          "text": "B"
+        },
+        {
+          "text": "C"
+        },
+        {
+          "text": "D"
+        }
+      ]
+    }
   }
 }
