@@ -7,6 +7,9 @@ import { Component, input, output } from '@angular/core';
   standalone: true
 })
 export class StandardButtonComponent {
+  id=input.required<string>();
+  value=input.required<number>();
+  inputType = input<'radio'|'checkbox'>('radio');
   image = input<string>();
   text = input<string>();
   icon = input<string>();

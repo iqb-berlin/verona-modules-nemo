@@ -1,26 +1,25 @@
-<button
-  type="button"
-  class="button-option"
-  [class.selected]="selected()"
-  [class]="size().toLowerCase()+'-size'"
-  [attr.aria-selected]="selected()"
-  role="option"
-  (click)="onClick()"
-  [attr.aria-label]="text()">
-  @if (image()) {
-    <img [src]="image()" [alt]="text()?.trim() || 'Button with image'">
-  } @else if (icon()) {
-    @if (icon() === 'CHECK_GREEN') {
-      <img src="assets/images/accept-icon.svg" alt="Accept icon" class="accept-icon">
-    } @else if (icon() === 'CLOSE_RED') {
-      <img src="assets/images/reject-icon.svg" alt="Reject icon" class="reject-icon">
+<div class="button-option input-wrapper"
+     [class]="size().toLowerCase()+'-size'">
+  <input
+    [type]="inputType()"
+    [name]="id()"
+    [id]="id() + '_' + value()"
+    [value]="value()"
+    (click)="onClick()"
+  />
+  <label [for]="id() + '_' + value()">
+    @if (image()) {
+      <img [src]="image()" [alt]="text()?.trim() || 'Button with image'">
+    } @else if (icon()) {
+      @if (icon() === 'CHECK_GREEN') {
+        <img src="assets/images/accept-icon.svg" alt="Accept icon" class="accept-icon">
+      } @else if (icon() === 'CLOSE_RED') {
+        <img src="assets/images/reject-icon.svg" alt="Reject icon" class="reject-icon">
+      }
+    } @else if (text()) {
+      <span>
+        {{ text() }}
+      </span>
     }
-  } @else if (text()) {
-    @if (size() !== 'ROUND') {
-      <span [class.small-text]="isSmallText()" [class.big-text]="!isSmallText()">
-      {{ text() }}
-    </span>
-    }
-  }
-</button>
-
+  </label>
+</div>

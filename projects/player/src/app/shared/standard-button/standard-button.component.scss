@@ -2,20 +2,36 @@
 @use 'variables';
 
 .button-option {
-  // Base button styles
+  position: relative;
   cursor: pointer;
-  background-color: colors.$white;
-  border: 8px solid colors.$white;
-  border-radius: variables.$border-radius;
-  @include variables.default-box-shadow;
-  @include variables.flex-center;
+
+  input, label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* gap size here */
+    bottom: 24px;
+    right: 24px;
+
+    background-color: colors.$white;
+    border: 8px solid colors.$white;
+    border-radius: variables.$border-radius;
+    @include variables.default-box-shadow;
+    @include variables.flex-center;
+
+  }
+
+  input {
+    opacity: 0;
+    z-index: 10;
+  }
 
   &:focus,
   &:active {
     outline: none;
   }
 
-  &.selected {
+  input:checked + label {
     border-radius: variables.$border-radius;
     border-color: colors.$highlight;
     transition: all 0.2s ease;
@@ -52,22 +68,18 @@
 .button-option {
   &.big-size {
     @include variables.big-button-size;
-    margin: 0 variables.$big-gap-margin variables.$big-gap-margin 0;
   }
 
   &.medium-size {
     @include variables.medium-button-size;
-    margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
   }
 
   &.small-size {
     @include variables.small-button-size;
-    margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
   }
 
   &.word-size {
     @include variables.word-button-size;
-    margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
     border: none;
 
     &.selected {
