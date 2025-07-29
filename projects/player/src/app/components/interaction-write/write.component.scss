@@ -1,0 +1,80 @@
+@use '_variables.scss';
+
+.write-container {
+  @include variables.flex-center;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.stimulus-wrapper {
+  margin: 0 auto;
+  height: 25vh;
+
+  img {
+    width: auto;
+    height: 100%;
+  }
+}
+
+.text-wrapper {
+  display: block;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.text-display {
+  display: block;
+  width: 90%;
+  min-height: 100px;
+  margin: 0 auto;
+  border-bottom: 4px solid #000;
+}
+
+.text-content {
+  font-size: 5rem;
+  letter-spacing: 0.15rem;
+  text-align: center;
+  min-height: 2rem;
+}
+
+.keyboard-buttons {
+  @include variables.flex-center;
+  flex-direction: row;
+  position: relative;
+  width: calc(65px * 9);
+
+  .grapheme-list {
+    float: left;
+  }
+}
+
+.keyboard-button {
+  margin: 5px;
+  justify-content: center;
+  align-items: center;
+  width: 55px;
+  height: 55px;
+  font-size: 1.4rem;
+  border: none;
+  border-radius: 12px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+
+  &:active:not(:disabled) {
+    background-color: #d0d0d0;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.backspace-button {
+  position: absolute;
+  top: 0;
+  right: -140px;
+  width: 100px;
+  background-color: #d0d0d0;
+}

@@ -60,6 +60,17 @@ export interface PhoneticsParams {
   numberOfOptions: number;
 }
 
+export interface WriteParams {
+  variableId: string;
+  addBackspaceKey: boolean;
+  addUmlautKeys: boolean;
+  imageSource: string;
+  text: string;
+  maxInputLength: number;
+  keysToAdd: string[];
+  placeholder: string;
+}
+
 export interface MainAudio {
   audioSource: string;
   firstClickLayer: boolean;

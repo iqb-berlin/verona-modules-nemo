@@ -43,7 +43,7 @@
     "@typescript-eslint/parser": "7.18.0",
     "@typescript-eslint/utils": "^7.16.0",
     "chromedriver": "119.0.1",
-    "eslint": "8.57.1",
+    "eslint": "^8.57.1",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-config-prettier": "10.1.5",
     "eslint-plugin-cypress": "2.15.1",
@@ -58,7 +58,8 @@
     "karma-coverage-istanbul-reporter": "~3.0.3",
     "karma-jasmine": "^4.0.2",
     "karma-jasmine-html-reporter": "^1.7.0",
-    "protractor": "~7.0.0",
+    "prettier": "^3.6.2",
+    "protractor": "^7.0.0",
     "selenium-webdriver": "^4.29.0",
     "ts-node": "~10.9.2",
     "typescript": "^5.8.3"
@@ -69,7 +70,10 @@
       "project": "./tsconfig.base.json"
     },
     "rules": {
-      "@typescript-eslint/quotes": ["error", "single"]
+      "@typescript-eslint/quotes": [
+        "error",
+        "single"
+      ]
     },
     "overrides": [
       {

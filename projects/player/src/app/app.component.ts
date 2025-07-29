@@ -10,7 +10,7 @@ import { VopStartCommand } from './models/verona';
 import {
   InteractionButtonParams, PhoneticsParams,
   SyllabifyParams,
-  WordSelectParams
+  WordSelectParams, WriteParams
 } from './models/unit-definition';
 
 @Component({
@@ -65,5 +65,9 @@ export class AppComponent implements OnInit {
 
   get paramsAsPhoneticsParams() {
     return this.unitService.parameters() as PhoneticsParams;
+  }
+
+  get paramsAsWriteParams() {
+    return this.unitService.parameters() as WriteParams;
   }
 }
