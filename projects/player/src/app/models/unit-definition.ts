@@ -77,3 +77,8 @@ export interface MainAudio {
   animateButton: boolean;
   maxPlay: number;
 }
+
+export interface NumberedOption {
+  id: number;
+  text: string;
+}

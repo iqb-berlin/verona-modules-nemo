@@ -1,8 +1,10 @@
+<script src="standard-button.component.ts"></script>
+<link rel="stylesheet" href="standard-button.component.scss">
 <button
   type="button"
   class="button-option"
   [class.selected]="selected()"
-  [class]="size().toLowerCase()+'-size'"
+  [class]="type().toLowerCase()+'-type'"
   [attr.aria-selected]="selected()"
   role="option"
   (click)="onClick()"
@@ -16,11 +18,10 @@
       <img src="assets/images/reject-icon.svg" alt="Reject icon" class="reject-icon">
     }
   } @else if (text()) {
-    @if (size() !== 'ROUND') {
-      <span [class.small-text]="isSmallText()" [class.big-text]="!isSmallText()">
+    <span>
       {{ text() }}
     </span>
-    }
   }
 </button>
+
 
