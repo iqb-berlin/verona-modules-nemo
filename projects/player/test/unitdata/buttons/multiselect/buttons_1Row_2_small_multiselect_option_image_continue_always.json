@@ -15,9 +15,9 @@
     "imageSource": "",
     "imagePosition": "LEFT",
     "text": "",
-    "buttonType": "MEDIUM_SQUARE",
+    "buttonType": "SMALL_SQUARE",
     "multiSelect": true,
-    "numberOfRows": 2,
+    "numberOfRows": 1,
     "options": {
       "buttons": [
         {
