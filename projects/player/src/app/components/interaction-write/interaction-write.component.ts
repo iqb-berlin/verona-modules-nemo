@@ -10,8 +10,8 @@ import { ResponsesService } from '../../services/responses.service';
 
 @Component({
   selector: 'stars-interaction-write',
-  templateUrl: 'write.component.html',
-  styleUrls: ['write.component.scss']
+  templateUrl: 'interaction-write.component.html',
+  styleUrls: ['interaction-write.component.scss']
 })
 
 export class InteractionWriteComponent extends InteractionComponentDirective implements OnInit, OnDestroy, OnChanges {
