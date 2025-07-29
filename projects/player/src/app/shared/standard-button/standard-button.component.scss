@@ -16,10 +16,30 @@
   }
 
   &.selected {
-    border-radius: variables.$border-radius;
+    // Default selected state for non-specific buttons
     border-color: colors.$highlight;
     transition: all 0.2s ease;
+  }
+
+  // Non-text button selection (images/icons)
+  &:not(.text-button).selected {
+    background-color: colors.$white; // Keep white background
+    border-color: colors.$highlight;
     box-shadow: none;
+  }
+
+  // Text button specific styles
+  &.text-button {
+    &.selected {
+      // Highlight the entire background for text buttons
+      background-color: colors.$highlight;
+      border-color: colors.$highlight;;
+      color: colors.$white;
+
+      span {
+        color: colors.$white;
+      }
+    }
   }
 
   // Content styles
