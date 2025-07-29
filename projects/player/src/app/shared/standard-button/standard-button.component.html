@@ -1,11 +1,12 @@
 <div class="button-option input-wrapper"
-     [class]="size().toLowerCase()+'-size'">
+     [class]="type().toLowerCase()+'-type'">
   <input
     [type]="inputType()"
     [name]="id()"
     [id]="id() + '_' + value()"
     [value]="value()"
     (click)="onClick()"
+    [checked]="selected()"
   />
   <label [for]="id() + '_' + value()">
     @if (image()) {
