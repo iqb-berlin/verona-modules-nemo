@@ -52,33 +52,26 @@
   }
 
   span {
-    &.small-text {
-      @include variables.text;
-      font-size: variables.$small-text-font-size;
-    }
-
-    &.big-text {
-      @include variables.text;
-      font-size: variables.$big-text-font-size;
-    }
+    @include variables.text;
+    font-size: variables.$big-text-font-size;
   }
 }
 
-// Size modifiers
+// Type modifiers
 .button-option {
-  &.big-size {
+  &.big-type {
     @include variables.big-button-size;
   }
 
-  &.medium-size {
+  &.medium-type {
     @include variables.medium-button-size;
   }
 
-  &.small-size {
+  &.small-type {
     @include variables.small-button-size;
   }
 
-  &.word-size {
+  &.word-type {
     @include variables.word-button-size;
     border: none;
 
@@ -88,16 +81,25 @@
       border: none;
       @include variables.default-box-shadow;
     }
+
+    span {
+      font-size: variables.$small-text-font-size;
+    }
   }
 
-  &.round-size {
-   @include variables.rounded-styles;
+  /* Styles for phonetics circles */
+  &.round-type {
+    @include variables.rounded-styles;
     @include variables.rounded-box-shadow;
 
     &.selected {
       background-color: colors.$highlight;
       border-radius: 50%;
       box-shadow: none;
+    }
+
+    span {
+      display: none;
     }
   }
 }

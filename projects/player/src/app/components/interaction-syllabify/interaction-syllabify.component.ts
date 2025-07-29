@@ -1,26 +1,26 @@
 import {
-  Component, signal, OnInit, input, inject, OnChanges, OnDestroy
+  Component, input, OnChanges, OnDestroy, OnInit, signal, inject
 } from '@angular/core';
 import { Response } from '@iqbspecs/response/response.interface';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
-import { NumberedOption, PhoneticsParams } from '../../models/unit-definition';
+import { NumberedOption, SyllabifyParams } from '../../models/unit-definition';
 import { ResponsesService } from '../../services/responses.service';
 import { UnitService } from '../../services/unit.service';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
 import { createNumberedOptions } from '../../utils/option-helpers';
 
 @Component({
-  selector: 'stars-interaction-phonetics',
-  templateUrl: './interaction-phonetics.component.html',
-  styleUrls: ['./interaction-phonetics.component.scss'],
+  selector: 'stars-interaction-syllabify',
+  templateUrl: './interaction-syllabify.component.html',
+  styleUrls: ['./interaction-syllabify.component.scss'],
   imports: [
     StandardButtonComponent
   ],
   standalone: true
 })
 
-export class InteractionPhoneticsComponent extends InteractionComponentDirective implements OnInit, OnChanges, OnDestroy {
-  parameters = input.required<PhoneticsParams>();
+export class InteractionSyllabifyComponent extends InteractionComponentDirective implements OnInit, OnChanges, OnDestroy {
+  parameters = input.required<SyllabifyParams>();
   options = signal<NumberedOption[]>([]);
   selectedValues = signal<string>('');
   responsesService = inject(ResponsesService);
@@ -32,9 +32,9 @@ export class InteractionPhoneticsComponent extends InteractionComponentDirective
   }
 
   ngOnInit() {
-    const circleOptions = createNumberedOptions(this.parameters().numberOfOptions);
+    const squareOptions = createNumberedOptions(this.parameters().numberOfOptions);
 
-    this.options.set(circleOptions);
+    this.options.set(squareOptions);
     this.resetSelection();
   }
 
@@ -55,7 +55,7 @@ export class InteractionPhoneticsComponent extends InteractionComponentDirective
     newState[optionId] = newState[optionId] === '1' ? '0' : '1';
     this.selectedValues.set(newState.join(''));
 
-    const id = this.parameters().variableId || 'PHONETICS_BUTTONS';
+    const id = this.parameters().variableId || 'SYLLABIFY_BUTTONS';
 
     const response: Response = {
       id: id,
