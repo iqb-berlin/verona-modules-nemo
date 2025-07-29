@@ -1,7 +1,7 @@
 @use '_colors.scss';
 @use '_variables.scss';
 
-.phonetics-wrapper {
+.syllabify-wrapper {
   @include variables.flex-center;
   flex-direction: row;
   width: 100%;

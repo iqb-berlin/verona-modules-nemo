@@ -12,7 +12,7 @@ export class StandardButtonComponent {
   icon = input<string>();
   selected = input<boolean>();
   isSmallText = input<boolean>(false);
-  size = input<string>();
+  type = input<string>();
   buttonClick = output<void>();
 
   onClick(): void {
