@@ -4,6 +4,7 @@
   type="button"
   class="button-option"
   [class.selected]="selected()"
+  [class.text-button]="text() && !image() && !icon()"
   [class]="type().toLowerCase()+'-type'"
   [attr.aria-selected]="selected()"
   role="option"
