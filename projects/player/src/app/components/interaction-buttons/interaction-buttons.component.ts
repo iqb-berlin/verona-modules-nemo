@@ -78,7 +78,9 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
   }
 
   onButtonClick(index: number): void {
+    /* Track user engagement to activate the Continue button ON_INTERACTION */
     this.unitService.hasInteraction.set(true);
+
     const currentSelected = this.selectedValues();
 
     if (this.parameters().multiSelect) {

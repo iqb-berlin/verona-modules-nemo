@@ -1,9 +1,11 @@
 import {
-  Component, signal, OnInit, input
+  Component, signal, OnInit, input, inject, OnChanges, OnDestroy
 } from '@angular/core';
 import { Response } from '@iqbspecs/response/response.interface';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { NumberedOption, PhoneticsParams } from '../../models/unit-definition';
+import { ResponsesService } from '../../services/responses.service';
+import { UnitService } from '../../services/unit.service';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
 import { createNumberedOptions } from '../../utils/option-helpers';
 
@@ -17,21 +19,38 @@ import { createNumberedOptions } from '../../utils/option-helpers';
   standalone: true
 })
 
-export class InteractionPhoneticsComponent extends InteractionComponentDirective implements OnInit {
+export class InteractionPhoneticsComponent extends InteractionComponentDirective implements OnInit, OnChanges, OnDestroy {
   parameters = input.required<PhoneticsParams>();
   options = signal<NumberedOption[]>([]);
   selectedValues = signal<string>('');
+  responsesService = inject(ResponsesService);
+  unitService = inject(UnitService);
+
+  ngOnChanges(): void {
+    /* Reset selection when parameters change (i.e., when loading a new file) */
+    this.resetSelection();
+  }
 
   ngOnInit() {
     const circleOptions = createNumberedOptions(this.parameters().numberOfOptions);
 
     this.options.set(circleOptions);
+    this.resetSelection();
+  }
 
+  ngOnDestroy(): void {
+    this.resetSelection();
+  }
+
+  private resetSelection(): void {
     /* Initialize the selectedValues with all 0 */
     this.selectedValues.set('0'.repeat(this.parameters().numberOfOptions));
   }
 
   onButtonClick(optionId: number): void {
+    /* Track user engagement to activate the Continue button ON_INTERACTION */
+    this.unitService.hasInteraction.set(true);
+
     const newState = this.selectedValues().split('');
     newState[optionId] = newState[optionId] === '1' ? '0' : '1';
     this.selectedValues.set(newState.join(''));
