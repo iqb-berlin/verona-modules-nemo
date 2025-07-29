@@ -9,7 +9,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "validate-data": "validate-json projects/player/test/unitdata/buttons/radio nemo-player-unit-definition 0.6",
+    "validate-data": "validate-json projects/player/test/unitdata/drop nemo-player-unit-definition 0.6",
     "build": "ng build --configuration production --output-hashing=none",
     "postbuild": "node projects/tools/distpacker.js dist/stars-player/browser index_packed.html"
   },
