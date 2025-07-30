@@ -4,9 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 
 import { AppComponent } from './app.component';
-import { InteractionButtonsComponent } from './components/interaction-buttons/interaction-buttons.component';
-import { InteractionWordSelectComponent } from './components/interaction-word-select/word-select.component';
-import { InteractionSyllabifyComponent } from './components/interaction-syllabify/interaction-syllabify.component';
+// import { InteractionButtonsComponent } from './components/interaction-buttons/interaction-buttons.component';
 import { ResponsesService } from './services/responses.service';
 import { UnitService } from './services/unit.service';
 import { VeronaPostService } from './services/verona-post.service';
@@ -20,8 +18,7 @@ import { LinebreaksHtmlPipe } from './pipes/linebreaks-html.pipe';
 import { ClickLayerComponent } from './components/main-audio/click-layer.component';
 import { MediaPlayerComponent } from './components/main-audio/media-player.component';
 import { StandardButtonComponent } from './shared/standard-button/standard-button.component';
-import { InteractionWriteComponent } from "./components/interaction-write/interaction-write.component";
-import { InteractionPhoneticsComponent } from './components/interaction-phonetics/interaction-phonetics.component';
+import { InteractionWriteComponent } from './components/interaction-write/interaction-write.component';
 import { InteractionDropComponent } from './components/interaction-drop/interaction-drop.component';
 
 @NgModule({
@@ -41,13 +38,10 @@ import { InteractionDropComponent } from './components/interaction-drop/interact
     ClickLayerComponent,
     MediaPlayerComponent,
     MainAudioComponent,
-    InteractionButtonsComponent,
+    // InteractionButtonsComponent,
     ContinueButtonComponent,
     StandardButtonComponent,
-    InteractionWordSelectComponent,
-    InteractionSyllabifyComponent,
     InteractionDropComponent,
-    InteractionPhoneticsComponent,
     InteractionWriteComponent
   ],
   providers: [

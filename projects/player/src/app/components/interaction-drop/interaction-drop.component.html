@@ -2,7 +2,7 @@
 
   <div class="interaction-wrapper">
     <div class="buttons-container" role="group">
-      @for (option of parameters().options; track $index) {
+      @for (option of parameters().options?.buttons || []; track $index) {
         <div
             class="animate-wrapper"
             [style.transform]="animateStyle($index)"

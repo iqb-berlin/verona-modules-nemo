@@ -55,7 +55,7 @@ export interface InteractionDropParams {
   options: InteractionOptions;
 }
 
-export interface WriteParams {
+export interface InteractionWriteParams {
   variableId: string;
   imageSource: string;
   text: string;
