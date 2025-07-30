@@ -1,12 +1,13 @@
 <div
   class="buttons-container"
-  [class.multiselect]="parameters().multiSelect"
-  role="group"
-  [attr.aria-multiselectable]="parameters().multiSelect">
+  [class.multiselect]="parameters().multiSelect">
   @for (row of optionRows; track $index) {
     <div class="row">
       @for (option of row; track $index) {
         <stars-standard-button
+          [id]="parameters().multiSelect ? parameters().variableId + '_' + $index : parameters().variableId"
+          [value]="$index"
+          [inputType]="parameters().multiSelect ? 'checkbox' : 'radio'"
           [text]="option.option.text"
           [image]="option.option.imageSource"
           [icon]="option.option.icon"
