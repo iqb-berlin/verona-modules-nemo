@@ -24,7 +24,7 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   disabledTransition = signal<boolean>(false);
 
   ngOnChanges(): void {
-    /* Reset selection when parameters change (i.e., when loading a new file) */
+    // Reset selection when parameters change (i.e., when loading a new file)
     this.resetSelection();
   }
 
@@ -65,7 +65,7 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
     const response: Response = {
       id: id,
       status: 'VALUE_CHANGED',
-      value: newSelectedValue
+      value: newSelectedValue + 1
     };
 
     this.responses.emit([response]);

@@ -26,7 +26,7 @@ export class InteractionWriteComponent extends InteractionComponentDirective imp
 
 
   ngOnChanges() {
-    /* Reset selection when parameters change (i.e., when loading a new file) */
+    // Reset selection when parameters change (i.e., when loading a new file)
     this.currentText = '';
     this.isDisabled = false;
 
