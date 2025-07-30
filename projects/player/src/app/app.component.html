@@ -19,9 +19,9 @@
       (responses)="responsesService.newResponses($event)"></stars-interaction-buttons>
   } @else if (unitService.interaction() === 'DROP') {
     <stars-interaction-drop class="interaction"
-                                   [style.background-color]="unitService.backgroundColor()"
-                                   [parameters]="paramsAsWordSelectParams"
-                                   (responses)="responsesService.newResponses($event)"></stars-interaction-drop>
+      [style.background-color]="unitService.backgroundColor()"
+      [parameters]="paramsAsDropParams"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-drop>
   }
 <!--  @else if (unitService.interaction() === 'PHONETICS') {-->
 <!--    <stars-interaction-phonetics class="interaction"-->
@@ -31,9 +31,9 @@
 <!--  }-->
   @else if (unitService.interaction() === 'WRITE') {
     <stars-interaction-write class="interaction"
-                                 [style.background-color]="unitService.backgroundColor()"
-                                 [parameters]="paramsAsWriteParams"
-                                 (responses)="responsesService.newResponses($event)"></stars-interaction-write>
+      [style.background-color]="unitService.backgroundColor()"
+      [parameters]="paramsAsWriteParams"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-write>
   }
   @else {
     <div>Unbekannter Interaktionstyp "{{unitService.interaction}}"</div>
