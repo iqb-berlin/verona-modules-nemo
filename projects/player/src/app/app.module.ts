@@ -4,7 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 
 import { AppComponent } from './app.component';
-// import { InteractionButtonsComponent } from './components/interaction-buttons/interaction-buttons.component';
+import { InteractionButtonsComponent } from './components/interaction-buttons/interaction-buttons.component';
 import { ResponsesService } from './services/responses.service';
 import { UnitService } from './services/unit.service';
 import { VeronaPostService } from './services/verona-post.service';
@@ -38,7 +38,7 @@ import { InteractionDropComponent } from './components/interaction-drop/interact
     ClickLayerComponent,
     MediaPlayerComponent,
     MainAudioComponent,
-    // InteractionButtonsComponent,
+    InteractionButtonsComponent,
     ContinueButtonComponent,
     StandardButtonComponent,
     InteractionDropComponent,

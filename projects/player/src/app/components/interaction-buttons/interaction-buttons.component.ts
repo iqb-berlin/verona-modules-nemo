@@ -97,6 +97,8 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
       options = options.slice(numberOfOptionsPerRow); // Move to the next chunk of options
     }
 
+    console.log(rows);
+
     return rows;
   }
 

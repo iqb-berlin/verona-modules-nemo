@@ -1,9 +1,0 @@
-@use '_colors.scss';
-@use '_variables.scss';
-
-.syllabify-wrapper {
-  @include variables.flex-center;
-  flex-direction: row;
-  width: 100%;
-  height: 150px;
-}

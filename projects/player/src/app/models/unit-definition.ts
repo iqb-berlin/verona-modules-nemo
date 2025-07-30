@@ -55,13 +55,6 @@ export interface InteractionButtonParams {
   options: InteractionOptions;
 }
 
-export interface InteractionWriteParams {
-  variableId: string;
-  imageSource: string;
-  text: string;
-  numberOfOptions: number;
-}
-
 export interface InteractionDropParams {
   variableId: string;
   options: InteractionOptions;
@@ -69,13 +62,10 @@ export interface InteractionDropParams {
   text: string;
 }
 
-export interface PhoneticsParams {
+export interface InteractionWriteParams {
   variableId: string;
-  numberOfOptions: number;
-}
-
-export interface WriteParams {
-  variableId: string;
+  imageSource: string;
+  text: string;
   addBackspaceKey: boolean;
   addUmlautKeys: boolean;
   keysToAdd: string[];

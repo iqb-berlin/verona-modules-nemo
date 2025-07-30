@@ -18,7 +18,6 @@
     border-radius: variables.$border-radius;
     @include variables.default-box-shadow;
     @include variables.flex-center;
-
   }
 
   input {
@@ -42,6 +41,32 @@
     background-color: colors.$white; // Keep white background
     border-color: colors.$highlight;
     box-shadow: none;
+  }
+
+  &.circle-type {
+    width: 100px;
+    height: 100px;
+    margin: 0 20px 20px 0;
+    cursor: pointer;
+    border-radius: 50%;
+    -webkit-tap-highlight-color: transparent;
+
+    @include variables.rounded-box-shadow;
+
+    input {
+      border-radius: 50%;
+      background-color: colors.$white;
+      border: none;
+    }
+
+    input:checked + label {
+      background-color: colors.$highlight;
+      box-shadow: none;
+    }
+
+    span {
+      display: none;
+    }
   }
 
   // Text button specific styles
@@ -108,7 +133,7 @@
   }
 
   /* Styles for phonetics circles */
-  &.circle-type {
+/*  &.circle-type {
     @include variables.rounded-styles;
     @include variables.rounded-box-shadow;
 
@@ -121,5 +146,5 @@
     span {
       display: none;
     }
-  }
+  }*/
 }
