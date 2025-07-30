@@ -1,11 +1,11 @@
 <div class="write-container">
   <div class="stimulus-wrapper">
-    <img [src]="parameters().imageSource" [alt]="parameters().text || ''">
+    <img [src]="parameters().imageSource" [alt]="">
   </div>
 
   <div class="text-wrapper">
     <div class="text-display">
-      <div class="text-content" [attr.aria-label]="'Eingegebener Text'">
+      <div class="text-content">
         @if (currentText) {
           <span>{{ currentText }}</span>
         }
@@ -13,7 +13,7 @@
     </div>
   </div>
 
-  <div class="keyboard-buttons">
+  <div class="keyboard-wrapper">
     <div>
       <div class="character-list">
         @for (button of characterList; track $index) {
@@ -65,4 +65,3 @@
     }
   </div>
 </div>
-

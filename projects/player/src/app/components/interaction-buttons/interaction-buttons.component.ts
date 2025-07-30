@@ -25,13 +25,13 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
 
   ngOnChanges(): void {
     this.resetSelection();
-    this.totalOptions = this.calcInteractionTypeSettings();
+    this.totalOptions = this.createOptions();
     this.optionRows = this.getRowsOptions();
   }
 
   ngOnInit(): void {
     this.resetSelection();
-    this.totalOptions = this.calcInteractionTypeSettings();
+    this.totalOptions = this.createOptions();
     this.optionRows = this.getRowsOptions();
   }
 
@@ -50,7 +50,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
     ));
   }
 
-  private calcInteractionTypeSettings() {
+  private createOptions() {
     if (!this.parameters().options) return [];
 
     let options: any[];
