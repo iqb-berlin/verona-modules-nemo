@@ -16,7 +16,7 @@
     "imagePosition": "LEFT",
     "text": "",
     "buttonType": "CIRCLE",
-    "multiSelect": false,
+    "multiSelect": true,
     "numberOfRows": 1,
     "options": {
       "repeatButton": {

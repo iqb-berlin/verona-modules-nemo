@@ -55,7 +55,7 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
 
     // each button has 170px plus 24px gap/shadow
     // minus half it's size to set target to the center of div
-    const offset = ((194 * this.parameters().options.length) / 2) - 87 - (index * 194);
+    const offset = ((194 * this.parameters().options.buttons.length) / 2) - 87 - (index * 194);
     return "translate(" + offset + "px,270px)";
   }
 

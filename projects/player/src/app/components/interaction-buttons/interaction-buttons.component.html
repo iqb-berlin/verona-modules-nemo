@@ -1,19 +1,18 @@
 <div
-  class="buttons-container"
-  [class.multiselect]="parameters().multiSelect">
+  class="buttons-container">
   @for (row of optionRows; track $index) {
     <div class="row">
-      @for (option of row; track $index) {
+      @for (button of row; track $index) {
         <stars-standard-button
-          [id]="parameters().multiSelect ? parameters().variableId + '_' + $index : parameters().variableId"
-          [value]="$index"
+          [id]="button.id"
+          [value]="button.index"
           [inputType]="parameters().multiSelect ? 'checkbox' : 'radio'"
-          [text]="option.option.text"
-          [image]="option.option.imageSource"
-          [icon]="option.option.icon"
-          [selected]="isSelected(option.index)"
-          [type]="parameters().size"
-          (buttonClick)="onButtonClick(option.index)">
+          [text]="button.option.text"
+          [image]="button.option.imageSource"
+          [icon]="button.option.icon"
+          [selected]="selectedValues()[button.index]"
+          [type]="parameters().buttonType"
+          (buttonClick)="onButtonClick(button.index)">
         </stars-standard-button>
       }
     </div>

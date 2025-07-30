@@ -16,7 +16,7 @@
     "imagePosition": "LEFT",
     "text": "",
     "buttonType": "SMALL_SQUARE",
-    "multiSelect": false,
+    "multiSelect": true,
     "numberOfRows": 1,
     "options": {
       "repeatButton": {

@@ -79,19 +79,19 @@
 
 // Type modifiers
 .button-option {
-  &.big-type {
+  &.big_square-type {
     @include variables.big-button-size;
   }
 
-  &.medium-type {
+  &.medium_square-type {
     @include variables.medium-button-size;
   }
 
-  &.small-type {
+  &.small_square-type {
     @include variables.small-button-size;
   }
 
-  &.word-type {
+  &.text-type {
     @include variables.word-button-size;
     border: none;
 
@@ -108,7 +108,7 @@
   }
 
   /* Styles for phonetics circles */
-  &.round-type {
+  &.circle-type {
     @include variables.rounded-styles;
     @include variables.rounded-box-shadow;
 

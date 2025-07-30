@@ -9,7 +9,7 @@ export interface UnitDefinition {
   version?: string;
   backgroundColor?: string;
   continueButtonShow?: ContinueButtonEnum;
-  mainAudio: MainAudio;
+  mainAudio?: MainAudio;
   interactionType: InteractionEnum;
   interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams;
 }
@@ -37,18 +37,18 @@ export interface Coding {
 }
 
 export interface InteractionButtonParams {
-  variableId?: string;
-  imageSource?: string;
-  imagePosition?: ImagePositionEnum;
-  text?: string;
-  buttonType?: ButtonTypeEnum;
+  variableId: string;
+  options: InteractionOptions;
+  imageSource: string;
+  imagePosition: ImagePositionEnum;
+  text: string;
+  textPosition: 'BOTTOM' | 'ABOVE_IMAGE ' | 'ABOVE_BUTTONS';
   multiSelect?: boolean;
   numberOfRows?: number;
-  options: InteractionOptions;
-  numberOfOptions?: number;
+  buttonType: ButtonTypeEnum;
 }
 
-export interface InteractionDropParams {
+  export interface InteractionDropParams {
   variableId: string;
   imageSource: string;
   text: string;
@@ -59,6 +59,23 @@ export interface WriteParams {
   variableId: string;
   imageSource: string;
   text: string;
+  numberOfOptions: number;
+}
+
+export interface InteractionDropParams {
+  variableId: string;
+  options: InteractionOptions;
+  imageSource: string;
+  text: string;
+}
+
+export interface PhoneticsParams {
+  variableId: string;
+  numberOfOptions: number;
+}
+
+export interface WriteParams {
+  variableId: string;
   addBackspaceKey: boolean;
   addUmlautKeys: boolean;
   keysToAdd: string[];

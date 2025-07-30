@@ -18,6 +18,7 @@ export class StandardButtonComponent {
   type = input<string>();
   buttonClick = output<void>();
 
+
   onClick(): void {
     this.buttonClick.emit();
   }
