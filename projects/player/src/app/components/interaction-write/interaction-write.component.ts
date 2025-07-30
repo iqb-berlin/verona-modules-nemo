@@ -4,7 +4,7 @@ import {
 import { Response } from '@iqbspecs/response/response.interface';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
-import { WriteParams } from '../../models/unit-definition';
+import { InteractionWriteParams } from '../../models/unit-definition';
 import { ResponsesService } from '../../services/responses.service';
 
 
@@ -15,7 +15,7 @@ import { ResponsesService } from '../../services/responses.service';
 })
 
 export class InteractionWriteComponent extends InteractionComponentDirective implements OnInit, OnDestroy, OnChanges {
-  parameters = input<WriteParams>();
+  parameters = input<InteractionWriteParams>();
   isDisabled: boolean = false;
   responsesService = inject(ResponsesService);
 
@@ -33,7 +33,6 @@ export class InteractionWriteComponent extends InteractionComponentDirective imp
   }
 
   ngOnInit() {
-    console.log(this.parameters());
     if (this.parameters().keysToAdd) this.graphemeList = this.parameters().keysToAdd;
   }
 
@@ -71,7 +70,7 @@ export class InteractionWriteComponent extends InteractionComponentDirective imp
   }
 
   private valueChanged(): void {
-    const id = this.parameters().variableId || 'INTERACTION_WRITE';
+    const id = this.parameters().variableId || 'WRITE';
 
     const response: Response = {
       id: id,

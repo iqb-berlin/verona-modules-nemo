@@ -22,7 +22,14 @@
                                    [style.background-color]="unitService.backgroundColor()"
                                    [parameters]="paramsAsWordSelectParams"
                                    (responses)="responsesService.newResponses($event)"></stars-interaction-drop>
-  } @else if (unitService.interaction() === 'WRITE') {
+  }
+<!--  @else if (unitService.interaction() === 'PHONETICS') {-->
+<!--    <stars-interaction-phonetics class="interaction"-->
+<!--       [style.background-color]="unitService.backgroundColor()"-->
+<!--       [parameters]="paramsAsPhoneticsParams"-->
+<!--       (responses)="responsesService.newResponses($event)"></stars-interaction-phonetics>-->
+<!--  }-->
+  @else if (unitService.interaction() === 'WRITE') {
     <stars-interaction-write class="interaction"
                                  [style.background-color]="unitService.backgroundColor()"
                                  [parameters]="paramsAsWriteParams"

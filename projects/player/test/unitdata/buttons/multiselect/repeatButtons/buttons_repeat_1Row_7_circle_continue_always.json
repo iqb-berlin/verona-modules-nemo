@@ -1,6 +1,6 @@
 {
-  "id": "nemo-player-unit-definition",
-  "version": "0.6",
+  "id": "stars-unit-definition",
+  "version": "0.7",
   "backgroundColor": "#FFD4AC",
   "continueButtonShow": "ALWAYS",
   "mainAudio": {

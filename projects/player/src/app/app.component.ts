@@ -8,8 +8,7 @@ import { MetadataService } from './services/metadata.service';
 import { ResponsesService } from './services/responses.service';
 import { VopStartCommand } from './models/verona';
 import {
-  InteractionButtonParams,
-  WriteParams
+  InteractionButtonParams, InteractionWriteParams, InteractionDropParams
 } from './models/unit-definition';
 
 @Component({
@@ -55,6 +54,10 @@ export class AppComponent implements OnInit {
   }
 
   get paramsAsWriteParams() {
-    return this.unitService.parameters() as WriteParams;
+    return this.unitService.parameters() as InteractionWriteParams;
+  }
+
+  get paramsAsDropParams() {
+    return this.unitService.parameters() as InteractionDropParams;
   }
 }

@@ -56,19 +56,24 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
     // each button has 170px plus 24px gap/shadow
     // minus half it's size to set target to the center of div
     const offset = ((194 * this.parameters().options.buttons.length) / 2) - 87 - (index * 194);
-    return "translate(" + offset + "px,270px)";
+    return `translate(${offset}px,270px)`;
   }
 
   onButtonClick(index: number): void {
     this.unitService.hasInteraction.set(true);
-    this.selectedValues.set(index);
 
-    const id = this.parameters().variableId || 'INTERACTION_DROP';
+    /* Toggle selection: if already selected, deselect it
+    (this moves the element back to original position) */
+    const newSelectedValue = this.selectedValues() === index ? null : index;
+
+    this.selectedValues.set(newSelectedValue);
+
+    const id = this.parameters().variableId || 'DROP';
 
     const response: Response = {
       id: id,
       status: 'VALUE_CHANGED',
-      value: this.selectedValues()
+      value: newSelectedValue
     };
 
     this.responsesService.newResponses([response]);
