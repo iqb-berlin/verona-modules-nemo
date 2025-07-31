@@ -1,7 +1,7 @@
 @use 'colors';
 @use 'variables';
 
-.drop-select-wrapper {
+.drop-select-container {
   @include variables.flex-center;
   flex-direction: column;
   padding-top: 7%;
@@ -32,6 +32,8 @@
   @include variables.flex-center;
   flex-direction: row;
   width: 100%;
+  /* align center to stimulus pic with half of gap/box-shadow */
+  padding-left: 12px;
 }
 
 .animate-wrapper {

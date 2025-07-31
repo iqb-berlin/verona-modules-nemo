@@ -1,12 +1,10 @@
 import {
-  Component, inject, signal, OnInit, OnChanges, OnDestroy, input
+  Component, signal, OnInit, OnChanges, OnDestroy, input
 } from '@angular/core';
 import { Response } from '@iqbspecs/response/response.interface';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { InteractionButtonParams, SelectionOption } from '../../models/unit-definition';
-import { ResponsesService } from '../../services/responses.service';
-import { UnitService } from '../../services/unit.service';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
 
 @Component({
@@ -20,20 +18,24 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
 
 export class InteractionButtonsComponent extends InteractionComponentDirective implements OnInit, OnChanges, OnDestroy {
   parameters = input.required<InteractionButtonParams>();
-  selectedValues = signal<number[]>([]);
-  responsesService = inject(ResponsesService);
-  unitService = inject(UnitService);
+  // array of booleans for each option
+  selectedValues = signal<boolean[]>([]);
 
+  // options sorted by rows
   optionRows: Array<Array<RowOption>> = null;
+  // Array of all options aka Buttons to be shown
+  allOptions: Array<SelectionOption> = null;
 
   ngOnChanges(): void {
-    /* Reset selection when parameters change (i.e., when loading a new file) */
+    // Reset selection when parameters change (i.e., when loading a new file)
     this.resetSelection();
+    this.allOptions = this.createOptions();
     this.optionRows = this.getRowsOptions();
   }
 
   ngOnInit(): void {
     this.resetSelection();
+    this.allOptions = this.createOptions();
     this.optionRows = this.getRowsOptions();
   }
 
@@ -42,74 +44,113 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
   }
 
   private resetSelection(): void {
-    this.selectedValues.set([]);
+    if (!this.parameters().options) return;
+
+    const numberOfOptions = this.parameters().options.buttons?.length ||
+      this.parameters().options.repeatButton?.numberOfOptions || 0;
+    this.selectedValues.set(Array.from(
+      { length: numberOfOptions },
+      () => false
+    ));
+  }
+
+  // function to create options array for items with repeat buttons
+  private createOptions() {
+    if (!this.parameters().options) return [];
+
+    let options: any[];
+
+    if (this.parameters().options?.repeatButton) {
+      options = Array.from(
+        { length: this.parameters().options.repeatButton.numberOfOptions },
+        (_, index) => ({
+          text: this.parameters().options.repeatButton.option.text || null,
+          imageSource: this.parameters().options.repeatButton.option.imageSource || null,
+          icon: this.parameters().options.repeatButton.option.icon || null,
+        })
+      )
+    } else {
+      options = this.parameters().options?.buttons || null;
+    }
+
+    return options;
   }
 
   getRowsOptions():Array<Array<RowOption>> {
     if (!this.parameters().options) return [];
 
-    const totalOptions = this.parameters().options.length;
     const numberOfRows = this.parameters().numberOfRows || 1;
     const rows: Array<Array<RowOption>> = [];
 
-    let options = this.parameters().options;
+    let options = this.allOptions;
+    const baseId = this.parameters().variableId ? this.parameters().variableId : 'BUTTONS';
 
-    /* If the calculation results more than 5 options in a row, cap it at 5 */
-    const numberOfOptionsPerRow = Math.min(Math.ceil(totalOptions / numberOfRows), 5);
+    // calculate number of options in each row, last row might be shorter
+    const numberOfOptionsPerRow = Math.ceil(options.length / numberOfRows);
 
+    // generate arrays of options for each row
     while (options.length > 0) {
       const startIndex = rows.length * numberOfOptionsPerRow;
       const singleRowOptionsIndexed: RowOption[] = options
         .slice(0, numberOfOptionsPerRow)
+        /* generate array of object containing option data and generated id
+           and keep track of index in allOptions array */
         .map((option, i) => ({
           option,
-          index: startIndex + i
+          index: startIndex + i,
+          id: this.parameters().multiSelect ? baseId + '_' + (startIndex + i) : baseId
         }));
 
       rows.push(singleRowOptionsIndexed);
-      options = options.slice(numberOfOptionsPerRow); // Move to the next chunk of options
+      // slice off options of current row and go to the next chunk of options
+      options = options.slice(numberOfOptionsPerRow);
     }
+
+    console.log(rows);
 
     return rows;
   }
 
-  isSelected(index: number): boolean {
-    return this.selectedValues().includes(index);
-  }
-
   onButtonClick(index: number): void {
-    /* Track user engagement to activate the Continue button ON_INTERACTION */
-    this.unitService.hasInteraction.set(true);
-
-    const currentSelected = this.selectedValues();
+    let selectedValues = this.selectedValues();
+    const numberOfOptions = this.parameters().options.buttons?.length ||
+      this.parameters().options.repeatButton?.numberOfOptions || 0;
 
     if (this.parameters().multiSelect) {
-      if (currentSelected.includes(index)) {
-        /* Remove if already selected */
-        this.selectedValues.set(currentSelected.filter(i => i !== index));
-      } else {
-        /* Add to selection */
-        this.selectedValues.set([...currentSelected, index]);
-      }
+      // toggle selected item for multiselect
+      selectedValues[index] = !selectedValues[index];
+      this.selectedValues.set(selectedValues);
     } else {
-      /* Handle single selection */
-      this.selectedValues.set([index]);
+      // reset array and set selected item to true for single select
+      // no toggle here
+      selectedValues = Array.from(
+        { length: numberOfOptions },
+        () => false
+      );
+      selectedValues[index] = true;
+      this.selectedValues.set(selectedValues);
     }
 
     const id = this.parameters().variableId || 'INTERACTION_BUTTONS';
+    /* stringify boolean array to string of 0 and 1 for multiselect or
+       index of selected item for single select */
+    const value = this.parameters().multiSelect ?
+      this.selectedValues().map(item => item ? 1 : 0).join("") :
+      (this.selectedValues().findIndex(item => item) + 1).toString();
 
     const response: Response = {
       id: id,
       status: 'VALUE_CHANGED',
-      value: this.selectedValues()
+      value: value
     };
 
-    this.responsesService.newResponses([response]);
     this.responses.emit([response]);
   }
 }
 
+// helper interface for options in row array - need to track index from allOptions Array
 interface RowOption {
   option: SelectionOption;
   index: number;
+  id: string;
 }

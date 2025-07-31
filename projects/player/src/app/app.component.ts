@@ -8,9 +8,7 @@ import { MetadataService } from './services/metadata.service';
 import { ResponsesService } from './services/responses.service';
 import { VopStartCommand } from './models/verona';
 import {
-  InteractionButtonParams, PhoneticsParams,
-  SyllabifyParams,
-  WordSelectParams, WriteParams
+  InteractionButtonParams, InteractionWriteParams, InteractionDropParams
 } from './models/unit-definition';
 
 @Component({
@@ -56,19 +54,11 @@ export class AppComponent implements OnInit {
     return this.unitService.parameters() as InteractionButtonParams;
   }
 
-  get paramsAsWordSelectParams() {
-    return this.unitService.parameters() as WordSelectParams;
-  }
-
-  get paramsAsSyllabifyParams() {
-    return this.unitService.parameters() as SyllabifyParams;
-  }
-
-  get paramsAsPhoneticsParams() {
-    return this.unitService.parameters() as PhoneticsParams;
-  }
-
   get paramsAsWriteParams() {
-    return this.unitService.parameters() as WriteParams;
+    return this.unitService.parameters() as InteractionWriteParams;
+  }
+
+  get paramsAsDropParams() {
+    return this.unitService.parameters() as InteractionDropParams;
   }
 }

@@ -1,28 +1,28 @@
-<script src="standard-button.component.ts"></script>
-<link rel="stylesheet" href="standard-button.component.scss">
-<button
-  type="button"
-  class="button-option"
-  [class.selected]="selected()"
-  [class.text-button]="text() && !image() && !icon()"
-  [class]="type().toLowerCase()+'-type'"
-  [attr.aria-selected]="selected()"
-  role="option"
-  (click)="onClick()"
-  [attr.aria-label]="text()">
-  @if (image()) {
-    <img [src]="image()" [alt]="text()?.trim() || 'Button with image'">
-  } @else if (icon()) {
-    @if (icon() === 'CHECK_GREEN') {
-      <img src="assets/images/accept-icon.svg" alt="Accept icon" class="accept-icon">
-    } @else if (icon() === 'CLOSE_RED') {
-      <img src="assets/images/reject-icon.svg" alt="Reject icon" class="reject-icon">
+<div class="button-option input-wrapper"
+     [class]="type().toLowerCase()+'-type'">
+  <input
+    [type]="inputType()"
+    [name]="id()"
+    [id]="id() + '_' + value()"
+    [value]="value()"
+    (click)="onClick()"
+    [checked]="selected()"
+  />
+  <label [for]="id() + '_' + value()">
+    @if (image()) {
+      <img [src]="image()" [alt]="">
+    } @else if (icon()) {
+      @if (icon() === 'CHECK_GREEN') {
+        <img src="assets/images/accept-icon.svg" alt="" class="accept-icon">
+      } @else if (icon() === 'CLOSE_RED') {
+        <img src="assets/images/reject-icon.svg" alt="" class="reject-icon">
+      } @else if (icon() === 'CLAP_HANDS') {
+        <img src="assets/images/reject-icon.svg" alt="" class="reject-icon">
+      }
+    } @else if (text()) {
+      <span>
+        {{ text() }}
+      </span>
     }
-  } @else if (text()) {
-    <span>
-      {{ text() }}
-    </span>
-  }
-</button>
-
-
+  </label>
+</div>
