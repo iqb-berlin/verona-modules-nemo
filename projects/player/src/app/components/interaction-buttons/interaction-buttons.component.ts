@@ -25,6 +25,8 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
   optionRows: Array<Array<RowOption>> = null;
   // Array of all options aka Buttons to be shown
   allOptions: Array<SelectionOption> = null;
+  // imagePosition for stimulus image if available
+  imagePosition: string = "TOP";
 
   ngOnChanges(): void {
     // Reset selection when parameters change (i.e., when loading a new file)
@@ -71,6 +73,12 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
       )
     } else {
       options = this.parameters().options?.buttons || null;
+    }
+
+    if (this.parameters().imageSource) {
+      this.imagePosition = this.parameters().imagePosition ? this.parameters().imagePosition : 'LEFT';
+    } else {
+      this.imagePosition = 'TOP';
     }
 
     return options;
