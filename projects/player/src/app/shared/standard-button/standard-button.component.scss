@@ -36,12 +36,12 @@
     transition: all 0.2s ease;
   }
 
-  &:not(.text-button).selected {
+/*  &:not(.text-button).selected {
     background-color: colors.$white;
     border-color: colors.$highlight;
     box-shadow: none;
   }
-
+*/
   &.circle-type {
     width: 100px;
     height: 100px;
@@ -88,6 +88,17 @@
 
     span {
       display: none;
+    }
+  }
+
+  &.text-button-mode {
+    input {
+      border: none;
+
+      &:checked + label {
+        background-color: colors.$highlight;
+        color: white;
+      }
     }
   }
 

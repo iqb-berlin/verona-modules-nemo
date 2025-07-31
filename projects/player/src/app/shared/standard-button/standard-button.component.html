@@ -1,5 +1,6 @@
 <div class="button-option input-wrapper"
-     [class]="type().toLowerCase()+'-type'">
+     [class]="type().toLowerCase()+'-type'"
+     [class.text-button-mode]="textMode">
   <input
     [type]="inputType()"
     [name]="id()"
