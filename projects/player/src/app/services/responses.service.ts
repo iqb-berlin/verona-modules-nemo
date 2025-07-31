@@ -18,6 +18,8 @@ export class ResponsesService {
   allResponses: Response[] = [];
   variableInfo: VariableInfo[] = [];
   veronaPostService = inject(VeronaPostService);
+  hasParentWindow = window === window.parent;
+  lastResponsesString = '';
 
   setNewData(unitDefinition: UnitDefinition = null) {
     this.firstInteractionDone.set(false);
@@ -59,21 +61,97 @@ export class ResponsesService {
   }
 
   newResponses(responses: Response[]) {
-    this.allResponses.push(...responses);
+    responses.forEach(response => {
+      const codedResponse = this.getCodedResponse(response);
+      const responseInStore = this.allResponses.find(r => r.id === response.id);
+      if (responseInStore) {
+        responseInStore.value = response.value;
+        responseInStore.status = codedResponse.status;
+        responseInStore.code = codedResponse.code;
+        responseInStore.score = codedResponse.score;
+      } else {
+        this.allResponses.push(codedResponse);
+      }
+    });
     this.firstResponseGiven.set(true);
+    const responsesAsString = JSON.stringify(this.allResponses);
+    if (responsesAsString !== this.lastResponsesString) {
+      this.lastResponsesString = responsesAsString;
+      const unitState: UnitState = {
+        unitStateDataType: UnitStateDataType,
+        dataParts: {
+          responses: responsesAsString
+        },
+        responseProgress: 'complete'
+      };
 
-    const unitState: UnitState = {
-      unitStateDataType: UnitStateDataType,
-      dataParts: {
-        responses: JSON.stringify(this.allResponses)
-      },
-      responseProgress: 'complete'
-    };
-
-    if (window === window.parent) {
-      console.log('state changed: ', unitState);
-    } else if (this.veronaPostService) {
-      this.veronaPostService.sendVopStateChangedNotification({ unitState });
+      if (this.hasParentWindow) {
+        // tslint:disable-next-line:no-console
+        console.log('unit state changed: ', unitState);
+      } else if (this.veronaPostService) {
+        this.veronaPostService.sendVopStateChangedNotification({ unitState });
+      }
     }
+  }
+
+  private getCodedResponse(givenResponse: Response): Response {
+    const newResponse = {
+      id: givenResponse.id,
+      status: givenResponse.status,
+      value: givenResponse.value,
+      code: givenResponse.code || 0,
+      score: givenResponse.score || 0
+    };
+    if (givenResponse.status === 'VALUE_CHANGED') {
+      const codingScheme = this.variableInfo.find(v => v.variableId === givenResponse.id);
+      if (codingScheme && codingScheme.codes && codingScheme.codes.length > 0) {
+        let valueAsNumber = Number.MIN_VALUE;
+        let valueAsString = givenResponse.value.toString();
+        if (codingScheme.codingSource === 'SUM') {
+          valueAsNumber = valueAsString.match(/1/g).length;
+          valueAsString = valueAsNumber.toString();
+        } else if (codingScheme.codingSource === 'VALUE_TO_UPPER') {
+          valueAsString = valueAsString.toUpperCase();
+        }
+        let newCode = Number.MIN_VALUE;
+        let newScore = Number.MIN_VALUE;
+        codingScheme.codes.forEach(c => {
+          if (newCode === Number.MIN_VALUE) {
+            let codeFound = false;
+            if (c.method === 'EQUALS') {
+              codeFound = valueAsString === c.parameter;
+            } else {
+              if (!Array.isArray(givenResponse.value) && typeof givenResponse.value === 'string') {
+                valueAsNumber = Number.parseInt(givenResponse.value, 2);
+              }
+              const parameterAsNumber = Number.parseInt(c.parameter, 2);
+              if (c.method === 'GREATER_THAN') {
+                codeFound = valueAsNumber > parameterAsNumber;
+              } else {
+                codeFound = valueAsNumber < parameterAsNumber;
+              }
+            }
+            if (codeFound) {
+              newCode = c.code;
+              newScore = c.score;
+            }
+          }
+        });
+        newResponse.status = 'CODING_COMPLETE';
+        if (newCode > Number.MIN_VALUE) {
+          newResponse.code = newCode;
+          newResponse.score = newScore;
+        } else {
+          newResponse.score = 0;
+          const allCodes = codingScheme.codes.map(c => c.code);
+          if (allCodes.includes(0)) {
+            newCode = Math.max(...allCodes) + 1;
+          } else {
+            newCode = 0;
+          }
+        }
+      }
+    }
+    return newResponse;
   }
 }
