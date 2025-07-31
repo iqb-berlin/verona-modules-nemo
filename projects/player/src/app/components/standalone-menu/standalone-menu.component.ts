@@ -4,6 +4,7 @@ import {
 } from '@angular/cdk/menu';
 import { FileService } from '../../services/file.service';
 import { UnitService } from '../../services/unit.service';
+import { ResponsesService } from '../../services/responses.service';
 
 @Component({
   selector: 'stars-standalone-menu',
@@ -32,12 +33,16 @@ import { UnitService } from '../../services/unit.service';
 })
 
 export class StandaloneMenuComponent {
-  constructor(public unitService: UnitService) { }
+  constructor(
+    public unitService: UnitService,
+    public responsesService: ResponsesService
+  ) { }
 
   async load(): Promise<void> {
     await FileService.loadFile(['.json', '.voud']).then(fileObject => {
       const unitDefinition = JSON.parse(fileObject.content);
       this.unitService.setNewData(unitDefinition);
+      this.responsesService.setNewData(unitDefinition);
     });
   }
 

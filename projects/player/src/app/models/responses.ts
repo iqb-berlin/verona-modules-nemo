@@ -1,7 +1,7 @@
 export interface VariableInfo {
   variableId: string;
-  responseComplete: 'ALWAYS' | 'IF_ANY_RESPONSE' | 'IF_FULL_CREDIT';
-  codingSource: 'VALUE' | 'VALUE_TO_UPPER' | 'SUM' | 'LENGTH';
+  responseComplete: 'ALWAYS' | 'ON_ANY_RESPONSE' | 'ON_FULL_CREDIT';
+  codingSource: 'VALUE' | 'VALUE_TO_UPPER' | 'SUM';
   codes: Code[];
 }
 
