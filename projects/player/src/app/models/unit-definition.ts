@@ -51,13 +51,6 @@ export interface InteractionButtonParams {
   buttonType: ButtonTypeEnum;
 }
 
-  export interface InteractionDropParams {
-  variableId: string;
-  imageSource: string;
-  text: string;
-  options: InteractionOptions;
-}
-
 export interface InteractionDropParams {
   variableId: string;
   options: InteractionOptions;
