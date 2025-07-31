@@ -1,6 +1,8 @@
 export type ContinueButtonEnum = 'ALWAYS' | 'NO' | 'ON_ANY_RESPONSE' | 'ON_FULL_CREDIT' | 'ON_INTERACTION';
-export type InteractionEnum = 'BUTTONS' | 'SYLLABIFY' | 'WORD_SELECT' | 'DROP' | 'PHONETICS' | 'WRITE' | 'FIND_ON_IMAGE';
-export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED';
+export type InteractionEnum = 'BUTTONS' | 'DROP' | 'WRITE' | 'FIND_ON_IMAGE' | 'VIDEO';
+export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED' | 'CLAP_HANDS';
+export type ButtonTypeEnum = 'MEDIUM_SQUARE' | 'BIG_SQUARE' | 'SMALL_SQUARE' | 'TEXT' | 'CIRCLE';
+export type ImagePositionEnum = 'TOP' | 'LEFT';
 
 export interface UnitDefinition {
   id: string;
@@ -9,13 +11,23 @@ export interface UnitDefinition {
   continueButtonShow?: ContinueButtonEnum;
   mainAudio?: MainAudio;
   interactionType: InteractionEnum;
-  interactionParameters: InteractionButtonParams | SyllabifyParams | WordSelectParams | undefined;
+  interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams;
 }
 
 export interface SelectionOption {
-  text: string;
-  imageSource: string;
-  icon: IconButtonTypeEnum;
+  text?: string;
+  imageSource?: string;
+  icon?: IconButtonTypeEnum;
+}
+
+export interface RepeatButtonConfig {
+  option: SelectionOption;
+  numberOfOptions: number;
+}
+
+export interface InteractionOptions {
+  buttons?: SelectionOption[];
+  repeatButton?: RepeatButtonConfig;
 }
 
 export interface Coding {
@@ -26,56 +38,45 @@ export interface Coding {
 
 export interface InteractionButtonParams {
   variableId: string;
-  options: SelectionOption[];
+  options: InteractionOptions;
+  imageSource: string;
+  imagePosition: ImagePositionEnum;
+  text: string;
+  textPosition: 'BOTTOM' | 'ABOVE_IMAGE ' | 'ABOVE_BUTTONS';
   multiSelect?: boolean;
   numberOfRows?: number;
-  size: 'BIG' | 'MEDIUM' | 'SMALL';
-  gap: 'BIG' | 'MEDIUM' | 'SMALL';
+  buttonType: ButtonTypeEnum;
 }
 
-export interface WordSelectParams {
-  variableId: string;
-  options: SelectionOption[];
-  imageSource: string;
-  text: string;
-  buttonsAsRow: boolean;
-}
-
-export interface SyllabifyParams {
+  export interface InteractionDropParams {
   variableId: string;
   imageSource: string;
   text: string;
-  numberOfOptions: number;
+  options: InteractionOptions;
 }
 
 export interface InteractionDropParams {
   variableId: string;
-  options: SelectionOption[];
+  options: InteractionOptions;
   imageSource: string;
   text: string;
 }
 
-export interface PhoneticsParams {
+export interface InteractionWriteParams {
   variableId: string;
-  numberOfOptions: number;
-}
-
-export interface WriteParams {
-  variableId: string;
+  imageSource: string;
+  text: string;
   addBackspaceKey: boolean;
   addUmlautKeys: boolean;
-  imageSource: string;
-  text: string;
-  maxInputLength: number;
   keysToAdd: string[];
-  placeholder: string;
+  maxInputLength: number;
 }
 
 export interface MainAudio {
   audioSource: string;
-  firstClickLayer: boolean;
-  animateButton: boolean;
-  maxPlay: number;
+  firstClickLayer?: boolean;
+  animateButton?: boolean;
+  maxPlay?: number;
 }
 
 export interface NumberedOption {

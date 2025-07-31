@@ -1,11 +1,10 @@
 import {
-  Component, inject, input, OnChanges, OnDestroy, OnInit
+  Component, input, OnChanges, OnDestroy, OnInit
 } from '@angular/core';
 import { Response } from '@iqbspecs/response/response.interface';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
-import { WriteParams } from '../../models/unit-definition';
-import { ResponsesService } from '../../services/responses.service';
+import { InteractionWriteParams } from '../../models/unit-definition';
 
 
 @Component({
@@ -15,9 +14,8 @@ import { ResponsesService } from '../../services/responses.service';
 })
 
 export class InteractionWriteComponent extends InteractionComponentDirective implements OnInit, OnDestroy, OnChanges {
-  parameters = input<WriteParams>();
+  parameters = input<InteractionWriteParams>();
   isDisabled: boolean = false;
-  responsesService = inject(ResponsesService);
 
   currentText: string = '';
   // @ts-ignore
@@ -28,17 +26,18 @@ export class InteractionWriteComponent extends InteractionComponentDirective imp
 
 
   ngOnChanges() {
+    // Reset selection when parameters change (i.e., when loading a new file)
     this.currentText = '';
     this.isDisabled = false;
+
+    if (this.parameters().keysToAdd) this.graphemeList = this.parameters().keysToAdd;
   }
 
   ngOnInit() {
-    console.log(this.parameters());
     if (this.parameters().keysToAdd) this.graphemeList = this.parameters().keysToAdd;
   }
 
   ngOnDestroy(): void {
-    console.log(this.parameters());
     console.log('WriteComponent ngOnDestroy');
   }
 
@@ -79,7 +78,6 @@ export class InteractionWriteComponent extends InteractionComponentDirective imp
       value: this.currentText
     };
 
-    this.responsesService.newResponses([response]);
     this.responses.emit([response]);
   }
 }

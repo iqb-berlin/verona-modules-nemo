@@ -1,13 +1,12 @@
 import {
-  Component, inject, signal, OnInit, OnChanges, OnDestroy, input
+  Component, signal, OnInit, OnChanges, OnDestroy, input
 } from '@angular/core';
 import { Response } from '@iqbspecs/response/response.interface';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { InteractionDropParams } from '../../models/unit-definition';
-import { ResponsesService } from '../../services/responses.service';
-import { UnitService } from '../../services/unit.service';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
+
 
 @Component({
   selector: 'stars-interaction-drop',
@@ -20,13 +19,12 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
 
 export class InteractionDropComponent extends InteractionComponentDirective implements OnInit, OnChanges, OnDestroy {
   parameters = input.required<InteractionDropParams>();
-  selectedValues = signal<number>(null);
-  responsesService = inject(ResponsesService);
-  unitService = inject(UnitService);
+  selectedValue = signal<number>(null);
+  // create a signal for handling disabling transition on change
   disabledTransition = signal<boolean>(false);
 
   ngOnChanges(): void {
-    /* Reset selection when parameters change (i.e., when loading a new file) */
+    // Reset selection when parameters change (i.e., when loading a new file)
     this.resetSelection();
   }
 
@@ -39,39 +37,37 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   }
 
   private resetSelection(): void {
+    // before resetting, disable transition to move back instantly
     this.disabledTransition.set(true);
-    this.selectedValues.set(null);
+    this.selectedValue.set(null);
     setTimeout(()=>{
       this.disabledTransition.set(false);
     }, 500);
   }
 
-  isSelected(index: number): boolean {
-    return this.selectedValues() == index;
-  }
-
   animateStyle(index: number): string {
-    if (!this.isSelected(index)) return '';
+    if (this.selectedValue() != index) return '';
 
-    // each button has 170px plus 24px gap/shadow
+    // each button has 200px incl 24px gap/shadow
     // minus half it's size to set target to the center of div
-    const offset = ((194 * this.parameters().options.length) / 2) - 87 - (index * 194);
-    return "translate(" + offset + "px,270px)";
+    const offset = ((200 * this.parameters().options.buttons.length) / 2) - 100 - (index * 200);
+    return `translate(${offset}px,270px)`;
   }
 
   onButtonClick(index: number): void {
-    this.unitService.hasInteraction.set(true);
-    this.selectedValues.set(index);
+    /* Toggle selection: if already selected, deselect it
+    (this moves the element back to original position) */
+    const newSelectedValue = this.selectedValue() === index ? null : index;
+    this.selectedValue.set(newSelectedValue);
 
     const id = this.parameters().variableId || 'INTERACTION_DROP';
 
     const response: Response = {
       id: id,
       status: 'VALUE_CHANGED',
-      value: this.selectedValues()
+      value: newSelectedValue + 1
     };
 
-    this.responsesService.newResponses([response]);
     this.responses.emit([response]);
   }
 }

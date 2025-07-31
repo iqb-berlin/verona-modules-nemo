@@ -2,30 +2,93 @@
 @use 'variables';
 
 .button-option {
-  // Base button styles
+  position: relative;
   cursor: pointer;
-  background-color: colors.$white;
-  border: 8px solid colors.$white;
-  border-radius: variables.$border-radius;
-  @include variables.default-box-shadow;
-  @include variables.flex-center;
+
+  input, label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* gap size here */
+    bottom: 24px;
+    right: 24px;
+
+    background-color: colors.$white;
+    border: 8px solid colors.$white;
+    border-radius: variables.$border-radius;
+    @include variables.default-box-shadow;
+    @include variables.flex-center;
+  }
+
+  input {
+    opacity: 0;
+    z-index: 10;
+  }
 
   &:focus,
   &:active {
     outline: none;
   }
 
-  &.selected {
-    // Default selected state for non-specific buttons
+  input:checked + label {
+    border-radius: variables.$border-radius;
     border-color: colors.$highlight;
     transition: all 0.2s ease;
   }
 
-  // Non-text button selection (images/icons)
   &:not(.text-button).selected {
-    background-color: colors.$white; // Keep white background
+    background-color: colors.$white;
     border-color: colors.$highlight;
     box-shadow: none;
+  }
+
+  &.circle-type {
+    width: 100px;
+    height: 100px;
+    margin: 0 variables.$big-gap-margin 0 0;
+    cursor: pointer;
+    border-radius: 50%;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+
+    @include variables.rounded-box-shadow;
+
+    input {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: colors.$white;
+      border: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      margin: 0;
+      padding: 0;
+    }
+
+    label {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      cursor: pointer;
+      @include variables.flex-center;
+    }
+
+    input:checked + label {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: colors.$highlight;
+      box-shadow: none;
+    }
+
+    span {
+      display: none;
+    }
   }
 
   // Text button specific styles
@@ -63,24 +126,20 @@
 
 // Type modifiers
 .button-option {
-  &.big-type {
+  &.big_square-type {
     @include variables.big-button-size;
-    margin: 0 variables.$big-gap-margin variables.$big-gap-margin 0;
   }
 
-  &.medium-type {
+  &.medium_square-type {
     @include variables.medium-button-size;
-    margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
   }
 
-  &.small-type {
+  &.small_square-type {
     @include variables.small-button-size;
-    margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
   }
 
-  &.word-type {
+  &.text-type {
     @include variables.word-button-size;
-    margin: 0 variables.$small-gap-margin variables.$small-gap-margin 0;
     border: none;
 
     &.selected {
@@ -96,7 +155,7 @@
   }
 
   /* Styles for phonetics circles */
-  &.round-type {
+/*  &.circle-type {
     @include variables.rounded-styles;
     @include variables.rounded-box-shadow;
 
@@ -109,5 +168,5 @@
     span {
       display: none;
     }
-  }
+  }*/
 }
