@@ -1,7 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 
 import { Response } from '@iqbspecs/response/response.interface';
-import { UnitState, UnitStateDataType } from '../models/verona';
+import { Progress, UnitState, UnitStateDataType } from '../models/verona';
 import { VeronaPostService } from './verona-post.service';
 import { UnitDefinition } from '../models/unit-definition';
 import { Code, VariableInfo } from '../models/responses';
@@ -12,9 +12,12 @@ import { Code, VariableInfo } from '../models/responses';
 
 export class ResponsesService {
   firstInteractionDone = signal(false);
+  // todo: delete firstResponseGiven; replace usages by responsesGiven
   firstResponseGiven = signal(false);
+  // todo: delete maxScoreReached; replace usages by responsesGiven
   maxScoreReached = signal(false);
   unitDefinitionProblem = signal('');
+  responseProgress = signal<Progress>('none');
   allResponses: Response[] = [];
   variableInfo: VariableInfo[] = [];
   veronaPostService = inject(VeronaPostService);
@@ -74,16 +77,19 @@ export class ResponsesService {
         this.allResponses.push(codedResponse);
       }
     });
-    this.firstResponseGiven.set(true);
     const responsesAsString = JSON.stringify(this.allResponses);
     if (responsesAsString !== this.lastResponsesString) {
       this.lastResponsesString = responsesAsString;
+      const getResponsesCompleteOutput = this.getResponsesComplete();
+      this.responseProgress.set(getResponsesCompleteOutput);
+      this.firstResponseGiven.set(getResponsesCompleteOutput !== 'none');
+      this.maxScoreReached.set(getResponsesCompleteOutput === 'complete');
       const unitState: UnitState = {
         unitStateDataType: UnitStateDataType,
         dataParts: {
           responses: responsesAsString
         },
-        responseProgress: 'complete'
+        responseProgress: this.responseProgress()
       };
 
       if (this.hasParentWindow) {
@@ -154,5 +160,30 @@ export class ResponsesService {
       }
     }
     return newResponse;
+  }
+
+  private getResponsesComplete(): Progress {
+    if (this.allResponses.length === 0) return 'none';
+    if (!this.variableInfo || this.variableInfo.length === 0) return 'complete';
+    const onAny = this.variableInfo.filter(coding => coding.responseComplete === 'ON_ANY_RESPONSE')
+      .map(coding => coding.variableId);
+    const onFullCredit = this.variableInfo
+      .filter(coding => coding.responseComplete === 'ON_FULL_CREDIT');
+    if (onAny.length + onFullCredit.length === 0) return 'complete';
+    let isComplete = true;
+    onAny.forEach(id => {
+      const myResponse = this.allResponses
+        .find(r => r.id === id && r.status === 'CODING_COMPLETE');
+      if (!myResponse) isComplete = false;
+    });
+    if (isComplete) {
+      onFullCredit.forEach(vi => {
+        const maxScore = Math.max(...vi.codes.map(c => c.score));
+        const myResponse = this.allResponses
+          .find(r => r.id === vi.variableId && r.status === 'CODING_COMPLETE');
+        if (!myResponse || myResponse.score < maxScore) isComplete = false;
+      });
+    }
+    return isComplete ? 'complete' : 'some';
   }
 }
