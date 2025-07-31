@@ -52,6 +52,7 @@ export class ResponsesService {
             if (c.score) newCode.score = c.score;
             newVInfo.codes.push(newCode);
           });
+          this.variableInfo.push(vInfo);
         } else {
           problems.push('variableId or codes missing');
         }
@@ -122,9 +123,9 @@ export class ResponsesService {
               codeFound = valueAsString === c.parameter;
             } else {
               if (!Array.isArray(givenResponse.value) && typeof givenResponse.value === 'string') {
-                valueAsNumber = Number.parseInt(givenResponse.value, 2);
+                valueAsNumber = Number.parseInt(givenResponse.value, 10);
               }
-              const parameterAsNumber = Number.parseInt(c.parameter, 2);
+              const parameterAsNumber = Number.parseInt(c.parameter, 10);
               if (c.method === 'GREATER_THAN') {
                 codeFound = valueAsNumber > parameterAsNumber;
               } else {
