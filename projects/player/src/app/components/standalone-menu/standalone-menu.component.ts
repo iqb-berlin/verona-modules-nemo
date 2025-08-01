@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   CdkMenu, CdkMenuBar, CdkMenuItem, CdkMenuTrigger
 } from '@angular/cdk/menu';
+import { Dialog } from '@angular/cdk/dialog';
 import { FileService } from '../../services/file.service';
 import { UnitService } from '../../services/unit.service';
+import { ResponsesService } from '../../services/responses.service';
+import { ResponsesDialogComponent } from './responses-dialog.component';
 
 @Component({
   selector: 'stars-standalone-menu',
@@ -23,7 +26,7 @@ import { UnitService } from '../../services/unit.service';
         <div class="menu" cdkMenu>
           <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="load()">from file</button>
           <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="handleDummy()">edit</button>
-          <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="handleDummy()">view responses</button>
+          <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="showResponses()">view responses</button>
         </div>
       </ng-template>
     </div>
@@ -32,12 +35,25 @@ import { UnitService } from '../../services/unit.service';
 })
 
 export class StandaloneMenuComponent {
-  constructor(public unitService: UnitService) { }
+  dialog = inject(Dialog);
+
+  constructor(
+    public unitService: UnitService,
+    public responsesService: ResponsesService
+  ) { }
 
   async load(): Promise<void> {
     await FileService.loadFile(['.json', '.voud']).then(fileObject => {
       const unitDefinition = JSON.parse(fileObject.content);
       this.unitService.setNewData(unitDefinition);
+      this.responsesService.setNewData(unitDefinition);
+    });
+  }
+
+  showResponses() {
+    this.dialog.open<string>(ResponsesDialogComponent, {
+      width: '800px',
+      data: this.responsesService.allResponses
     });
   }
 

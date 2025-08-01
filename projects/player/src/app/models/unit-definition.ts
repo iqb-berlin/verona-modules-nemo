@@ -1,3 +1,5 @@
+import { VariableInfo } from './responses';
+
 export type ContinueButtonEnum = 'ALWAYS' | 'NO' | 'ON_ANY_RESPONSE' | 'ON_FULL_CREDIT' | 'ON_INTERACTION';
 export type InteractionEnum = 'BUTTONS' | 'DROP' | 'WRITE' | 'FIND_ON_IMAGE' | 'VIDEO';
 export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED' | 'CLAP_HANDS';
@@ -12,6 +14,7 @@ export interface UnitDefinition {
   mainAudio?: MainAudio;
   interactionType: InteractionEnum;
   interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams;
+  variableInfo: VariableInfo[] | undefined;
 }
 
 export interface SelectionOption {
@@ -46,13 +49,6 @@ export interface InteractionButtonParams {
   multiSelect?: boolean;
   numberOfRows?: number;
   buttonType: ButtonTypeEnum;
-}
-
-  export interface InteractionDropParams {
-  variableId: string;
-  imageSource: string;
-  text: string;
-  options: InteractionOptions;
 }
 
 export interface InteractionDropParams {

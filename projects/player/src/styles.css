@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 @import 'styles/_colors.scss';
 @import "styles/_variables.scss";
+@import '@angular/cdk/overlay-prebuilt.css';
 
 @font-face {
   font-family: 'Quicksand';
