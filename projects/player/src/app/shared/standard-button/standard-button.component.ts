@@ -1,7 +1,8 @@
-import { Component, input, output } from '@angular/core';
+import {
+  Component, input, output, computed
+} from '@angular/core';
 
-import { ButtonTypeEnum } from "../../models/unit-definition";
-
+import { ButtonTypeEnum } from '../../models/unit-definition';
 
 @Component({
   selector: 'stars-standard-button',
@@ -11,9 +12,9 @@ import { ButtonTypeEnum } from "../../models/unit-definition";
 })
 
 export class StandardButtonComponent {
-  id=input.required<string>();
-  value=input.required<number>();
-  inputType = input<'radio'|'checkbox'>('radio');
+  id = input.required<string>();
+  value = input.required<number>();
+  inputType = input<'radio' | 'checkbox'>('radio');
   image = input<string>();
   text = input<string>();
   icon = input<string>();
@@ -21,6 +22,10 @@ export class StandardButtonComponent {
   isSmallText = input<boolean>(false);
   type = input<ButtonTypeEnum>();
   buttonClick = output<void>();
+
+  textMode = computed(() => {
+    return !!this.text() && !this.icon() && !this.image();
+  });
 
   onClick(): void {
     this.buttonClick.emit();

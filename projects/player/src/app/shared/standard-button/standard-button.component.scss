@@ -36,12 +36,6 @@
     transition: all 0.2s ease;
   }
 
-  &:not(.text-button).selected {
-    background-color: colors.$white;
-    border-color: colors.$highlight;
-    box-shadow: none;
-  }
-
   &.circle-type {
     width: 100px;
     height: 100px;
@@ -91,15 +85,12 @@
     }
   }
 
-  // Text button specific styles
-  &.text-button {
-    &.selected {
-      // Highlight the entire background for text buttons
-      background-color: colors.$highlight;
-      border-color: colors.$highlight;;
-      color: colors.$white;
+  &.text-button-mode {
+    input {
+      border: none;
 
-      span {
+      &:checked + label {
+        background-color: colors.$highlight;
         color: colors.$white;
       }
     }
@@ -143,7 +134,6 @@
     border: none;
 
     &.selected {
-      background-color: colors.$highlight;
       color: white;
       border: none;
       @include variables.default-box-shadow;
@@ -153,20 +143,4 @@
       font-size: variables.$small-text-font-size;
     }
   }
-
-  /* Styles for phonetics circles */
-/*  &.circle-type {
-    @include variables.rounded-styles;
-    @include variables.rounded-box-shadow;
-
-    &.selected {
-      background-color: colors.$highlight;
-      border-radius: 50%;
-      box-shadow: none;
-    }
-
-    span {
-      display: none;
-    }
-  }*/
 }
