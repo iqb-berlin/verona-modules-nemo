@@ -1,12 +1,12 @@
-import {Component, inject} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   CdkMenu, CdkMenuBar, CdkMenuItem, CdkMenuTrigger
 } from '@angular/cdk/menu';
+import { Dialog } from '@angular/cdk/dialog';
 import { FileService } from '../../services/file.service';
 import { UnitService } from '../../services/unit.service';
 import { ResponsesService } from '../../services/responses.service';
-import {Dialog} from "@angular/cdk/dialog";
-import {ResponsesDialogComponent} from "./responses-dialog.component";
+import { ResponsesDialogComponent } from './responses-dialog.component';
 
 @Component({
   selector: 'stars-standalone-menu',
@@ -51,13 +51,9 @@ export class StandaloneMenuComponent {
   }
 
   showResponses() {
-    const dialogRef = this.dialog.open<string>(ResponsesDialogComponent, {
-      width: '250px',
+    this.dialog.open<string>(ResponsesDialogComponent, {
+      width: '800px',
       data: this.responsesService.allResponses
-    });
-
-    dialogRef.closed.subscribe(() => {
-      console.log('The dialog was closed');
     });
   }
 
