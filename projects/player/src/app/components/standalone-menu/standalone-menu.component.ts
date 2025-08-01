@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {
   CdkMenu, CdkMenuBar, CdkMenuItem, CdkMenuTrigger
 } from '@angular/cdk/menu';
 import { FileService } from '../../services/file.service';
 import { UnitService } from '../../services/unit.service';
 import { ResponsesService } from '../../services/responses.service';
+import {Dialog} from "@angular/cdk/dialog";
+import {ResponsesDialogComponent} from "./responses-dialog.component";
 
 @Component({
   selector: 'stars-standalone-menu',
@@ -24,7 +26,7 @@ import { ResponsesService } from '../../services/responses.service';
         <div class="menu" cdkMenu>
           <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="load()">from file</button>
           <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="handleDummy()">edit</button>
-          <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="handleDummy()">view responses</button>
+          <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="showResponses()">view responses</button>
         </div>
       </ng-template>
     </div>
@@ -33,6 +35,8 @@ import { ResponsesService } from '../../services/responses.service';
 })
 
 export class StandaloneMenuComponent {
+  dialog = inject(Dialog);
+
   constructor(
     public unitService: UnitService,
     public responsesService: ResponsesService
@@ -43,6 +47,17 @@ export class StandaloneMenuComponent {
       const unitDefinition = JSON.parse(fileObject.content);
       this.unitService.setNewData(unitDefinition);
       this.responsesService.setNewData(unitDefinition);
+    });
+  }
+
+  showResponses() {
+    const dialogRef = this.dialog.open<string>(ResponsesDialogComponent, {
+      width: '250px',
+      data: this.responsesService.allResponses
+    });
+
+    dialogRef.closed.subscribe(() => {
+      console.log('The dialog was closed');
     });
   }
 
