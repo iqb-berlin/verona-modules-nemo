@@ -110,7 +110,6 @@
   }
 
   span {
-    @include variables.text;
     font-size: variables.$big-text-font-size;
   }
 }
