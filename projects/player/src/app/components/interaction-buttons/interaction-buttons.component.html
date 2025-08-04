@@ -1,21 +1,35 @@
-<div
-  class="buttons-container">
-  @for (row of optionRows; track $index) {
-    <div class="row">
-      @for (button of row; track $index) {
-        <stars-standard-button
-          [id]="button.id"
-          [value]="button.index"
-          [inputType]="parameters().multiSelect ? 'checkbox' : 'radio'"
-          [text]="button.option.text"
-          [image]="button.option.imageSource"
-          [icon]="button.option.icon"
-          [selected]="selectedValues()[button.index]"
-          [type]="parameters().buttonType"
-          (buttonClick)="onButtonClick(button.index)">
-        </stars-standard-button>
-      }
+<div class="buttons-container"
+     [class.flex-row]="imagePosition === 'LEFT'">
+  @if (parameters().imageSource) {
+    <div class="stimulus-wrapper"
+         [class]="parameters().imagePosition?.toLowerCase() + '-position' || ''">
+      <img [src]="parameters().imageSource" [alt]="">
+    </div>
+  }
+
+  <div class="buttons-wrapper">
+    @for (row of optionRows; track $index) {
+      <div class="row">
+        @for (button of row; track $index) {
+          <stars-standard-button
+            [id]="button.id"
+            [value]="button.index"
+            [inputType]="parameters().multiSelect ? 'checkbox' : 'radio'"
+            [text]="button.option.text"
+            [image]="button.option.imageSource"
+            [icon]="button.option.icon"
+            [selected]="selectedValues()[button.index]"
+            [type]="parameters().buttonType"
+            (buttonClick)="onButtonClick(button.index)">
+          </stars-standard-button>
+        }
+      </div>
+    }
+  </div>
+
+  @if (parameters().text) {
+    <div class="text-wrapper">
+      <span>{{parameters().text}}</span>
     </div>
   }
 </div>
-
