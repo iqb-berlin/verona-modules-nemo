@@ -45,7 +45,6 @@ export interface InteractionButtonParams {
   imageSource: string;
   imagePosition: ImagePositionEnum;
   text: string;
-  textPosition: 'BOTTOM' | 'ABOVE_IMAGE ' | 'ABOVE_BUTTONS';
   multiSelect?: boolean;
   numberOfRows?: number;
   buttonType: ButtonTypeEnum;

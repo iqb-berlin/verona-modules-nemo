@@ -39,7 +39,7 @@
             </button>
           }
         }
-        @for (button of graphemeList; track $index) {
+        @for (button of localParameters.keysToAdd; track $index) {
           <button type="button"
                   class="keyboard-button"
                   [attr.aria-label]="currentText.length === 0 ? capitalize(button) : button"

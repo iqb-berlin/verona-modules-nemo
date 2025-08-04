@@ -17,7 +17,7 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
 })
 
 export class InteractionDropComponent extends InteractionComponentDirective {
-  localParameters: InteractionDropParams | null = null;
+  localParameters: InteractionDropParams;
   selectedValue = signal<number>(null);
   // create a signal for handling disabling transition on change
   disabledTransition = signal<boolean>(false);
@@ -26,13 +26,17 @@ export class InteractionDropComponent extends InteractionComponentDirective {
     super();
 
     effect(() => {
-      this.localParameters = this.parameters() as InteractionDropParams;
-      if (this.localParameters) {
-        this.localParameters.options = this.localParameters.options ?
-          this.localParameters.options : null;
-        this.localParameters.variableId = this.localParameters.variableId ?
-          this.localParameters.variableId : 'DROP';
+      const parameters = this.parameters() as InteractionDropParams;
+
+      this.localParameters = this.createDefaultParameters();
+
+      if (parameters) {
+        this.localParameters.options = parameters.options || null;
+        this.localParameters.variableId = parameters.variableId || 'DROP';
+        this.localParameters.imageSource = parameters.imageSource || null;
+        this.localParameters.text = parameters.text || null;
       }
+
       this.resetSelection();
     });
   }
@@ -57,7 +61,7 @@ export class InteractionDropComponent extends InteractionComponentDirective {
 
   onButtonClick(index: number): void {
     /* Toggle selection: if already selected, deselect it
-    (this moves the element back to original position) */
+    (this moves the element back to the original position) */
     const newSelectedValue = this.selectedValue() === index ? null : index;
     this.selectedValue.set(newSelectedValue);
 
@@ -70,5 +74,15 @@ export class InteractionDropComponent extends InteractionComponentDirective {
     };
 
     this.responses.emit([response]);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private createDefaultParameters(): InteractionDropParams {
+    return {
+      variableId: 'DROP',
+      options: null,
+      imageSource: null,
+      text: null
+    };
   }
 }

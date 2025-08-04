@@ -11,34 +11,30 @@ import { InteractionWriteParams } from '../../models/unit-definition';
 })
 
 export class InteractionWriteComponent extends InteractionComponentDirective {
-  localParameters: InteractionWriteParams | null = null;
+  localParameters: InteractionWriteParams;
   isDisabled: boolean = false;
   currentText: string = '';
   characterList = [...'abcdefghijklmnopqrstuvwxyz'];
   umlautListChars = [...'äöü'];
+  // TODO: delete? no need of it, because missing default in spec
   graphemeList = ['ch', 'sch', 'ng', 'ei', 'au', 'eu', 'le', 'pf', 'chs'];
 
   constructor() {
     super();
 
     effect(() => {
-      this.localParameters = this.parameters() as InteractionWriteParams;
+      const parameters = this.parameters() as InteractionWriteParams;
 
-      if (this.localParameters !== null) {
-        this.localParameters.addBackspaceKey = this.localParameters.addBackspaceKey ?
-          this.localParameters.addBackspaceKey : true;
-        this.localParameters.addUmlautKeys = this.localParameters.addUmlautKeys ?
-          this.localParameters.addUmlautKeys : true;
-        this.localParameters.keysToAdd = this.localParameters.keysToAdd ?
-          this.localParameters.keysToAdd : [];
-        this.localParameters.variableId = this.localParameters.variableId ?
-          this.localParameters.variableId : 'WRITE';
-        this.localParameters.maxInputLength = this.localParameters.maxInputLength ?
-          this.localParameters.maxInputLength : 10;
-        this.localParameters.imageSource = this.localParameters.imageSource ?
-          this.localParameters.imageSource : null;
-        this.localParameters.text = this.localParameters.text ?
-          this.localParameters.text : null;
+      this.localParameters = this.createDefaultParameters();
+
+      if (parameters) {
+        this.localParameters.addBackspaceKey = parameters.addBackspaceKey || true;
+        this.localParameters.addUmlautKeys = parameters.addUmlautKeys || true;
+        this.localParameters.keysToAdd = parameters.keysToAdd || [];
+        this.localParameters.variableId = parameters.variableId || 'WRITE';
+        this.localParameters.maxInputLength = parameters.maxInputLength || 10;
+        this.localParameters.imageSource = parameters.imageSource || null;
+        this.localParameters.text = parameters.text || null;
       }
 
       this.currentText = '';
@@ -84,5 +80,18 @@ export class InteractionWriteComponent extends InteractionComponentDirective {
     };
 
     this.responses.emit([response]);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private createDefaultParameters(): InteractionWriteParams {
+    return {
+      variableId: 'WRITE',
+      imageSource: null,
+      text: null,
+      addBackspaceKey: true,
+      addUmlautKeys: true,
+      keysToAdd: [],
+      maxInputLength: 10
+    };
   }
 }

@@ -4,7 +4,10 @@ import {
 import { Response } from '@iqbspecs/response/response.interface';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
-import { InteractionButtonParams, SelectionOption } from '../../models/unit-definition';
+import {
+  InteractionButtonParams,
+  SelectionOption
+} from '../../models/unit-definition';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
 
 @Component({
@@ -17,7 +20,7 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
 })
 
 export class InteractionButtonsComponent extends InteractionComponentDirective {
-  localParameters: InteractionButtonParams | null = null;
+  localParameters: InteractionButtonParams;
   // array of booleans for each option
   selectedValues = signal<boolean[]>([]);
   // options sorted by rows
@@ -31,26 +34,22 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     super();
 
     effect(() => {
-      this.localParameters = this.parameters() as InteractionButtonParams;
+      const parameters = this.parameters() as InteractionButtonParams;
 
-      if (this.localParameters) {
-        this.localParameters.options = this.localParameters.options ?
-          this.localParameters.options : null;
-        this.localParameters.variableId = this.localParameters.variableId ?
-          this.localParameters.variableId : 'BUTTONS';
-        this.localParameters.imageSource = this.localParameters.imageSource ?
-          this.localParameters.imageSource : null;
-        this.localParameters.numberOfRows = this.localParameters.numberOfRows ?
-          this.localParameters.numberOfRows : 1;
-        this.localParameters.multiSelect = this.localParameters.multiSelect ?
-          this.localParameters.multiSelect : false;
-        this.localParameters.buttonType = this.localParameters.buttonType ?
-          this.localParameters.buttonType : 'MEDIUM_SQUARE';
-        this.localParameters.text = this.localParameters.text ?
-          this.localParameters.text : null;
+      this.localParameters = this.createDefaultParameters();
+
+      if (parameters) {
+        this.localParameters.options = parameters.options || null;
+        this.localParameters.variableId = parameters.variableId || 'BUTTONS';
+        this.localParameters.imageSource = parameters.imageSource || null;
+        this.localParameters.numberOfRows = parameters.numberOfRows || 1;
+        this.localParameters.multiSelect = parameters.multiSelect || false;
+        this.localParameters.buttonType = parameters.buttonType || 'MEDIUM_SQUARE';
+        this.localParameters.numberOfRows = parameters.numberOfRows || 1;
+        this.localParameters.text = parameters.text || null;
+
         if (this.localParameters.imageSource) {
-          this.localParameters.imagePosition = this.localParameters.imagePosition ?
-            this.localParameters.imagePosition : 'LEFT';
+          this.localParameters.imagePosition = parameters.imagePosition || 'LEFT';
         } else {
           this.localParameters.imagePosition = 'TOP';
         }
@@ -169,6 +168,20 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     };
 
     this.responses.emit([response]);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private createDefaultParameters(): InteractionButtonParams {
+    return {
+      variableId: 'BUTTONS',
+      options: null,
+      imageSource: null,
+      imagePosition: 'TOP',
+      text: null,
+      multiSelect: false,
+      numberOfRows: 1,
+      buttonType: 'MEDIUM_SQUARE'
+    };
   }
 }
 
