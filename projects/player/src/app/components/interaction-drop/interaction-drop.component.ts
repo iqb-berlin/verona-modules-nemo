@@ -1,12 +1,11 @@
 import {
-  Component, signal, OnInit, OnChanges, OnDestroy, input
+  Component, signal, effect
 } from '@angular/core';
 import { Response } from '@iqbspecs/response/response.interface';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { InteractionDropParams } from '../../models/unit-definition';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
-
 
 @Component({
   selector: 'stars-interaction-drop',
@@ -17,40 +16,42 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
   styleUrls: ['./interaction-drop.component.scss']
 })
 
-export class InteractionDropComponent extends InteractionComponentDirective implements OnInit, OnChanges, OnDestroy {
-  parameters = input.required<InteractionDropParams>();
+export class InteractionDropComponent extends InteractionComponentDirective {
+  localParameters: InteractionDropParams | null = null;
   selectedValue = signal<number>(null);
   // create a signal for handling disabling transition on change
   disabledTransition = signal<boolean>(false);
 
-  ngOnChanges(): void {
-    // Reset selection when parameters change (i.e., when loading a new file)
-    this.resetSelection();
-  }
+  constructor() {
+    super();
 
-  ngOnInit(): void {
-    this.resetSelection();
-  }
-
-  ngOnDestroy(): void {
-    this.resetSelection();
+    effect(() => {
+      this.localParameters = this.parameters() as InteractionDropParams;
+      if (this.localParameters) {
+        this.localParameters.options = this.localParameters.options ?
+          this.localParameters.options : null;
+        this.localParameters.variableId = this.localParameters.variableId ?
+          this.localParameters.variableId : 'DROP';
+      }
+      this.resetSelection();
+    });
   }
 
   private resetSelection(): void {
     // before resetting, disable transition to move back instantly
     this.disabledTransition.set(true);
     this.selectedValue.set(null);
-    setTimeout(()=>{
+    setTimeout(() => {
       this.disabledTransition.set(false);
     }, 500);
   }
 
   animateStyle(index: number): string {
-    if (this.selectedValue() != index) return '';
+    if (this.selectedValue() !== index) return '';
 
     // each button has 200px incl 24px gap/shadow
     // minus half it's size to set target to the center of div
-    const offset = ((200 * this.parameters().options.buttons.length) / 2) - 100 - (index * 200);
+    const offset = ((200 * this.localParameters.options.buttons.length) / 2) - 100 - (index * 200);
     return `translate(${offset}px,270px)`;
   }
 
@@ -60,7 +61,7 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
     const newSelectedValue = this.selectedValue() === index ? null : index;
     this.selectedValue.set(newSelectedValue);
 
-    const id = this.parameters().variableId || 'INTERACTION_DROP';
+    const id = this.localParameters.variableId;
 
     const response: Response = {
       id: id,
