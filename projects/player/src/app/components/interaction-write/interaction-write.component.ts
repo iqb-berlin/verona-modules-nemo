@@ -1,11 +1,8 @@
-import {
-  Component, input, OnChanges, OnDestroy, OnInit
-} from '@angular/core';
+import { Component, effect } from '@angular/core';
 import { Response } from '@iqbspecs/response/response.interface';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { InteractionWriteParams } from '../../models/unit-definition';
-
 
 @Component({
   selector: 'stars-interaction-write',
@@ -13,49 +10,57 @@ import { InteractionWriteParams } from '../../models/unit-definition';
   styleUrls: ['interaction-write.component.scss']
 })
 
-export class InteractionWriteComponent extends InteractionComponentDirective implements OnInit, OnDestroy, OnChanges {
-  parameters = input<InteractionWriteParams>();
+export class InteractionWriteComponent extends InteractionComponentDirective {
+  localParameters: InteractionWriteParams | null = null;
   isDisabled: boolean = false;
-
   currentText: string = '';
-  // @ts-ignore
-  characterList = [ ...'abcdefghijklmnopqrstuvwxyz' ];
-  // @ts-ignore
+  characterList = [...'abcdefghijklmnopqrstuvwxyz'];
   umlautListChars = [...'äöü'];
-  graphemeList = [ 'ch', 'sch', 'ng', 'ei', 'au', 'eu', 'le', 'pf', 'chs' ];
+  graphemeList = ['ch', 'sch', 'ng', 'ei', 'au', 'eu', 'le', 'pf', 'chs'];
 
+  constructor() {
+    super();
 
-  ngOnChanges() {
-    // Reset selection when parameters change (i.e., when loading a new file)
-    this.currentText = '';
-    this.isDisabled = false;
+    effect(() => {
+      this.localParameters = this.parameters() as InteractionWriteParams;
 
-    if (this.parameters().keysToAdd) this.graphemeList = this.parameters().keysToAdd;
+      if (this.localParameters !== null) {
+        this.localParameters.addBackspaceKey = this.localParameters.addBackspaceKey ?
+          this.localParameters.addBackspaceKey : true;
+        this.localParameters.addUmlautKeys = this.localParameters.addUmlautKeys ?
+          this.localParameters.addUmlautKeys : true;
+        this.localParameters.keysToAdd = this.localParameters.keysToAdd ?
+          this.localParameters.keysToAdd : [];
+        this.localParameters.variableId = this.localParameters.variableId ?
+          this.localParameters.variableId : 'WRITE';
+        this.localParameters.maxInputLength = this.localParameters.maxInputLength ?
+          this.localParameters.maxInputLength : 10;
+        this.localParameters.imageSource = this.localParameters.imageSource ?
+          this.localParameters.imageSource : null;
+        this.localParameters.text = this.localParameters.text ?
+          this.localParameters.text : null;
+      }
+
+      this.currentText = '';
+    });
   }
 
-  ngOnInit() {
-    if (this.parameters().keysToAdd) this.graphemeList = this.parameters().keysToAdd;
-  }
-
-  ngOnDestroy(): void {
-    console.log('WriteComponent ngOnDestroy');
-  }
-
+  // eslint-disable-next-line class-methods-use-this
   capitalize(s: string): string {
     return String(s[0].toUpperCase() + s.slice(1));
   }
 
   addChar(button: string) {
-    if (this.parameters().maxInputLength !== null &&
-      this.currentText.length >= this.parameters().maxInputLength) {
+    if (this.localParameters.maxInputLength !== null &&
+      this.currentText.length >= this.localParameters.maxInputLength) {
       return;
     }
 
     const charToAdd = this.currentText.length === 0 ? this.capitalize(button) : button;
     this.currentText += charToAdd;
 
-    this.isDisabled = this.parameters().maxInputLength !== null &&
-        this.currentText.length >= this.parameters().maxInputLength;
+    this.isDisabled = this.localParameters.maxInputLength !== null &&
+        this.currentText.length >= this.localParameters.maxInputLength;
 
     this.valueChanged();
   }
@@ -63,14 +68,14 @@ export class InteractionWriteComponent extends InteractionComponentDirective imp
   deleteChar() {
     if (this.currentText.length > 0) {
       this.currentText = this.currentText.slice(0, -1);
-      this.isDisabled = this.parameters().maxInputLength !== null &&
-        this.currentText.length >= this.parameters().maxInputLength;
+      this.isDisabled = this.localParameters.maxInputLength !== null &&
+        this.currentText.length >= this.localParameters.maxInputLength;
       this.valueChanged();
     }
   }
 
   private valueChanged(): void {
-    const id = this.parameters().variableId || 'INTERACTION_WRITE';
+    const id = this.localParameters.variableId;
 
     const response: Response = {
       id: id,
