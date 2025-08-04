@@ -68,10 +68,6 @@ body {
 *, *::before, *::after {
   font-family: 'IQBprimar', 'Quicksand', sans-serif;
 }
-/*input, button, select, textarea, label, span {*/
-/*  font-family: 'IQBprimar', 'Quicksand', sans-serif;*/
-/*}*/
-
 
 player-sub-form {
   display: block;
