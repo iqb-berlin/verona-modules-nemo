@@ -1,5 +1,5 @@
 import {
-  Component, signal, OnInit, OnChanges, OnDestroy, input
+  Component, signal, effect
 } from '@angular/core';
 import { Response } from '@iqbspecs/response/response.interface';
 
@@ -16,40 +16,57 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
   styleUrls: ['./interaction-buttons.component.scss']
 })
 
-export class InteractionButtonsComponent extends InteractionComponentDirective implements OnInit, OnChanges, OnDestroy {
-  parameters = input.required<InteractionButtonParams>();
+export class InteractionButtonsComponent extends InteractionComponentDirective {
+  localParameters: InteractionButtonParams | null = null;
   // array of booleans for each option
   selectedValues = signal<boolean[]>([]);
-
   // options sorted by rows
   optionRows: Array<Array<RowOption>> = null;
   // Array of all options aka Buttons to be shown
   allOptions: Array<SelectionOption> = null;
   // imagePosition for stimulus image if available
-  imagePosition: string = "TOP";
+  imagePosition: string = 'TOP';
 
-  ngOnChanges(): void {
-    // Reset selection when parameters change (i.e., when loading a new file)
-    this.resetSelection();
-    this.allOptions = this.createOptions();
-    this.optionRows = this.getRowsOptions();
-  }
+  constructor() {
+    super();
 
-  ngOnInit(): void {
-    this.resetSelection();
-    this.allOptions = this.createOptions();
-    this.optionRows = this.getRowsOptions();
-  }
+    effect(() => {
+      this.localParameters = this.parameters() as InteractionButtonParams;
 
-  ngOnDestroy(): void {
-    this.resetSelection();
+      if (this.localParameters) {
+        this.localParameters.options = this.localParameters.options ?
+          this.localParameters.options : null;
+        this.localParameters.variableId = this.localParameters.variableId ?
+          this.localParameters.variableId : 'BUTTONS';
+        this.localParameters.imageSource = this.localParameters.imageSource ?
+          this.localParameters.imageSource : null;
+        this.localParameters.numberOfRows = this.localParameters.numberOfRows ?
+          this.localParameters.numberOfRows : 1;
+        this.localParameters.multiSelect = this.localParameters.multiSelect ?
+          this.localParameters.multiSelect : false;
+        this.localParameters.buttonType = this.localParameters.buttonType ?
+          this.localParameters.buttonType : 'MEDIUM_SQUARE';
+        this.localParameters.text = this.localParameters.text ?
+          this.localParameters.text : null;
+        if (this.localParameters.imageSource) {
+          this.localParameters.imagePosition = this.localParameters.imagePosition ?
+            this.localParameters.imagePosition : 'LEFT';
+        } else {
+          this.localParameters.imagePosition = 'TOP';
+        }
+      }
+
+      this.resetSelection();
+      this.allOptions = this.createOptions();
+      this.optionRows = this.getRowsOptions();
+    });
   }
 
   private resetSelection(): void {
-    if (!this.parameters().options) return;
+    if (!this.localParameters.options) return;
 
-    const numberOfOptions = this.parameters().options.buttons?.length ||
-      this.parameters().options.repeatButton?.numberOfOptions || 0;
+    const numberOfOptions = this.localParameters.options?.buttons?.length ||
+      this.localParameters.options?.repeatButton?.numberOfOptions || 0;
     this.selectedValues.set(Array.from(
       { length: numberOfOptions },
       () => false
@@ -58,25 +75,26 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
 
   // function to create options array for items with repeat buttons
   private createOptions() {
-    if (!this.parameters().options) return [];
+    if (!this.localParameters.options) return [];
 
-    let options: any[];
+    let options:any[];
 
-    if (this.parameters().options?.repeatButton) {
+    if (this.localParameters.options?.repeatButton) {
       options = Array.from(
-        { length: this.parameters().options.repeatButton.numberOfOptions },
-        (_, index) => ({
-          text: this.parameters().options.repeatButton.option.text || null,
-          imageSource: this.parameters().options.repeatButton.option.imageSource || null,
-          icon: this.parameters().options.repeatButton.option.icon || null,
+        { length: this.localParameters.options.repeatButton.numberOfOptions },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _ => ({
+          text: this.localParameters.options.repeatButton.option.text || null,
+          imageSource: this.localParameters.options.repeatButton.option.imageSource || null,
+          icon: this.localParameters.options.repeatButton.option.icon || null
         })
-      )
+      );
     } else {
-      options = this.parameters().options?.buttons || null;
+      options = this.localParameters.options?.buttons || null;
     }
 
-    if (this.parameters().imageSource) {
-      this.imagePosition = this.parameters().imagePosition ? this.parameters().imagePosition : 'LEFT';
+    if (this.localParameters.imageSource) {
+      this.imagePosition = this.localParameters.imagePosition ? this.localParameters.imagePosition : 'LEFT';
     } else {
       this.imagePosition = 'TOP';
     }
@@ -85,13 +103,13 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
   }
 
   getRowsOptions():Array<Array<RowOption>> {
-    if (!this.parameters().options) return [];
+    if (!this.localParameters.options) return [];
 
-    const numberOfRows = this.parameters().numberOfRows || 1;
+    const numberOfRows = this.localParameters.numberOfRows;
     const rows: Array<Array<RowOption>> = [];
 
     let options = this.allOptions;
-    const baseId = this.parameters().variableId ? this.parameters().variableId : 'BUTTONS';
+    const baseId = this.localParameters.variableId;
 
     // calculate number of options in each row, last row might be shorter
     const numberOfOptionsPerRow = Math.ceil(options.length / numberOfRows);
@@ -106,7 +124,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
         .map((option, i) => ({
           option,
           index: startIndex + i,
-          id: this.parameters().multiSelect ? baseId + '_' + (startIndex + i) : baseId
+          id: this.localParameters.multiSelect ? `${baseId}_${startIndex + i}` : baseId
         }));
 
       rows.push(singleRowOptionsIndexed);
@@ -114,17 +132,15 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
       options = options.slice(numberOfOptionsPerRow);
     }
 
-    console.log(rows);
-
     return rows;
   }
 
   onButtonClick(index: number): void {
     let selectedValues = this.selectedValues();
-    const numberOfOptions = this.parameters().options.buttons?.length ||
-      this.parameters().options.repeatButton?.numberOfOptions || 0;
+    const numberOfOptions = this.localParameters.options?.buttons?.length ||
+      this.localParameters.options?.repeatButton?.numberOfOptions || 0;
 
-    if (this.parameters().multiSelect) {
+    if (this.localParameters.multiSelect) {
       // toggle selected item for multiselect
       selectedValues[index] = !selectedValues[index];
       this.selectedValues.set(selectedValues);
@@ -139,11 +155,11 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
       this.selectedValues.set(selectedValues);
     }
 
-    const id = this.parameters().variableId || 'INTERACTION_BUTTONS';
+    const id = this.localParameters.variableId;
     /* stringify boolean array to string of 0 and 1 for multiselect or
        index of selected item for single select */
-    const value = this.parameters().multiSelect ?
-      this.selectedValues().map(item => item ? 1 : 0).join("") :
+    const value = this.localParameters.multiSelect ?
+      this.selectedValues().map(item => (item ? 1 : 0)).join('') :
       (this.selectedValues().findIndex(item => item) + 1).toString();
 
     const response: Response = {
