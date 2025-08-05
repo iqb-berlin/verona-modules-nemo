@@ -1,6 +1,6 @@
 <div class="write-container">
   <div class="stimulus-wrapper">
-    <img [src]="parameters().imageSource" [alt]="">
+    <img [src]="localParameters.imageSource" [alt]="">
   </div>
 
   <div class="text-wrapper">
@@ -28,7 +28,7 @@
       </div>
 
       <div class="grapheme-list">
-        @if (parameters().addUmlautKeys) {
+        @if (localParameters.addUmlautKeys) {
           @for (button of umlautListChars; track $index) {
             <button type="button"
                     class="keyboard-button"
@@ -39,7 +39,7 @@
             </button>
           }
         }
-        @for (button of graphemeList; track $index) {
+        @for (button of localParameters.keysToAdd; track $index) {
           <button type="button"
                   class="keyboard-button"
                   [attr.aria-label]="currentText.length === 0 ? capitalize(button) : button"
@@ -51,7 +51,7 @@
       </div>
     </div>
 
-    @if (parameters().addBackspaceKey) {
+    @if (localParameters.addBackspaceKey) {
       <button type="button"
               class="keyboard-button backspace-button"
               [attr.aria-label]="'Backspace'"
