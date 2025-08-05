@@ -2,6 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, provideZonelessChangeDetection } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { provideLottieOptions } from 'ngx-lottie';
+import player from 'lottie-web';
 
 import { AppComponent } from './app.component';
 import { InteractionButtonsComponent } from './components/interaction-buttons/interaction-buttons.component';
@@ -50,7 +52,10 @@ import { InteractionDropComponent } from './components/interaction-drop/interact
     ResponsesService,
     VeronaPostService,
     VeronaSubscriptionService,
-    MetadataService
+    MetadataService,
+    provideLottieOptions({
+      player: () => player
+    })
   ],
   bootstrap: [AppComponent]
 })

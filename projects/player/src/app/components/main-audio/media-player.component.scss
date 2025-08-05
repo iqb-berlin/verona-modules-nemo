@@ -1,40 +1,22 @@
-.custom-audio-button {
-  display: inline-flex;
-  justify-content: flex-start;
+.audio-button-container {
+  display: flex;
+  justify-content: center;
   align-items: flex-start;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-  width: auto;
-  height: auto;
-  overflow: visible;
+  flex-direction: row;
 
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.04);
+  .custom-audio-button {
+    width: 70px;
+    height: 70px;
+    margin-top: 20px;
+    margin-left: 20px;
+
+    img {
+      width: auto;
+      height: auto;
+    }
   }
 
-
-  .speaker-icon {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    overflow: visible;
-    width: clamp(220px, 30vw, 350px); // increased to accommodate the waves
-    height: clamp(80px, 15vw, 180px);
-    margin: 0;
-
-
-    ::ng-deep .white-circle {
-      filter: drop-shadow(5px 5px 0 rgba(0, 0, 0, 0.2));
-    }
-
-    ::ng-deep .animated-audio-button {
-      transition: all 0.3s ease-out;
-      transform-origin: left center;
-      transform: scale(1);
-    }
+  .audio-button-animation {
+    height: 100px;
   }
 }
-
-
