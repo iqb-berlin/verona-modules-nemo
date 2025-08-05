@@ -6,7 +6,6 @@ import {
   MainAudio, UnitDefinition
 } from '../models/unit-definition';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -23,24 +22,23 @@ export class UnitService {
     this.mainAudio.set(null);
     this.backgroundColor.set('#FFF');
     this.continueButton.set('ALWAYS');
-    this.interaction.set('BUTTONS');
+    this.interaction.set(null);
     this.parameters.set({});
     this.hasInteraction.set(false);
   }
 
-  setNewData(unitDefinition: UnitDefinition) {
+  setNewData(unitDefinition: unknown) {
     this.reset();
-    if (unitDefinition.mainAudio) this.mainAudio.set(unitDefinition.mainAudio);
+    const def = unitDefinition as UnitDefinition;
+    if (def.mainAudio) this.mainAudio.set(def.mainAudio);
     const pattern = /^#([a-f0-9]{3}|[a-f0-9]{6})$/i;
-    if (unitDefinition.backgroundColor && pattern.test(unitDefinition.backgroundColor)) {
-      this.backgroundColor.set(unitDefinition.backgroundColor);
+    if (def.backgroundColor && pattern.test(def.backgroundColor)) {
+      this.backgroundColor.set(def.backgroundColor);
     }
-    if (unitDefinition.continueButtonShow) {
-      this.continueButton.set(unitDefinition.continueButtonShow);
+    if (def.continueButtonShow) {
+      this.continueButton.set(def.continueButtonShow);
     }
-    if (unitDefinition.interactionType) this.interaction.set(unitDefinition.interactionType);
-    if (unitDefinition.interactionParameters) this.parameters.set(unitDefinition.interactionParameters);
-    console.log(this.mainAudio());
-    console.log(this.parameters());
+    if (def.interactionType) this.interaction.set(def.interactionType);
+    if (def.interactionParameters) this.parameters.set(def.interactionParameters);
   }
 }

@@ -1,9 +1,9 @@
 <div class="buttons-container"
      [class.flex-row]="imagePosition === 'LEFT'">
-  @if (parameters().imageSource) {
+  @if (localParameters.imageSource) {
     <div class="stimulus-wrapper"
-         [class]="parameters().imagePosition?.toLowerCase() + '-position' || ''">
-      <img [src]="parameters().imageSource" [alt]="">
+         [class]="localParameters.imagePosition?.toLowerCase() + '-position' || ''">
+      <img [src]="localParameters.imageSource" [alt]="">
     </div>
   }
 
@@ -14,12 +14,12 @@
           <stars-standard-button
             [id]="button.id"
             [value]="button.index"
-            [inputType]="parameters().multiSelect ? 'checkbox' : 'radio'"
+            [inputType]="localParameters.multiSelect ? 'checkbox' : 'radio'"
             [text]="button.option.text"
             [image]="button.option.imageSource"
             [icon]="button.option.icon"
             [selected]="selectedValues()[button.index]"
-            [type]="parameters().buttonType"
+            [type]="localParameters.buttonType"
             (buttonClick)="onButtonClick(button.index)">
           </stars-standard-button>
         }
@@ -27,9 +27,9 @@
     }
   </div>
 
-  @if (parameters().text) {
+  @if (localParameters.text) {
     <div class="text-wrapper">
-      <span>{{parameters().text}}</span>
+      <span>{{localParameters.text}}</span>
     </div>
   }
 </div>

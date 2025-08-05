@@ -25,5 +25,18 @@
       "ng"
     ],
     "maxInputLength": 10
-  }
+  },
+  "variableInfo": [
+    {
+      "variableId": "WRITE",
+      "codes": [
+        {
+          "method": "EQUALS",
+          "parameter": "Kopf",
+          "code": 1,
+          "score": 1
+        }
+      ]
+    }
+  ]
 }
