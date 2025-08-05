@@ -1,0 +1,145 @@
+@use 'colors';
+@use 'variables';
+
+.button-option {
+  position: relative;
+  cursor: pointer;
+
+  input, label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* gap size here */
+    bottom: 24px;
+    right: 24px;
+
+    background-color: colors.$white;
+    border: 8px solid colors.$white;
+    border-radius: variables.$border-radius;
+    @include variables.default-box-shadow;
+    @include variables.flex-center;
+  }
+
+  input {
+    opacity: 0;
+    z-index: 10;
+  }
+
+  &:focus,
+  &:active {
+    outline: none;
+  }
+
+  input:checked + label {
+    border-radius: variables.$border-radius;
+    border-color: colors.$highlight;
+    transition: all 0.2s ease;
+  }
+
+  &.circle-type {
+    width: 100px;
+    height: 100px;
+    margin: 0 variables.$big-gap-margin 0 0;
+    cursor: pointer;
+    border-radius: 50%;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+
+    @include variables.rounded-box-shadow;
+
+    input {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: colors.$white;
+      border: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      margin: 0;
+      padding: 0;
+    }
+
+    label {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      cursor: pointer;
+      @include variables.flex-center;
+    }
+
+    input:checked + label {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: colors.$highlight;
+      box-shadow: none;
+    }
+
+    span {
+      display: none;
+    }
+  }
+
+  &.text-button-mode {
+    input {
+      border: none;
+
+      &:checked + label {
+        background-color: colors.$highlight;
+        color: colors.$white;
+      }
+    }
+  }
+
+  // Content styles
+  img {
+    @include variables.responsive-image;
+
+    &.accept-icon {
+      @include variables.accept-icon-size;
+    }
+
+    &.reject-icon {
+      @include variables.reject-icon-size;
+    }
+  }
+
+  span {
+    font-size: variables.$big-text-font-size;
+  }
+}
+
+// Type modifiers
+.button-option {
+  &.big_square-type {
+    @include variables.big-button-size;
+  }
+
+  &.medium_square-type {
+    @include variables.medium-button-size;
+  }
+
+  &.small_square-type {
+    @include variables.small-button-size;
+  }
+
+  &.text-type {
+    @include variables.word-button-size;
+    border: none;
+
+    &.selected {
+      color: white;
+      border: none;
+      @include variables.default-box-shadow;
+    }
+
+    span {
+      font-size: variables.$small-text-font-size;
+    }
+  }
+}

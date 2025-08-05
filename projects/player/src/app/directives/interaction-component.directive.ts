@@ -1,4 +1,6 @@
-import { Directive, input, output } from '@angular/core';
+import {
+  Directive, input, output
+} from '@angular/core';
 import { Response } from '@iqbspecs/response/response.interface';
 
 @Directive()

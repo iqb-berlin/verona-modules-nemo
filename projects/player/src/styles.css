@@ -1,6 +1,16 @@
 @import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 @import 'styles/_colors.scss';
 @import "styles/_variables.scss";
+@import '@angular/cdk/overlay-prebuilt.css';
+
+@font-face {
+  font-family: 'IQBprimar';
+  src: url('./assets/fonts/IQBprimar-Regular.woff2') format('woff2'),
+        url('./assets/fonts/IQBprimar-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 @font-face {
   font-family: 'Quicksand';
@@ -48,9 +58,16 @@ html {
 
 body {
   margin: 0;
-  font-family: 'Quicksand', sans-serif;
+  font-family: 'IQBprimar', 'Quicksand', sans-serif;
+  font-weight: normal;
+  color: black;
+  font-size: 28px;
 }
 
+/* Apply font family to all elements */
+*, *::before, *::after {
+  font-family: 'IQBprimar', 'Quicksand', sans-serif;
+}
 
 player-sub-form {
   display: block;

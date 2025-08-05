@@ -136,6 +136,6 @@ export class MediaPlayerComponent implements OnInit, OnDestroy {
       id: this.playerId(),
       value: this.player().currentTime,
       status: 'VALUE_CHANGED'
-    }], this.veronaPostService);
+    }]);
   }
 }

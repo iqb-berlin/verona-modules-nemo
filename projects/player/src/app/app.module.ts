@@ -4,9 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 
 import { AppComponent } from './app.component';
-import { ButtonsComponent } from './components/interaction-buttons/buttons.component';
-import { WordSelectComponent } from './components/interaction-word-select/word-select.component';
-import { SyllabifyComponent } from './components/interaction-syllabify/syllabify.component';
+import { InteractionButtonsComponent } from './components/interaction-buttons/interaction-buttons.component';
 import { ResponsesService } from './services/responses.service';
 import { UnitService } from './services/unit.service';
 import { VeronaPostService } from './services/verona-post.service';
@@ -19,14 +17,13 @@ import { SafeResourceUrlPipe } from './pipes/safe-resource-url.pipe';
 import { LinebreaksHtmlPipe } from './pipes/linebreaks-html.pipe';
 import { ClickLayerComponent } from './components/main-audio/click-layer.component';
 import { MediaPlayerComponent } from './components/main-audio/media-player.component';
-import { StandardButtonComponent } from './components/standard-button.component';
+import { StandardButtonComponent } from './shared/standard-button/standard-button.component';
+import { InteractionWriteComponent } from './components/interaction-write/interaction-write.component';
+import { InteractionDropComponent } from './components/interaction-drop/interaction-drop.component';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    ButtonsComponent,
-    WordSelectComponent,
-    SyllabifyComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
@@ -41,8 +38,11 @@ import { StandardButtonComponent } from './components/standard-button.component'
     ClickLayerComponent,
     MediaPlayerComponent,
     MainAudioComponent,
+    InteractionButtonsComponent,
     ContinueButtonComponent,
-    StandardButtonComponent
+    StandardButtonComponent,
+    InteractionDropComponent,
+    InteractionWriteComponent
   ],
   providers: [
     provideZonelessChangeDetection(),

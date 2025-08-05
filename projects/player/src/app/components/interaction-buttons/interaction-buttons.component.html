@@ -1,0 +1,35 @@
+<div class="buttons-container"
+     [class.flex-row]="imagePosition === 'LEFT'">
+  @if (localParameters.imageSource) {
+    <div class="stimulus-wrapper"
+         [class]="localParameters.imagePosition?.toLowerCase() + '-position' || ''">
+      <img [src]="localParameters.imageSource" [alt]="">
+    </div>
+  }
+
+  <div class="buttons-wrapper">
+    @for (row of optionRows; track $index) {
+      <div class="row">
+        @for (button of row; track $index) {
+          <stars-standard-button
+            [id]="button.id"
+            [value]="button.index"
+            [inputType]="localParameters.multiSelect ? 'checkbox' : 'radio'"
+            [text]="button.option.text"
+            [image]="button.option.imageSource"
+            [icon]="button.option.icon"
+            [selected]="selectedValues()[button.index]"
+            [type]="localParameters.buttonType"
+            (buttonClick)="onButtonClick(button.index)">
+          </stars-standard-button>
+        }
+      </div>
+    }
+  </div>
+
+  @if (localParameters.text) {
+    <div class="text-wrapper">
+      <span>{{localParameters.text}}</span>
+    </div>
+  }
+</div>

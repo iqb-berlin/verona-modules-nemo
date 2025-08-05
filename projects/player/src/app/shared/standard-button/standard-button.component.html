@@ -1,0 +1,29 @@
+<div class="button-option input-wrapper"
+     [class]="type().toLowerCase() +'-type'"
+     [class.text-button-mode]="textMode()">
+  <input
+    [type]="inputType()"
+    [name]="id()"
+    [id]="id() + '_' + value()"
+    [value]="value()"
+    (click)="onClick()"
+    [checked]="selected()"
+  />
+  <label [for]="id() + '_' + value()">
+    @if (image()) {
+      <img [src]="image()" [alt]="">
+    } @else if (icon()) {
+      @if (icon() === 'CHECK_GREEN') {
+        <img src="assets/images/accept-icon.svg" alt="" class="accept-icon">
+      } @else if (icon() === 'CLOSE_RED') {
+        <img src="assets/images/reject-icon.svg" alt="" class="reject-icon">
+      } @else if (icon() === 'CLAP_HANDS') {
+        <img src="assets/images/reject-icon.svg" alt="" class="reject-icon">
+      }
+    } @else if (text()) {
+      <span>
+        {{ text() }}
+      </span>
+    }
+  </label>
+</div>

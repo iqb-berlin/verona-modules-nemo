@@ -1,42 +1,44 @@
 import { Injectable, signal } from '@angular/core';
-import { ContinueButtonEnum, InteractionEnum } from '../models/unit-definition';
+
+import {
+  ContinueButtonEnum,
+  InteractionEnum,
+  MainAudio, UnitDefinition
+} from '../models/unit-definition';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class UnitService {
-  mainAudio = signal('');
-  mainText = signal('');
+  mainAudio = signal<MainAudio>(null);
   backgroundColor = signal('#FFF');
-  continueButton = signal<ContinueButtonEnum>('hide');
-  interaction = signal<InteractionEnum>('buttons');
+  continueButton = signal<ContinueButtonEnum>('ALWAYS');
+  interaction = signal<InteractionEnum>('BUTTONS');
   parameters = signal<unknown>({});
+  hasInteraction = signal(false);
 
   reset() {
-    this.mainAudio.set('');
-    this.mainText.set('');
+    this.mainAudio.set(null);
     this.backgroundColor.set('#FFF');
-    this.continueButton.set('hide');
-    this.interaction.set('buttons');
+    this.continueButton.set('ALWAYS');
+    this.interaction.set(null);
     this.parameters.set({});
+    this.hasInteraction.set(false);
   }
 
   setNewData(unitDefinition: unknown) {
     this.reset();
-    if (unitDefinition['main-audio']) this.mainAudio.set(unitDefinition['main-audio']);
-    if (unitDefinition['main-text']) this.mainText.set(unitDefinition['main-text']);
+    const def = unitDefinition as UnitDefinition;
+    if (def.mainAudio) this.mainAudio.set(def.mainAudio);
     const pattern = /^#([a-f0-9]{3}|[a-f0-9]{6})$/i;
-    if (unitDefinition['background-color'] && pattern.test(unitDefinition['background-color'])) {
-      this.backgroundColor.set(unitDefinition['background-color']);
+    if (def.backgroundColor && pattern.test(def.backgroundColor)) {
+      this.backgroundColor.set(def.backgroundColor);
     }
-    if (unitDefinition['continue-button']) {
-      this.continueButton.set(unitDefinition['continue-button']);
-    } else {
-      this.continueButton.set('show');
+    if (def.continueButtonShow) {
+      this.continueButton.set(def.continueButtonShow);
     }
-    if (unitDefinition['interaction']) this.interaction.set(unitDefinition['interaction']);
-    if (unitDefinition['parameters']) this.parameters.set(unitDefinition['parameters']);
-    console.log(this.parameters());
+    if (def.interactionType) this.interaction.set(def.interactionType);
+    if (def.interactionParameters) this.parameters.set(def.interactionParameters);
   }
 }

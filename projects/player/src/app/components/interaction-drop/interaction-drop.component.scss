@@ -1,0 +1,45 @@
+@use 'colors';
+@use 'variables';
+
+.drop-select-container {
+  @include variables.flex-center;
+  flex-direction: column;
+  padding-top: 7%;
+
+  .stimulus-wrapper, .interaction-wrapper {
+    display: block;
+    width: 100%;
+  }
+
+  .stimulus-wrapper {
+    height: 70%;
+
+    img {
+      display: block;
+      width: auto;
+      height: 80%;
+      padding-top: 40px;
+      margin: 0 auto;
+    }
+  }
+
+  .interaction-wrapper {
+    height: 30%;
+  }
+}
+
+.buttons-container {
+  @include variables.flex-center;
+  flex-direction: row;
+  width: 100%;
+  /* align center to stimulus pic with half of gap/box-shadow */
+  padding-left: 12px;
+}
+
+.animate-wrapper {
+  transition: all 1s ease-in-out;
+
+  &.no-transition {
+    transition: none;
+  }
+}

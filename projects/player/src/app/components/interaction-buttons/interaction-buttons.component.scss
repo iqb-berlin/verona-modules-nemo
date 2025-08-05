@@ -1,0 +1,69 @@
+@use 'colors';
+@use 'variables';
+
+.buttons-container {
+  @include variables.flex-center;
+  flex-direction: column;
+  width: 80%;
+  height: 80%;
+
+  .stimulus-wrapper {
+    @include variables.flex-center;
+    margin-bottom: variables.$big-gap-margin;
+
+    img {
+      @include variables.responsive-image;
+    }
+  }
+
+  .left-position {
+    justify-content: end;
+  }
+
+  .top-position {
+    width: 250px;
+    height: 250px;
+  }
+
+  .text-wrapper {
+    width: 100%;
+    height: 10%;
+    display: flex;
+    margin-top: variables.$small-gap-margin;
+
+    span {
+      margin: 0 auto;
+    }
+  }
+
+  .buttons-wrapper {
+    @include variables.flex-center;
+    flex-direction: column;
+
+    .row {
+      @include variables.flex-center;
+      flex-direction: row;
+      width: 100%;
+    }
+  }
+
+
+  &.flex-row {
+    flex-direction: row;
+
+    .stimulus-wrapper {
+      width: 300px;
+      height: 300px;
+      margin: 0;
+
+      img {
+        @include variables.responsive-image;
+      }
+    }
+
+    .buttons-wrapper {
+      width: 50%;
+      margin-top: variables.$small-gap-margin;
+    }
+  }
+}
