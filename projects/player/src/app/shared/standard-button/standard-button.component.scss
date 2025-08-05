@@ -99,14 +99,6 @@
   // Content styles
   img {
     @include variables.responsive-image;
-
-    &.accept-icon {
-      @include variables.accept-icon-size;
-    }
-
-    &.reject-icon {
-      @include variables.reject-icon-size;
-    }
   }
 
   span {
