@@ -5,7 +5,7 @@ $small-gap-margin: 24px;
 $big-gap-margin: 32px;
 $img-border: 6px;
 $border-radius: 20px;
-$font-family: 'Quicksand', sans-serif;
+$font-family: 'IQBprimar', 'Quicksand', sans-serif;
 $font-weight-600: 600;
 $big-text-font-size: 112px;
 $small-text-font-size: 32px;
@@ -20,9 +20,8 @@ $small-text-font-size: 32px;
 }
 
 @mixin text {
-  /* font-family: $font-family;
+  font-family: $font-family;
   font-weight: $font-weight-600;
-  color: colors.$black; */
 }
 
 @mixin flex-center {
