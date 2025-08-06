@@ -94,8 +94,7 @@ export class MainAudioComponent {
   }
 
   canPlay(): boolean {
-    return true;
-    //return this.maxPlays() === 0 || this.playCount < this.maxPlays();
+    return this.maxPlays() === 0 || this.playCount < this.maxPlays();
   }
 
   layerClicked() {

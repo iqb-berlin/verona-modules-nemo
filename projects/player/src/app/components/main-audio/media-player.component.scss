@@ -18,5 +18,14 @@
 
   .audio-button-animation {
     height: 100px;
+    opacity: 0;
+    margin-top: 5px;
+    transition: opacity ease-in-out 0.5s;
+    transition-delay: 0.5s;
+
+    &.playing {
+      opacity: 1;
+      transition-delay: 0s;
+    }
   }
 }
