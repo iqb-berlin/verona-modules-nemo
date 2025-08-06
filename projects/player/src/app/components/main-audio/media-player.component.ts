@@ -14,7 +14,7 @@ import { ResponsesService } from '../../services/responses.service';
 
 @Component({
   selector: 'stars-media-player',
-  templateUrl: 'media-player.component.hmtl',
+  templateUrl: 'media-player.component.html',
   imports: [LottieComponent],
   styleUrls: ['./media-player.component.scss']
 })
