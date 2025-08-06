@@ -1,5 +1,5 @@
 import {
-  Component, effect, input, OnDestroy, OnInit, output
+  Component, effect, input, OnDestroy, OnInit, output, signal
 } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import {
@@ -25,7 +25,7 @@ export class MediaPlayerComponent implements OnInit, OnDestroy {
   disabled = input<boolean>(false);
 
   hadInteraction = false;
-  movingButton = false;
+  movingButton = signal(false);
   elementValueChanged = output();
   currentTime = 0;
   private ngUnsubscribe = new Subject<void>();
@@ -55,7 +55,7 @@ export class MediaPlayerComponent implements OnInit, OnDestroy {
       if (this.isPlaying()) {
         this.animationItem?.play();
         this.hadInteraction = true;
-        this.movingButton = false;
+        this.movingButton.set(false);
       } else {
         this.animationItem?.pause();
       }
@@ -73,9 +73,10 @@ export class MediaPlayerComponent implements OnInit, OnDestroy {
       )
       .subscribe(() => this.sendPlaybackTimeChanged());
 
+    // wait for 10 sec before start the moving button animation
     setTimeout(() => {
-      if (!this.hadInteraction) this.movingButton = true;
-    }, 5000);
+      if (!this.hadInteraction) this.movingButton.set(true);
+    }, 10000);
   }
 
   ngOnDestroy() {
