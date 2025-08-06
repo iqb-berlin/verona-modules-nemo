@@ -32,7 +32,7 @@ export class MediaPlayerComponent implements OnInit, OnDestroy {
   animationItem: AnimationItem = null;
 
   private staticSvg = `
-   <svg width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+   <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
         <rect class="white-circle" x="0" y="0" width="70" height="70" rx="70" fill="white"/>
         <g transform="translate(-3, -3)">
             <path d="M27.6744 25.0836C28.301 24.2986 28.3101 23.1534 27.601 22.4421C26.8888 21.7278 25.7247 21.723 25.0803 22.4989C22.1911 25.9773 20.4541 30.4532 20.4541 35.3399C20.4541 40.2266 22.1911 44.7024 25.0803 48.1808C25.7247 48.9567 26.8888 48.9518 27.6009 48.2376C28.3101 47.5263 28.3009 46.381 27.6743 45.5961C25.4301 42.7848 24.0915 39.2193 24.0915 35.34C24.0915 31.4606 25.4303 27.8949 27.6744 25.0836Z" fill="#101C61"/>
