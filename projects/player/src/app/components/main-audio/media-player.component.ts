@@ -16,7 +16,7 @@ import { ResponsesService } from '../../services/responses.service';
   selector: 'stars-media-player',
   template: `
     <div class="audio-button-container">
-      <div class="custom-audio-button" (click)="play()">
+      <div class="custom-audio-button" (click)="play()" [class.moving-button]="movingButton">
         <div [innerHTML]="audioIconSvg" class="speaker-icon"></div>
       </div>
       <div class="audio-button-animation" [class.playing]="isPlaying()">
@@ -34,6 +34,9 @@ export class MediaPlayerComponent implements OnInit, OnDestroy {
   playerId = input<string>();
   isPlaying = input<boolean>(false);
   disabled = input<boolean>(false);
+
+  hadInteraction = false;
+  movingButton = false;
   elementValueChanged = output();
   currentTime = 0;
   private ngUnsubscribe = new Subject<void>();
@@ -62,6 +65,8 @@ export class MediaPlayerComponent implements OnInit, OnDestroy {
     effect(() => {
       if (this.isPlaying()) {
         this.animationItem?.play();
+        this.hadInteraction = true;
+        this.movingButton = false;
       } else {
         this.animationItem?.pause();
       }
@@ -78,6 +83,10 @@ export class MediaPlayerComponent implements OnInit, OnDestroy {
         throttleTime(100)
       )
       .subscribe(() => this.sendPlaybackTimeChanged());
+
+    setTimeout(() => {
+      if (!this.hadInteraction) this.movingButton = true;
+    }, 5000);
   }
 
   ngOnDestroy() {

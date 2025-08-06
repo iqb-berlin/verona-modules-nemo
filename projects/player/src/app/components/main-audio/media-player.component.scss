@@ -10,6 +10,33 @@
     margin-top: 20px;
     margin-left: 20px;
 
+    &.moving-button {
+      animation: moving 10s infinite;
+    }
+
+    @keyframes moving {
+      0% {
+        transform: scale(1.15);
+      }
+
+      10% {
+        transform: scale(0.95);
+      }
+
+      20% {
+        transform: scale(1.15);
+      }
+
+      30% {
+        transform: scale(1);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+
+    }
+
     img {
       width: auto;
       height: auto;
