@@ -9,36 +9,13 @@ import { MainAudio } from '../../models/unit-definition';
 
 @Component({
   selector: 'stars-main-audio',
-  template: `
-    <div class="audio-instruction-container">
-      @if (showLayer) {
-        <stars-click-layer (click)="layerClicked()"></stars-click-layer>
-      }
-      <div class="audio-button-wrapper">
-        <stars-media-player [player]="player"
-                            [playerId]="playerId()"
-                            [isPlaying]="isPlaying"
-                            [disabled]="canPlay()"
-                            (elementValueChanged)="valueChanged($event)">
-          <audio #player
-                 [src]="localAudio.audioSource | safeResourceUrl"
-                 (play)="onPlay()"
-                 (pause)="onPause()"
-                 (ended)="onPause()">
-          </audio>
-          <label>
-            Audio
-          </label>
-        </stars-media-player>
-      </div>
-    </div>
-  `,
+  templateUrl: 'main-audio.component.html',
   imports: [
     MediaPlayerComponent,
     ClickLayerComponent,
     SafeResourceUrlPipe
   ],
-  styleUrl: 'main-audio.component.css'
+  styleUrl: 'main-audio.component.scss'
 })
 
 export class MainAudioComponent {

@@ -1,0 +1,10 @@
+<div class="audio-button-container">
+  <div class="custom-audio-button" (click)="play()" [class.moving-button]="movingButton">
+    <div [innerHTML]="audioIconSvg" class="speaker-icon"></div>
+  </div>
+  <div class="audio-button-animation" [class.playing]="isPlaying()">
+    <ng-lottie [options]="lottieOptions"
+               (animationCreated)="animationCreated($event)">
+    </ng-lottie>
+  </div>
+</div>
