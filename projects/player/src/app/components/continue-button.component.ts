@@ -29,7 +29,6 @@ import { Component, EventEmitter, Output } from '@angular/core';
       display: inline-block;
       filter: drop-shadow(5px 5px 0 rgba(0, 0, 0, 0.2));
       vertical-align: middle;
-      margin: 5px;
       transition: filter 0.2s ease, transform 0.2s ease;
     }
 

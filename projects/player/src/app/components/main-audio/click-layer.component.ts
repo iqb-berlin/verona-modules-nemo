@@ -4,7 +4,6 @@ import {
 
 @Component({
   selector: 'stars-click-layer',
-  standalone: true,
   template: `
     <div #starsClickLayer class="layer"></div>
   `,
@@ -28,16 +27,15 @@ export class ClickLayerComponent implements OnInit {
 
   ngOnInit() {
     if (this.layerElement) {
-      this.layerElement.addEventListener('click', this.handleClick, {capture: true});
-      this.layerElement.addEventListener('touchstart', this.handleClick, {capture: true});
-      this.layerElement.addEventListener('touchend', this.handleClick, {capture: true});
-      this.layerElement.addEventListener('pointerdown', this.handleClick, {capture: true});
-      this.layerElement.addEventListener('mousedown', this.handleClick, {capture: true});
+      this.layerElement.addEventListener('click', this.handleClick, { capture: true });
+      this.layerElement.addEventListener('touchstart', this.handleClick, { capture: true });
+      this.layerElement.addEventListener('touchend', this.handleClick, { capture: true });
+      this.layerElement.addEventListener('pointerdown', this.handleClick, { capture: true });
+      this.layerElement.addEventListener('mousedown', this.handleClick, { capture: true });
     }
   }
 
   handleClick() {
     this.click.emit();
-    console.log('layer clicked');
   }
 }
