@@ -3,7 +3,7 @@
     <stars-standalone-menu></stars-standalone-menu>
   }
   @if (unitService.mainAudio()?.audioSource) {
-    <stars-main-audio [audioSource]="unitService.mainAudio().audioSource" playerId="mainAudio"></stars-main-audio>
+    <stars-main-audio [mainAudio]="unitService.mainAudio()" playerId="mainAudio"></stars-main-audio>
   }
   @if (unitService.continueButton() === "ALWAYS" ||
     unitService.continueButton() === "ON_FULL_CREDIT" && responsesService.maxScoreReached() ||
