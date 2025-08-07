@@ -13,7 +13,7 @@ export interface UnitDefinition {
   continueButtonShow?: ContinueButtonEnum;
   mainAudio?: MainAudio;
   interactionType: InteractionEnum;
-  interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams;
+  interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams | InteractionImageOnlyParams;
   variableInfo: VariableInfo[] | undefined;
 }
 
@@ -65,6 +65,10 @@ export interface InteractionWriteParams {
   addUmlautKeys: boolean;
   keysToAdd: string[];
   maxInputLength: number;
+}
+
+export interface InteractionImageOnlyParams {
+  imageSource: string;
 }
 
 export interface MainAudio {

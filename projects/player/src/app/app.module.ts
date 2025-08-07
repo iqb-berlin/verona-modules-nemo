@@ -22,6 +22,7 @@ import { MediaPlayerComponent } from './components/main-audio/media-player.compo
 import { StandardButtonComponent } from './shared/standard-button/standard-button.component';
 import { InteractionWriteComponent } from './components/interaction-write/interaction-write.component';
 import { InteractionDropComponent } from './components/interaction-drop/interaction-drop.component';
+import { InteractionImageOnlyComponent } from './components/interaction-image-only/interaction-image-only.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { InteractionDropComponent } from './components/interaction-drop/interact
     ContinueButtonComponent,
     StandardButtonComponent,
     InteractionDropComponent,
-    InteractionWriteComponent
+    InteractionWriteComponent,
+    InteractionImageOnlyComponent
   ],
   providers: [
     provideZonelessChangeDetection(),
