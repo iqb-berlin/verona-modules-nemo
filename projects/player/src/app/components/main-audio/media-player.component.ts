@@ -1,7 +1,6 @@
 import {
   Component, effect, input, OnDestroy, OnInit, output, signal
 } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 import {
   fromEvent, Subject, tap, throttleTime
 } from 'rxjs';
@@ -9,7 +8,6 @@ import { takeUntil } from 'rxjs/operators';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 import { AnimationItem } from 'lottie-web';
 
-import { VeronaPostService } from '../../services/verona-post.service';
 import { ResponsesService } from '../../services/responses.service';
 
 @Component({
@@ -37,8 +35,6 @@ export class MediaPlayerComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private sanitizer: DomSanitizer,
-    private veronaPostService: VeronaPostService,
     private responsesService: ResponsesService
   ) {
     effect(() => {
