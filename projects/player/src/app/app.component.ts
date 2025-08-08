@@ -17,6 +17,9 @@ import { VopStartCommand } from './models/verona';
 export class AppComponent implements OnInit {
   isStandalone: boolean;
   private ngUnsubscribe = new Subject<void>();
+  hasRibbonBars(): boolean {
+    return this.unitService.ribbonBars();
+  }
 
   constructor(
     public unitService: UnitService,

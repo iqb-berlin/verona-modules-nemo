@@ -1,3 +1,5 @@
+@use 'colors';
+
 .unit-definition-menu{
   position: fixed;
   z-index: 2000;
@@ -18,3 +20,33 @@
   align-items: center;
   overflow: hidden;
 }
+
+.interaction.ribbon-bars {
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: repeating-linear-gradient(
+        -45deg,
+        colors.$white 0px,
+        colors.$white 8px,
+        transparent 8px,
+        transparent 16px
+    );
+
+    z-index: 1;
+  }
+
+  &::before {
+    top: 0;
+  }
+
+  &::after {
+    bottom: 0;
+  }
+}
+

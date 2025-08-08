@@ -14,6 +14,7 @@
   @if (unitService.interaction() === 'BUTTONS') {
     <stars-interaction-buttons class="interaction"
       [style.background-color]="unitService.backgroundColor()"
+      [class.ribbon-bars]="hasRibbonBars()"
       [parameters]="unitService.parameters()"
       (responses)="responsesService.newResponses($event)"></stars-interaction-buttons>
   } @else if (unitService.interaction() === 'DROP') {
