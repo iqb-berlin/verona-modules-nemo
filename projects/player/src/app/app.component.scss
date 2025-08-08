@@ -1,12 +1,5 @@
 @use 'colors';
 
-.unit-definition-menu{
-  position: fixed;
-  z-index: 2000;
-  right: 0;
-  top:0;
-}
-
 .interaction {
   position: fixed;
   top: 0;
@@ -22,7 +15,7 @@
 }
 
 // White stripes on training mode
-.interaction.ribbon-bars {
+.ribbon-bars .interaction {
 
   &::before,
   &::after {
@@ -52,7 +45,7 @@
 }
 
 // Light blue stripes for white backgrounds on training mode
-.interaction.ribbon-bars.white-background {
+.ribbon-bars.white-background .interaction{
 
   &::before,
   &::after {
