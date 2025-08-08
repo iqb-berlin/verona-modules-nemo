@@ -32,7 +32,13 @@
       [class.white-background]="isWhiteBackground() && hasRibbonBars()"
       [parameters]="unitService.parameters()"
       (responses)="responsesService.newResponses($event)"></stars-interaction-write>
-  } @else {
+  } @else if (unitService.interaction() === 'IMAGE_ONLY') {
+    <stars-interaction-image-only class="interaction"
+      [style.background-color]="unitService.backgroundColor()"
+      [parameters]="unitService.parameters()"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-image-only>
+  }
+  @else {
     <div>Unbekannter Interaktionstyp "{{unitService.interaction}}"</div>
   }
 </div>
