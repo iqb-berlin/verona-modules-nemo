@@ -1,6 +1,6 @@
 {
   "name": "verona-modules-stars",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -9,7 +9,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "validate-data": "validate-json projects/player/test/unitdata/imageOnly stars-unit-definition 0.11",
+    "validate-data": "validate-json projects/player/test/unitdata/imageOnly stars-unit-definition 0.12",
     "build": "ng build --configuration production --output-hashing=none",
     "postbuild": "node projects/tools/distpacker.js dist/stars-player/browser index_packed.html"
   },

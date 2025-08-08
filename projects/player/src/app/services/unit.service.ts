@@ -17,6 +17,7 @@ export class UnitService {
   interaction = signal<InteractionEnum>('BUTTONS');
   parameters = signal<unknown>({});
   hasInteraction = signal(false);
+  ribbonBars = signal<boolean>(false);
 
   reset() {
     this.mainAudio.set(null);
@@ -25,6 +26,7 @@ export class UnitService {
     this.interaction.set(null);
     this.parameters.set({});
     this.hasInteraction.set(false);
+    this.ribbonBars.set(false);
   }
 
   setNewData(unitDefinition: unknown) {
@@ -40,5 +42,6 @@ export class UnitService {
     }
     if (def.interactionType) this.interaction.set(def.interactionType);
     if (def.interactionParameters) this.parameters.set(def.interactionParameters);
+    if (def.ribbonBars) this.ribbonBars.set(def.ribbonBars);
   }
 }

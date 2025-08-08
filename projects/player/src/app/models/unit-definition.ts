@@ -10,6 +10,7 @@ export interface UnitDefinition {
   id: string;
   version?: string;
   backgroundColor?: string;
+  ribbonBars?: boolean;
   continueButtonShow?: ContinueButtonEnum;
   mainAudio?: MainAudio;
   interactionType: InteractionEnum;

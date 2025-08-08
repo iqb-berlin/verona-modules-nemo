@@ -17,6 +17,16 @@ import { VopStartCommand } from './models/verona';
 export class AppComponent implements OnInit {
   isStandalone: boolean;
   private ngUnsubscribe = new Subject<void>();
+  hasRibbonBars(): boolean {
+    return this.unitService.ribbonBars();
+  }
+
+  isWhiteBackground(): boolean {
+    const bgColor = this.unitService.backgroundColor().toLowerCase();
+    // Check for white color variations
+    return bgColor === '#ffffff' || bgColor === '#fff' ||
+      bgColor === '#eeeeee' || bgColor === '#eee';
+  }
 
   constructor(
     public unitService: UnitService,
