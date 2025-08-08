@@ -35,6 +35,8 @@
   } @else if (unitService.interaction() === 'IMAGE_ONLY') {
     <stars-interaction-image-only class="interaction"
       [style.background-color]="unitService.backgroundColor()"
+      [class.ribbon-bars]="hasRibbonBars()"
+      [class.white-background]="isWhiteBackground() && hasRibbonBars()"
       [parameters]="unitService.parameters()"
       (responses)="responsesService.newResponses($event)"></stars-interaction-image-only>
   }
