@@ -76,6 +76,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   private createOptions() {
     if (!this.localParameters.options) return [];
 
+    // eslint-disable-next-line
     let options:any[];
 
     if (this.localParameters.options?.repeatButton) {
@@ -83,9 +84,9 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         { length: this.localParameters.options.repeatButton.numberOfOptions },
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _ => ({
-          text: this.localParameters.options.repeatButton.option.text || null,
-          imageSource: this.localParameters.options.repeatButton.option.imageSource || null,
-          icon: this.localParameters.options.repeatButton.option.icon || null
+          text: this.localParameters.options.repeatButton.option?.text || null,
+          imageSource: this.localParameters.options.repeatButton.option?.imageSource || null,
+          icon: this.localParameters.options.repeatButton.option?.icon || null
         })
       );
     } else {
