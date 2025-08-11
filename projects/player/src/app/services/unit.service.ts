@@ -12,7 +12,7 @@ import {
 
 export class UnitService {
   mainAudio = signal<MainAudio>(null);
-  backgroundColor = signal('#FFF');
+  backgroundColor = signal('#EEE');
   continueButton = signal<ContinueButtonEnum>('ALWAYS');
   interaction = signal<InteractionEnum>('BUTTONS');
   parameters = signal<unknown>({});
@@ -21,7 +21,7 @@ export class UnitService {
 
   reset() {
     this.mainAudio.set(null);
-    this.backgroundColor.set('#FFF');
+    this.backgroundColor.set('#EEE');
     this.continueButton.set('ALWAYS');
     this.interaction.set(null);
     this.parameters.set({});
