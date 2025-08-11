@@ -1,5 +1,5 @@
 import { Component, effect } from '@angular/core';
-import { Response } from '@iqbspecs/response/response.interface';
+import { Response, ResponseStatusType } from '@iqbspecs/response/response.interface';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { InteractionWriteParams } from '../../models/unit-definition';
@@ -16,8 +16,6 @@ export class InteractionWriteComponent extends InteractionComponentDirective {
   currentText: string = '';
   characterList = [...'abcdefghijklmnopqrstuvwxyz'];
   umlautListChars = [...'äöü'];
-  // TODO: delete? no need of it, because missing default in spec
-  graphemeList = ['ch', 'sch', 'ng', 'ei', 'au', 'eu', 'le', 'pf', 'chs'];
 
   constructor() {
     super();
@@ -38,6 +36,8 @@ export class InteractionWriteComponent extends InteractionComponentDirective {
       }
 
       this.currentText = '';
+
+      this.valueChanged(true);
     });
   }
 
@@ -70,12 +70,13 @@ export class InteractionWriteComponent extends InteractionComponentDirective {
     }
   }
 
-  private valueChanged(): void {
+  private valueChanged(displayed = false) {
     const id = this.localParameters.variableId;
+    const status: ResponseStatusType = displayed ? 'DISPLAYED' : 'VALUE_CHANGED';
 
     const response: Response = {
       id: id,
-      status: 'VALUE_CHANGED',
+      status: status,
       value: this.currentText
     };
 

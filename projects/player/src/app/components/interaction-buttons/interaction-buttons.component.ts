@@ -1,7 +1,7 @@
 import {
-  Component, signal, effect
+  Component, signal, effect, OnInit, OnChanges
 } from '@angular/core';
-import { Response } from '@iqbspecs/response/response.interface';
+import { Response, ResponseStatusType } from '@iqbspecs/response/response.interface';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import {
@@ -19,7 +19,7 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
   styleUrls: ['./interaction-buttons.component.scss']
 })
 
-export class InteractionButtonsComponent extends InteractionComponentDirective {
+export class InteractionButtonsComponent extends InteractionComponentDirective implements OnInit, OnChanges {
   localParameters: InteractionButtonParams;
   // array of booleans for each option
   selectedValues = signal<boolean[]>([]);
@@ -59,6 +59,14 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       this.allOptions = this.createOptions();
       this.optionRows = this.getRowsOptions();
     });
+  }
+
+  ngOnChanges() {
+    this.valueChanged(true);
+  }
+
+  ngOnInit() {
+    this.valueChanged(true);
   }
 
   private resetSelection(): void {
@@ -154,16 +162,23 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       this.selectedValues.set(selectedValues);
     }
 
+    this.valueChanged();
+  }
+
+  private valueChanged(displayed = false) {
     const id = this.localParameters.variableId;
     /* stringify boolean array to string of 0 and 1 for multiselect or
        index of selected item for single select */
     const value = this.localParameters.multiSelect ?
       this.selectedValues().map(item => (item ? 1 : 0)).join('') :
       (this.selectedValues().findIndex(item => item) + 1).toString();
+    const status: ResponseStatusType = displayed ? 'DISPLAYED' : 'VALUE_CHANGED';
+
+    console.log(displayed, value);
 
     const response: Response = {
       id: id,
-      status: 'VALUE_CHANGED',
+      status: status,
       value: value
     };
 

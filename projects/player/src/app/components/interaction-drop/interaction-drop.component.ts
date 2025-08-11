@@ -1,7 +1,7 @@
 import {
   Component, signal, effect
 } from '@angular/core';
-import { Response } from '@iqbspecs/response/response.interface';
+import { Response, ResponseStatusType } from '@iqbspecs/response/response.interface';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { InteractionDropParams } from '../../models/unit-definition';
@@ -18,7 +18,7 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
 
 export class InteractionDropComponent extends InteractionComponentDirective {
   localParameters: InteractionDropParams;
-  selectedValue = signal<number>(null);
+  selectedValue = signal<number>(-1);
   // create a signal for handling disabling transition on change
   disabledTransition = signal<boolean>(false);
 
@@ -38,13 +38,15 @@ export class InteractionDropComponent extends InteractionComponentDirective {
       }
 
       this.resetSelection();
+
+      this.valueChanged(true);
     });
   }
 
   private resetSelection(): void {
     // before resetting, disable transition to move back instantly
     this.disabledTransition.set(true);
-    this.selectedValue.set(null);
+    this.selectedValue.set(-1);
     setTimeout(() => {
       this.disabledTransition.set(false);
     }, 500);
@@ -62,15 +64,19 @@ export class InteractionDropComponent extends InteractionComponentDirective {
   onButtonClick(index: number): void {
     /* Toggle selection: if already selected, deselect it
     (this moves the element back to the original position) */
-    const newSelectedValue = this.selectedValue() === index ? null : index;
-    this.selectedValue.set(newSelectedValue);
+    this.selectedValue.set(this.selectedValue() === index ? -1 : index);
 
+    this.valueChanged();
+  }
+
+  private valueChanged(displayed = false) {
     const id = this.localParameters.variableId;
+    const status: ResponseStatusType = displayed ? 'DISPLAYED' : 'VALUE_CHANGED';
 
     const response: Response = {
       id: id,
-      status: 'VALUE_CHANGED',
-      value: newSelectedValue + 1
+      status: status,
+      value: this.selectedValue() + 1
     };
 
     this.responses.emit([response]);
