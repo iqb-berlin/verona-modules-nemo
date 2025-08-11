@@ -53,7 +53,7 @@ export interface InteractionButtonParams {
 
 export interface InteractionDropParams {
   variableId: string;
-  options: InteractionOptions;
+  options: SelectionOption[];
   imageSource: string;
   text: string;
 }
