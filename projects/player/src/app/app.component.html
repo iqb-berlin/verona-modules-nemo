@@ -6,8 +6,10 @@
     <stars-main-audio [mainAudio]="unitService.mainAudio()" playerId="mainAudio"></stars-main-audio>
   }
   @if (unitService.continueButton() === "ALWAYS" ||
-    unitService.continueButton() === "ON_FULL_CREDIT" && responsesService.maxScoreReached() ||
-    unitService.continueButton() === "ON_INTERACTION" && unitService.hasInteraction()) {
+      (unitService.continueButton() === "ON_MAIN_AUDIO_COMPLETE" && responsesService.mainAudioComplete()) ||
+      (unitService.continueButton() === "ON_ANY_RESPONSE" && responsesService.responseProgress() === "some") ||
+      (unitService.continueButton() === "ON_RESPONSES_COMPLETE" && responsesService.responseProgress() === "complete")
+    ) {
     <stars-continue-button
       (navigate)="veronaPostService.sendVopUnitNavigationRequestedNotification('next')"></stars-continue-button>
   }
