@@ -41,6 +41,7 @@ export class AppComponent implements OnInit {
       .subscribe((message: VopStartCommand) => {
         const unitDefinition = JSON.parse(message.unitDefinition);
         this.unitService.setNewData(unitDefinition);
+        this.veronaPostService.sessionID = message.sessionId;
         this.responsesService.setNewData(unitDefinition);
       });
     this.isStandalone = window === window.parent;
