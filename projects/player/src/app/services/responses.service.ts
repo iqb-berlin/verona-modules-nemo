@@ -13,11 +13,13 @@ import { Code, VariableInfo } from '../models/responses';
 export class ResponsesService {
   firstInteractionDone = signal(false);
   // todo: delete firstResponseGiven; replace usages by responsesGiven
-  firstResponseGiven = signal(false);
+  // firstResponseGiven = signal(false);
   // todo: delete maxScoreReached; replace usages by responsesGiven
-  maxScoreReached = signal(false);
+  // maxScoreReached = signal(false);
   unitDefinitionProblem = signal('');
   responseProgress = signal<Progress>('none');
+  mainAudioComplete = signal(false);
+
   allResponses: Response[] = [];
   variableInfo: VariableInfo[] = [];
   veronaPostService = inject(VeronaPostService);
@@ -26,9 +28,11 @@ export class ResponsesService {
 
   setNewData(unitDefinition: UnitDefinition = null) {
     this.firstInteractionDone.set(false);
-    this.firstResponseGiven.set(false);
-    this.maxScoreReached.set(false);
+    // this.firstResponseGiven.set(false);
+    // this.maxScoreReached.set(false);
     this.unitDefinitionProblem.set('');
+    this.mainAudioComplete.set(false);
+    this.responseProgress.set('none');
     this.variableInfo = [];
     this.allResponses = [];
     if (unitDefinition && unitDefinition.variableInfo && unitDefinition.variableInfo.length > 0) {
@@ -76,14 +80,17 @@ export class ResponsesService {
       } else {
         this.allResponses.push(codedResponse);
       }
+      if (response.id === 'mainAudio') {
+        this.mainAudioComplete.set(response.value as number >= 1);
+      }
     });
     const responsesAsString = JSON.stringify(this.allResponses);
     if (responsesAsString !== this.lastResponsesString) {
       this.lastResponsesString = responsesAsString;
       const getResponsesCompleteOutput = this.getResponsesComplete();
       this.responseProgress.set(getResponsesCompleteOutput);
-      this.firstResponseGiven.set(getResponsesCompleteOutput !== 'none');
-      this.maxScoreReached.set(getResponsesCompleteOutput === 'complete');
+      // this.firstResponseGiven.set(this.responseProgress() !== 'none');
+      // this.maxScoreReached.set(this.responseProgress() === 'complete');
       const unitState: UnitState = {
         unitStateDataType: UnitStateDataType,
         dataParts: {
@@ -124,7 +131,7 @@ export class ResponsesService {
         let newScore = Number.MIN_VALUE;
         codingScheme.codes.forEach(c => {
           if (newCode === Number.MIN_VALUE) {
-            let codeFound = false;
+            let codeFound: boolean;
             if (c.method === 'EQUALS') {
               codeFound = valueAsString === c.parameter;
             } else {
