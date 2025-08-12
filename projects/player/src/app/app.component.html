@@ -7,6 +7,7 @@
   }
   @if (unitService.continueButton() === "ALWAYS" ||
       (unitService.continueButton() === "ON_MAIN_AUDIO_COMPLETE" && responsesService.mainAudioComplete()) ||
+      (unitService.continueButton() === "ON_VIDEO_COMPLETE" && responsesService.videoComplete()) ||
       (unitService.continueButton() === "ON_ANY_RESPONSE" && responsesService.responseProgress() === "some") ||
       (unitService.continueButton() === "ON_RESPONSES_COMPLETE" && responsesService.responseProgress() === "complete")
     ) {
@@ -34,8 +35,12 @@
         [style.background-color]="unitService.backgroundColor()"
         [parameters]="unitService.parameters()"
         (responses)="responsesService.newResponses($event)"></stars-interaction-image-only>
-    }
-    @else {
+    } @else if (unitService.interaction() === 'VIDEO') {
+      <stars-interaction-video class="interaction"
+        [style.background-color]="unitService.backgroundColor()"
+        [parameters]="unitService.parameters()"
+        (responses)="responsesService.newResponses($event)"></stars-interaction-video>
+    } @else {
       <div>Unbekannter Interaktionstyp "{{unitService.interaction}}"</div>
     }
   </div>
