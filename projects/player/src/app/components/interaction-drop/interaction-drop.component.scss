@@ -43,3 +43,13 @@
     transition: none;
   }
 }
+
+@media screen and (max-height: 700px) {
+  .drop-select-container {
+    padding-top: 12%;
+
+    .stimulus-wrapper {
+      height: 65%;
+    }
+  }
+}
