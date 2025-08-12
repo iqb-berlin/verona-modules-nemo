@@ -6,13 +6,12 @@
     <stars-media-player [player]="player"
                         [playerId]="playerId()"
                         [isPlaying]="isPlaying"
-                        [disabled]="canPlay()"
-                        (elementValueChanged)="valueChanged($event)">
+                        [playCount]="playCount()"
+                        [disabled]="!canPlay()">
       <audio #player
              [src]="localAudio.audioSource | safeResourceUrl"
              (play)="onPlay()"
-             (pause)="onPause()"
-             (ended)="onPause()">
+             (pause)="onPause()">
       </audio>
       <label>
         Audio
