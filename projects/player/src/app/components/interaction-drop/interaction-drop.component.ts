@@ -55,14 +55,14 @@ export class InteractionDropComponent extends InteractionComponentDirective {
 
     // each button has 200px incl 24px gap/shadow
     // minus half it's size to set target to the center of div
-    const offset = ((200 * this.localParameters.options.buttons.length) / 2) - 100 - (index * 200);
+    const offset = ((200 * this.localParameters.options.length) / 2) - 100 - (index * 200);
     return `translate(${offset}px,270px)`;
   }
 
   onButtonClick(index: number): void {
     /* Toggle selection: if already selected, deselect it
     (this moves the element back to the original position) */
-    const newSelectedValue = this.selectedValue() === index ? null : index;
+    const newSelectedValue = this.selectedValue() === index ? -1 : index;
     this.selectedValue.set(newSelectedValue);
 
     const id = this.localParameters.variableId;
