@@ -84,11 +84,17 @@ export class ResponsesService {
         this.mainAudioComplete.set(response.value as number >= 1);
       }
     });
+
+    // calculate responseProgress only when variable is in current response
+    // so no change in progress when audio is playing
+    const valueResponses = responses.find(r => r.id !== 'mainAudio');
     const responsesAsString = JSON.stringify(this.allResponses);
     if (responsesAsString !== this.lastResponsesString) {
       this.lastResponsesString = responsesAsString;
-      const getResponsesCompleteOutput = this.getResponsesComplete();
-      this.responseProgress.set(getResponsesCompleteOutput);
+      if (valueResponses) {
+        const getResponsesCompleteOutput = this.getResponsesComplete();
+        this.responseProgress.set(getResponsesCompleteOutput);
+      }
       // this.firstResponseGiven.set(this.responseProgress() !== 'none');
       // this.maxScoreReached.set(this.responseProgress() === 'complete');
       const unitState: UnitState = {
