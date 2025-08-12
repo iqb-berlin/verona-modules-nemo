@@ -20,6 +20,9 @@
     "numberOfRows": 1,
     "options": {
       "repeatButton": {
+        "option": {
+          "icon": "CLOSE_RED"
+        },
         "numberOfOptions": 7
       }
     }
