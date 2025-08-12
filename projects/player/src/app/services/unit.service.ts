@@ -14,7 +14,7 @@ export class UnitService {
   mainAudio = signal<MainAudio>(null);
   backgroundColor = signal('#EEE');
   continueButton = signal<ContinueButtonEnum>('ALWAYS');
-  interaction = signal<InteractionEnum>('BUTTONS');
+  interaction = signal<InteractionEnum>(null);
   parameters = signal<unknown>({});
   hasInteraction = signal(false);
   ribbonBars = signal<boolean>(false);

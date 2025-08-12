@@ -1,5 +1,5 @@
-import { Component, effect } from '@angular/core';
-import { Response, ResponseStatusType } from '@iqbspecs/response/response.interface';
+import { Component, effect, OnInit } from '@angular/core';
+import { Response } from '@iqbspecs/response/response.interface';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { InteractionWriteParams } from '../../models/unit-definition';
@@ -10,7 +10,7 @@ import { InteractionWriteParams } from '../../models/unit-definition';
   styleUrls: ['interaction-write.component.scss']
 })
 
-export class InteractionWriteComponent extends InteractionComponentDirective {
+export class InteractionWriteComponent extends InteractionComponentDirective implements OnInit {
   localParameters: InteractionWriteParams;
   isDisabled: boolean = false;
   currentText: string = '';
@@ -36,9 +36,16 @@ export class InteractionWriteComponent extends InteractionComponentDirective {
       }
 
       this.currentText = '';
-
-      this.valueChanged(true);
     });
+  }
+
+  ngOnInit() {
+    this.responses.emit([{
+      // @ts-expect-error access parameter of unknown
+      id: this.parameters().variableId || 'WRITE',
+      status: 'DISPLAYED',
+      value: ''
+    }]);
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -70,13 +77,10 @@ export class InteractionWriteComponent extends InteractionComponentDirective {
     }
   }
 
-  private valueChanged(displayed = false) {
-    const id = this.localParameters.variableId;
-    const status: ResponseStatusType = displayed ? 'DISPLAYED' : 'VALUE_CHANGED';
-
+  private valueChanged() {
     const response: Response = {
-      id: id,
-      status: status,
+      id: this.localParameters.variableId,
+      status: 'VALUE_CHANGED',
       value: this.currentText
     };
 

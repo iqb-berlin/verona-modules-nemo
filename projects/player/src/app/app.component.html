@@ -34,7 +34,7 @@
         [style.background-color]="unitService.backgroundColor()"
         [parameters]="unitService.parameters()"
         (responses)="responsesService.newResponses($event)"></stars-interaction-image-only>
-    }
+    } @else if (unitService.interaction() == null ){}
     @else {
       <div>Unbekannter Interaktionstyp "{{unitService.interaction}}"</div>
     }
