@@ -1,13 +1,15 @@
-# Release Note 0.6.2-beta #
+# Release Note 0.6.4-beta #
 
-## Änderungen
-- Interaktionstyp IMAGE_ONLY
-- Flatterband für Übungsmodus
-- Aktualisierung Audio wellen animation
+## Neu
+- Interaktionstyp VIDEO
+
+## Bugfixes
+- Verhalten continueButtonShow
+- Variable für MainAudio enthält Anzahl der Durchläufe
+- Optimierung Kodierung
 
 
 ## stars-unit-definition
 
-- Umsetzung der Version 0.12 der StarS Unit Definition für IMAGE_ONLY Interaktionstyp 
-- Umsetzung der Version 0.13 der StarS Unit Definition für ribbonBars (Übungsmodus)
+- Umsetzung der Version 0.14 der StarS Unit Definition für VIDEO und andere
 
