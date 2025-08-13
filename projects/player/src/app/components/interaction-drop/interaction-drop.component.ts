@@ -1,8 +1,8 @@
 import {
   Component, signal, effect
 } from '@angular/core';
-import { Response } from '@iqbspecs/response/response.interface';
 
+import { StarsResponse } from '../../services/responses.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { InteractionDropParams } from '../../models/unit-definition';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
@@ -67,10 +67,11 @@ export class InteractionDropComponent extends InteractionComponentDirective {
 
     const id = this.localParameters.variableId;
 
-    const response: Response = {
+    const response: StarsResponse = {
       id: id,
       status: 'VALUE_CHANGED',
-      value: newSelectedValue + 1
+      value: newSelectedValue + 1,
+      relevantForResponsesProgress: true
     };
 
     this.responses.emit([response]);

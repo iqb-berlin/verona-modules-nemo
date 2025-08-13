@@ -1,8 +1,8 @@
 import {
   Component, signal, effect
 } from '@angular/core';
-import { Response } from '@iqbspecs/response/response.interface';
 
+import { StarsResponse } from '../../services/responses.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import {
   InteractionButtonParams,
@@ -162,10 +162,11 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       this.selectedValues().map(item => (item ? 1 : 0)).join('') :
       (this.selectedValues().findIndex(item => item) + 1).toString();
 
-    const response: Response = {
+    const response: StarsResponse = {
       id: id,
       status: 'VALUE_CHANGED',
-      value: value
+      value: value,
+      relevantForResponsesProgress: true
     };
 
     this.responses.emit([response]);
