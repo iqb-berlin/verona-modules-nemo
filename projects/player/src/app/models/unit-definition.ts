@@ -1,5 +1,5 @@
 import { VariableInfo } from './responses';
-import {AudioFeedback} from "./feedback";
+import { AudioFeedback } from './feedback';
 
 export type ContinueButtonEnum = 'ALWAYS' | 'NO' | 'ON_ANY_RESPONSE' |
 'ON_RESPONSES_COMPLETE' | 'ON_MAIN_AUDIO_COMPLETE';
