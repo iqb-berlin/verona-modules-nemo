@@ -23,7 +23,7 @@ export class UnitService {
     this.mainAudio.set(null);
     this.backgroundColor.set('#EEE');
     this.continueButton.set('ALWAYS');
-    this.interaction.set(null);
+    this.interaction.set('NONE');
     this.parameters.set({});
     this.hasInteraction.set(false);
     this.ribbonBars.set(false);

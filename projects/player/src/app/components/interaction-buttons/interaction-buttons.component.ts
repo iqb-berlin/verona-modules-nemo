@@ -1,8 +1,8 @@
 import {
   Component, signal, effect, OnInit
 } from '@angular/core';
-import { Response } from '@iqbspecs/response/response.interface';
 
+import { StarsResponse } from '../../services/responses.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import {
   InteractionButtonParams,
@@ -66,7 +66,8 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
       // @ts-expect-error access parameter of unknown
       id: this.parameters().variableId || 'BUTTONS',
       status: 'DISPLAYED',
-      value: 0
+      value: 0,
+      relevantForResponsesProgress: true
     }]);
   }
 
@@ -170,10 +171,8 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
       this.selectedValues().map(item => (item ? 1 : 0)).join('') :
       (this.selectedValues().findIndex(item => item) + 1).toString();
 
-    const response: Response = {
-      id: this.localParameters.variableId,
     const response: StarsResponse = {
-      id: id,
+      id: this.localParameters.variableId,
       status: 'VALUE_CHANGED',
       value: value,
       relevantForResponsesProgress: true

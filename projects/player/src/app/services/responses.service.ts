@@ -87,7 +87,8 @@ export class ResponsesService {
     const responsesAsString = JSON.stringify(this.allResponses);
     if (responsesAsString !== this.lastResponsesString) {
       this.lastResponsesString = responsesAsString;
-      if (responses[0].relevantForResponsesProgress) {
+      // only set response progress if it is relevant for the progress and the status is VALUE_CHANGED
+      if (responses[0].relevantForResponsesProgress && responses[0].status === 'VALUE_CHANGED') {
         const getResponsesCompleteOutput = this.getResponsesComplete();
         this.responseProgress.set(getResponsesCompleteOutput);
       }

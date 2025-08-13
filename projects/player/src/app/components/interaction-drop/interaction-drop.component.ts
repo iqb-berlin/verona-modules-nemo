@@ -1,8 +1,8 @@
 import {
   Component, signal, effect, OnInit
 } from '@angular/core';
-import { Response } from '@iqbspecs/response/response.interface';
 
+import { StarsResponse } from '../../services/responses.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { InteractionDropParams } from '../../models/unit-definition';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
@@ -46,7 +46,8 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
       // @ts-expect-error access parameter of unknown
       id: this.parameters().variableId || 'DROP',
       status: 'DISPLAYED',
-      value: 0
+      value: 0,
+      relevantForResponsesProgress: true
     }]);
   }
 
@@ -74,9 +75,9 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
     this.selectedValue.set(this.selectedValue() === index ? -1 : index);
 
     const response: StarsResponse = {
-      id: id,
+      id: this.localParameters.variableId,
       status: 'VALUE_CHANGED',
-      value: newSelectedValue + 1,
+      value: this.selectedValue() + 1,
       relevantForResponsesProgress: true
     };
 
