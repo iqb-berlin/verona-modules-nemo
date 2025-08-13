@@ -10,7 +10,7 @@ import { InteractionWriteParams } from '../../models/unit-definition';
   styleUrls: ['interaction-write.component.scss']
 })
 
-export class InteractionWriteComponent extends InteractionComponentDirective implements OnInit {
+export class InteractionWriteComponent extends InteractionComponentDirective {
   localParameters: InteractionWriteParams;
   isDisabled: boolean = false;
   currentText: string = '';
@@ -80,8 +80,14 @@ export class InteractionWriteComponent extends InteractionComponentDirective imp
   private valueChanged() {
     const response: Response = {
       id: this.localParameters.variableId,
+  private valueChanged(): void {
+    const id = this.localParameters.variableId;
+
+    const response: StarsResponse = {
+      id: id,
       status: 'VALUE_CHANGED',
-      value: this.currentText
+      value: this.currentText,
+      relevantForResponsesProgress: true
     };
 
     this.responses.emit([response]);

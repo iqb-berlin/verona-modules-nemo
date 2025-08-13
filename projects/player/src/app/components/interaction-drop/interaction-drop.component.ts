@@ -73,10 +73,11 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
     (this moves the element back to the original position) */
     this.selectedValue.set(this.selectedValue() === index ? -1 : index);
 
-    const response: Response = {
-      id: this.localParameters.variableId,
+    const response: StarsResponse = {
+      id: id,
       status: 'VALUE_CHANGED',
-      value: this.selectedValue() + 1
+      value: newSelectedValue + 1,
+      relevantForResponsesProgress: true
     };
 
     this.responses.emit([response]);

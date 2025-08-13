@@ -172,8 +172,11 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
 
     const response: Response = {
       id: this.localParameters.variableId,
+    const response: StarsResponse = {
+      id: id,
       status: 'VALUE_CHANGED',
-      value: value
+      value: value,
+      relevantForResponsesProgress: true
     };
 
     this.responses.emit([response]);

@@ -23,6 +23,7 @@ import { StandardButtonComponent } from './shared/standard-button/standard-butto
 import { InteractionWriteComponent } from './components/interaction-write/interaction-write.component';
 import { InteractionDropComponent } from './components/interaction-drop/interaction-drop.component';
 import { InteractionImageOnlyComponent } from './components/interaction-image-only/interaction-image-only.component';
+import { InteractionVideoComponent } from './components/interaction-video/interaction-video.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { InteractionImageOnlyComponent } from './components/interaction-image-on
     StandardButtonComponent,
     InteractionDropComponent,
     InteractionWriteComponent,
-    InteractionImageOnlyComponent
+    InteractionImageOnlyComponent,
+    InteractionVideoComponent
   ],
   providers: [
     provideZonelessChangeDetection(),

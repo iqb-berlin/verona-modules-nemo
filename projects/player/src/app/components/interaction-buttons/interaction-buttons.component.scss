@@ -39,6 +39,7 @@
   .buttons-wrapper {
     @include variables.flex-center;
     flex-direction: column;
+    padding-left: variables.$small-gap-margin;
 
     .row {
       @include variables.flex-center;
