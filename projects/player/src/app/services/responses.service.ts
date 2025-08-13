@@ -13,9 +13,15 @@ import { FeedbackDefinition } from '../models/feedback';
 
 export class ResponsesService {
   firstInteractionDone = signal(false);
+  // todo: delete firstResponseGiven; replace usages by responsesGiven
+  // firstResponseGiven = signal(false);
+  // todo: delete maxScoreReached; replace usages by responsesGiven
+  // maxScoreReached = signal(false);
   unitDefinitionProblem = signal('');
   responseProgress = signal<Progress>('none');
   mainAudioComplete = signal(false);
+  videoComplete = signal(false);
+
   allResponses: Response[] = [];
   variableInfo: VariableInfo[] = [];
   veronaPostService = inject(VeronaPostService);
@@ -29,6 +35,7 @@ export class ResponsesService {
     this.firstInteractionDone.set(false);
     this.unitDefinitionProblem.set('');
     this.mainAudioComplete.set(false);
+    this.videoComplete.set(false);
     this.responseProgress.set('none');
     this.variableInfo = [];
     this.allResponses = [];
@@ -86,7 +93,7 @@ export class ResponsesService {
     }
   }
 
-  newResponses(responses: Response[]) {
+  newResponses(responses: StarsResponse[]) {
     responses.forEach(response => {
       const codedResponse = this.getCodedResponse(response);
       const responseInStore = this.allResponses.find(r => r.id === response.id);
@@ -101,12 +108,19 @@ export class ResponsesService {
       if (response.id === 'mainAudio') {
         this.mainAudioComplete.set(response.value as number >= 1);
       }
+      if (response.id === 'videoPlayer') {
+        this.videoComplete.set(response.value as number >= 1);
+      }
     });
+
     const responsesAsString = JSON.stringify(this.allResponses);
     if (responsesAsString !== this.lastResponsesString) {
       this.lastResponsesString = responsesAsString;
-      const getResponsesCompleteOutput = this.getResponsesComplete();
-      this.responseProgress.set(getResponsesCompleteOutput);
+      // only set response progress if it is relevant for the progress and the status is VALUE_CHANGED
+      if (responses[0].relevantForResponsesProgress && responses[0].status === 'VALUE_CHANGED') {
+        const getResponsesCompleteOutput = this.getResponsesComplete();
+        this.responseProgress.set(getResponsesCompleteOutput);
+      }
       const unitState: UnitState = {
         unitStateDataType: UnitStateDataType,
         dataParts: {
@@ -273,4 +287,8 @@ export class ResponsesService {
     }
     // console.log(this.pendingAudioFeedback(), ' <<>> ', audioToPlay);
   }
+}
+
+export interface StarsResponse extends Response {
+  relevantForResponsesProgress:boolean;
 }

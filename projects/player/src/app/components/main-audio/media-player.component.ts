@@ -7,7 +7,8 @@ import {
 import { takeUntil } from 'rxjs/operators';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 import { AnimationItem } from 'lottie-web';
-import {ResponsesService} from "../../services/responses.service";
+
+import { ResponsesService } from '../../services/responses.service';
 
 @Component({
   selector: 'stars-media-player',
@@ -114,7 +115,8 @@ export class MediaPlayerComponent implements OnInit, OnDestroy {
     this.responsesService.newResponses([{
       id: this.playerId(),
       value: audioValue,
-      status: 'VALUE_CHANGED'
+      status: 'VALUE_CHANGED',
+      relevantForResponsesProgress: false
     }]);
   }
 }

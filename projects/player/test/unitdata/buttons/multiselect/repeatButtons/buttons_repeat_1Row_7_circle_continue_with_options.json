@@ -11,7 +11,7 @@
   },
   "interactionType": "BUTTONS",
   "interactionParameters": {
-    "variableId": "BUTTONS",
+    "variableId": "CIRCLES",
     "imageSource": "",
     "imagePosition": "LEFT",
     "text": "",

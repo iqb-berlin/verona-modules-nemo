@@ -14,7 +14,7 @@ export class UnitService {
   mainAudio = signal<MainAudio>(null);
   backgroundColor = signal('#EEE');
   continueButton = signal<ContinueButtonEnum>('ALWAYS');
-  interaction = signal<InteractionEnum>('BUTTONS');
+  interaction = signal<InteractionEnum>(null);
   parameters = signal<unknown>({});
   hasInteraction = signal(false);
   ribbonBars = signal<boolean>(false);
@@ -23,7 +23,7 @@ export class UnitService {
     this.mainAudio.set(null);
     this.backgroundColor.set('#EEE');
     this.continueButton.set('ALWAYS');
-    this.interaction.set(null);
+    this.interaction.set('NONE');
     this.parameters.set({});
     this.hasInteraction.set(false);
     this.ribbonBars.set(false);

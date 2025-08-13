@@ -25,7 +25,7 @@ export class MainAudioComponent {
   playerId = input.required<string>();
 
   showLayer = false;
-  @ViewChild('player', { static: false }) audioElementRef!: ElementRef<HTMLAudioElement>;
+  @ViewChild('audioPlayer', { static: false }) audioElementRef!: ElementRef<HTMLAudioElement>;
   playCount = signal(0);
   maxPlay = 0;
   isPlaying: boolean = false;
