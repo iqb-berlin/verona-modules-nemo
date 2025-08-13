@@ -1,6 +1,6 @@
 import { Component, effect } from '@angular/core';
-import { Response } from '@iqbspecs/response/response.interface';
 
+import { StarsResponse } from '../../services/responses.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { InteractionWriteParams } from '../../models/unit-definition';
 
@@ -73,10 +73,11 @@ export class InteractionWriteComponent extends InteractionComponentDirective {
   private valueChanged(): void {
     const id = this.localParameters.variableId;
 
-    const response: Response = {
+    const response: StarsResponse = {
       id: id,
       status: 'VALUE_CHANGED',
-      value: this.currentText
+      value: this.currentText,
+      relevantForResponsesProgress: true
     };
 
     this.responses.emit([response]);

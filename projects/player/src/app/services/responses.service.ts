@@ -12,10 +12,6 @@ import { Code, VariableInfo } from '../models/responses';
 
 export class ResponsesService {
   firstInteractionDone = signal(false);
-  // todo: delete firstResponseGiven; replace usages by responsesGiven
-  // firstResponseGiven = signal(false);
-  // todo: delete maxScoreReached; replace usages by responsesGiven
-  // maxScoreReached = signal(false);
   unitDefinitionProblem = signal('');
   responseProgress = signal<Progress>('none');
   mainAudioComplete = signal(false);
@@ -29,8 +25,6 @@ export class ResponsesService {
 
   setNewData(unitDefinition: UnitDefinition = null) {
     this.firstInteractionDone.set(false);
-    // this.firstResponseGiven.set(false);
-    // this.maxScoreReached.set(false);
     this.unitDefinitionProblem.set('');
     this.mainAudioComplete.set(false);
     this.videoComplete.set(false);
@@ -70,7 +64,7 @@ export class ResponsesService {
     }
   }
 
-  newResponses(responses: Response[]) {
+  newResponses(responses: StarsResponse[]) {
     responses.forEach(response => {
       const codedResponse = this.getCodedResponse(response);
       const responseInStore = this.allResponses.find(r => r.id === response.id);
@@ -89,13 +83,14 @@ export class ResponsesService {
         this.videoComplete.set(response.value as number >= 1);
       }
     });
+
     const responsesAsString = JSON.stringify(this.allResponses);
     if (responsesAsString !== this.lastResponsesString) {
       this.lastResponsesString = responsesAsString;
-      const getResponsesCompleteOutput = this.getResponsesComplete();
-      this.responseProgress.set(getResponsesCompleteOutput);
-      // this.firstResponseGiven.set(this.responseProgress() !== 'none');
-      // this.maxScoreReached.set(this.responseProgress() === 'complete');
+      if (responses[0].relevantForResponsesProgress) {
+        const getResponsesCompleteOutput = this.getResponsesComplete();
+        this.responseProgress.set(getResponsesCompleteOutput);
+      }
       const unitState: UnitState = {
         unitStateDataType: UnitStateDataType,
         dataParts: {
@@ -198,4 +193,8 @@ export class ResponsesService {
     }
     return isComplete ? 'complete' : 'some';
   }
+}
+
+export interface StarsResponse extends Response {
+  relevantForResponsesProgress:boolean;
 }
