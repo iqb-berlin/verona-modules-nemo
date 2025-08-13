@@ -1,6 +1,6 @@
 {
   "id": "stars-unit-definition",
-  "version": "0.10",
+  "version": "0.14",
   "backgroundColor": "#FFD4AC",
   "continueButtonShow": "ALWAYS",
   "mainAudio": {
@@ -20,9 +20,6 @@
     "numberOfRows": 1,
     "options": {
       "repeatButton": {
-        "option": {
-          "text": "A"
-        },
         "numberOfOptions": 7
       }
     }

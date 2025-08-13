@@ -10,25 +10,27 @@
     [checked]="selected()"
   />
   <label [for]="id() + '_' + value()">
-    @if (image()) {
-      <img [src]="image()" [alt]="">
-    } @else if (icon()) {
-      @if (icon() === 'CHECK_GREEN') {
-        <svg class="accept-icon" width="92" height="78" viewBox="0 0 92 78" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M8 45.2L30.2007 69.1756C30.6071 69.6146 31.3055 69.6008 31.6943 69.1462L84 8" stroke="#4A7611" stroke-width="16" stroke-linecap="round"/>
-        </svg>
-      } @else if (icon() === 'CLOSE_RED') {
-        <svg class="reject-icon" width="84" height="85" viewBox="0 0 84 85" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M8 10.1006L76 75.8713" stroke="#B83A1E" stroke-width="16" stroke-linecap="round"/>
-          <path d="M74.8853 8.98535L9.11451 76.9854" stroke="#B83A1E" stroke-width="16" stroke-linecap="round"/>
-        </svg>
-      } @else if (icon() === 'CLAP_HANDS') {
-        <img src="assets/images/hands/clapping-hand.png" alt="Clapping hands" class="clap-hands">
+    @if (type() !== 'CIRCLE') {
+      @if (image()) {
+        <img [src]="image()" [alt]="">
+      } @else if (icon()) {
+        @if (icon() === 'CHECK_GREEN') {
+          <svg class="accept-icon" width="92" height="78" viewBox="0 0 92 78" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 45.2L30.2007 69.1756C30.6071 69.6146 31.3055 69.6008 31.6943 69.1462L84 8" stroke="#4A7611" stroke-width="16" stroke-linecap="round"/>
+          </svg>
+        } @else if (icon() === 'CLOSE_RED') {
+          <svg class="reject-icon" width="84" height="85" viewBox="0 0 84 85" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 10.1006L76 75.8713" stroke="#B83A1E" stroke-width="16" stroke-linecap="round"/>
+            <path d="M74.8853 8.98535L9.11451 76.9854" stroke="#B83A1E" stroke-width="16" stroke-linecap="round"/>
+          </svg>
+        } @else if (icon() === 'CLAP_HANDS') {
+          <img src="assets/images/hands/clapping-hand.png" alt="Clapping hands" class="clap-hands">
+        }
+      } @else if (text()) {
+        <span>
+          {{ text() }}
+        </span>
       }
-    } @else if (text()) {
-      <span>
-        {{ text() }}
-      </span>
     }
   </label>
 </div>

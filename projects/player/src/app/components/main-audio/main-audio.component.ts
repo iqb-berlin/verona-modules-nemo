@@ -1,6 +1,7 @@
 import {
-  Component, effect, ElementRef, inject, input, ViewChild
+  Component, effect, ElementRef, inject, input, signal, ViewChild
 } from '@angular/core';
+
 import { MediaPlayerComponent } from './media-player.component';
 import { ClickLayerComponent } from './click-layer.component';
 import { SafeResourceUrlPipe } from '../../pipes/safe-resource-url.pipe';
@@ -21,15 +22,14 @@ import { MainAudio } from '../../models/unit-definition';
 export class MainAudioComponent {
   mainAudio = input.required();
   localAudio:MainAudio | null = null;
-
   playerId = input.required<string>();
-  maxPlays = input(0);
 
   showLayer = false;
-  @ViewChild('player', { static: false }) audioElementRef!: ElementRef<HTMLAudioElement>;
-
-  private playCount: number = 0;
+  @ViewChild('audioPlayer', { static: false }) audioElementRef!: ElementRef<HTMLAudioElement>;
+  playCount = signal(0);
+  maxPlay = 0;
   isPlaying: boolean = false;
+
   responsesService = inject(ResponsesService);
 
   constructor() {
@@ -44,19 +44,20 @@ export class MainAudioComponent {
         this.localAudio.audioSource = this.localAudio.audioSource ?
           this.localAudio.audioSource : null;
         if (this.localAudio.firstClickLayer) this.showLayer = true;
-        this.playCount = 0;
+        this.playCount.set(0);
+        this.maxPlay = this.localAudio.maxPlay;
         this.isPlaying = false;
       }
     });
   }
 
   onPlay() {
-    if (this.maxPlays() !== 0 && this.playCount >= this.maxPlays()) {
+    if (this.maxPlay !== 0 && this.playCount() >= this.maxPlay) {
       this.audioElementRef?.nativeElement.pause();
       console.warn('Maximum play limit reached');
       return;
     }
-    this.playCount += 1;
+    this.playCount.set(this.playCount() + 1);
     this.isPlaying = true;
   }
 
@@ -64,13 +65,8 @@ export class MainAudioComponent {
     this.isPlaying = false;
   }
 
-  valueChanged(event) {
-    console.log(`valueChanged ${this.playerId}`);
-    console.log(event);
-  }
-
   canPlay(): boolean {
-    return this.maxPlays() === 0 || this.playCount < this.maxPlays();
+    return this.maxPlay === 0 || this.playCount() < this.maxPlay;
   }
 
   layerClicked() {

@@ -1,8 +1,8 @@
 import {
-  Component, signal, effect
+  Component, signal, effect, OnInit
 } from '@angular/core';
-import { Response } from '@iqbspecs/response/response.interface';
 
+import { StarsResponse } from '../../services/responses.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { InteractionDropParams } from '../../models/unit-definition';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
@@ -16,9 +16,9 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
   styleUrls: ['./interaction-drop.component.scss']
 })
 
-export class InteractionDropComponent extends InteractionComponentDirective {
+export class InteractionDropComponent extends InteractionComponentDirective implements OnInit {
   localParameters: InteractionDropParams;
-  selectedValue = signal<number>(null);
+  selectedValue = signal<number>(-1);
   // create a signal for handling disabling transition on change
   disabledTransition = signal<boolean>(false);
 
@@ -41,10 +41,20 @@ export class InteractionDropComponent extends InteractionComponentDirective {
     });
   }
 
+  ngOnInit() {
+    this.responses.emit([{
+      // @ts-expect-error access parameter of unknown
+      id: this.parameters().variableId || 'DROP',
+      status: 'DISPLAYED',
+      value: 0,
+      relevantForResponsesProgress: true
+    }]);
+  }
+
   private resetSelection(): void {
     // before resetting, disable transition to move back instantly
     this.disabledTransition.set(true);
-    this.selectedValue.set(null);
+    this.selectedValue.set(-1);
     setTimeout(() => {
       this.disabledTransition.set(false);
     }, 500);
@@ -55,22 +65,20 @@ export class InteractionDropComponent extends InteractionComponentDirective {
 
     // each button has 200px incl 24px gap/shadow
     // minus half it's size to set target to the center of div
-    const offset = ((200 * this.localParameters.options.buttons.length) / 2) - 100 - (index * 200);
+    const offset = ((200 * this.localParameters.options.length) / 2) - 100 - (index * 200);
     return `translate(${offset}px,270px)`;
   }
 
   onButtonClick(index: number): void {
     /* Toggle selection: if already selected, deselect it
     (this moves the element back to the original position) */
-    const newSelectedValue = this.selectedValue() === index ? null : index;
-    this.selectedValue.set(newSelectedValue);
+    this.selectedValue.set(this.selectedValue() === index ? -1 : index);
 
-    const id = this.localParameters.variableId;
-
-    const response: Response = {
-      id: id,
+    const response: StarsResponse = {
+      id: this.localParameters.variableId,
       status: 'VALUE_CHANGED',
-      value: newSelectedValue + 1
+      value: this.selectedValue() + 1,
+      relevantForResponsesProgress: true
     };
 
     this.responses.emit([response]);

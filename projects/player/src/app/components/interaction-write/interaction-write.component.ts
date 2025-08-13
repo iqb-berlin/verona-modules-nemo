@@ -1,6 +1,6 @@
-import { Component, effect } from '@angular/core';
-import { Response } from '@iqbspecs/response/response.interface';
+import { Component, effect, OnInit } from '@angular/core';
 
+import { StarsResponse } from '../../services/responses.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { InteractionWriteParams } from '../../models/unit-definition';
 
@@ -10,14 +10,12 @@ import { InteractionWriteParams } from '../../models/unit-definition';
   styleUrls: ['interaction-write.component.scss']
 })
 
-export class InteractionWriteComponent extends InteractionComponentDirective {
+export class InteractionWriteComponent extends InteractionComponentDirective implements OnInit {
   localParameters: InteractionWriteParams;
   isDisabled: boolean = false;
   currentText: string = '';
   characterList = [...'abcdefghijklmnopqrstuvwxyz'];
   umlautListChars = [...'äöü'];
-  // TODO: delete? no need of it, because missing default in spec
-  graphemeList = ['ch', 'sch', 'ng', 'ei', 'au', 'eu', 'le', 'pf', 'chs'];
 
   constructor() {
     super();
@@ -39,6 +37,16 @@ export class InteractionWriteComponent extends InteractionComponentDirective {
 
       this.currentText = '';
     });
+  }
+
+  ngOnInit() {
+    this.responses.emit([{
+      // @ts-expect-error access parameter of unknown
+      id: this.parameters().variableId || 'WRITE',
+      status: 'DISPLAYED',
+      value: '',
+      relevantForResponsesProgress: true
+    }]);
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -70,13 +78,12 @@ export class InteractionWriteComponent extends InteractionComponentDirective {
     }
   }
 
-  private valueChanged(): void {
-    const id = this.localParameters.variableId;
-
-    const response: Response = {
-      id: id,
+  private valueChanged() {
+    const response: StarsResponse = {
+      id: this.localParameters.variableId,
       status: 'VALUE_CHANGED',
-      value: this.currentText
+      value: this.currentText,
+      relevantForResponsesProgress: true
     };
 
     this.responses.emit([response]);

@@ -43,3 +43,23 @@
     transition: none;
   }
 }
+
+@media screen and (max-height: 700px) {
+  .drop-select-container {
+    padding-top: 13%;
+
+    .stimulus-wrapper {
+      height: 65%;
+    }
+  }
+}
+
+@media screen and (max-height: 700px) {
+  .drop-select-container {
+    padding-top: 12%;
+
+    .stimulus-wrapper {
+      height: 65%;
+    }
+  }
+}

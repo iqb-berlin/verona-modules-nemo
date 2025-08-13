@@ -3,16 +3,15 @@
     <stars-click-layer (click)="layerClicked()"></stars-click-layer>
   }
   <div class="audio-button-wrapper">
-    <stars-media-player [player]="player"
+    <stars-media-player [player]="audioPlayer"
                         [playerId]="playerId()"
                         [isPlaying]="isPlaying"
-                        [disabled]="canPlay()"
-                        (elementValueChanged)="valueChanged($event)">
-      <audio #player
+                        [playCount]="playCount()"
+                        [disabled]="!canPlay()">
+      <audio #audioPlayer
              [src]="localAudio.audioSource | safeResourceUrl"
              (play)="onPlay()"
-             (pause)="onPause()"
-             (ended)="onPause()">
+             (pause)="onPause()">
       </audio>
       <label>
         Audio

@@ -1,7 +1,7 @@
 <div class="drop-select-container">
   <div class="interaction-wrapper">
     <div class="buttons-container" role="group">
-      @for (option of localParameters.options?.buttons; track $index) {
+      @for (option of localParameters.options; track $index) {
         <div
             class="animate-wrapper"
             [style.transform]="animateStyle($index)"

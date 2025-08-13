@@ -1,8 +1,8 @@
 import {
-  Component, signal, effect
+  Component, signal, effect, OnInit
 } from '@angular/core';
-import { Response } from '@iqbspecs/response/response.interface';
 
+import { StarsResponse } from '../../services/responses.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import {
   InteractionButtonParams,
@@ -19,7 +19,7 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
   styleUrls: ['./interaction-buttons.component.scss']
 })
 
-export class InteractionButtonsComponent extends InteractionComponentDirective {
+export class InteractionButtonsComponent extends InteractionComponentDirective implements OnInit {
   localParameters: InteractionButtonParams;
   // array of booleans for each option
   selectedValues = signal<boolean[]>([]);
@@ -61,6 +61,16 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     });
   }
 
+  ngOnInit() {
+    this.responses.emit([{
+      // @ts-expect-error access parameter of unknown
+      id: this.parameters().variableId || 'BUTTONS',
+      status: 'DISPLAYED',
+      value: 0,
+      relevantForResponsesProgress: true
+    }]);
+  }
+
   private resetSelection(): void {
     if (!this.localParameters.options) return;
 
@@ -76,6 +86,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   private createOptions() {
     if (!this.localParameters.options) return [];
 
+    // eslint-disable-next-line
     let options:any[];
 
     if (this.localParameters.options?.repeatButton) {
@@ -83,9 +94,9 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         { length: this.localParameters.options.repeatButton.numberOfOptions },
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _ => ({
-          text: this.localParameters.options.repeatButton.option.text || null,
-          imageSource: this.localParameters.options.repeatButton.option.imageSource || null,
-          icon: this.localParameters.options.repeatButton.option.icon || null
+          text: this.localParameters.options.repeatButton.option?.text || null,
+          imageSource: this.localParameters.options.repeatButton.option?.imageSource || null,
+          icon: this.localParameters.options.repeatButton.option?.icon || null
         })
       );
     } else {
@@ -154,17 +165,17 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       this.selectedValues.set(selectedValues);
     }
 
-    const id = this.localParameters.variableId;
     /* stringify boolean array to string of 0 and 1 for multiselect or
        index of selected item for single select */
     const value = this.localParameters.multiSelect ?
       this.selectedValues().map(item => (item ? 1 : 0)).join('') :
       (this.selectedValues().findIndex(item => item) + 1).toString();
 
-    const response: Response = {
-      id: id,
+    const response: StarsResponse = {
+      id: this.localParameters.variableId,
       status: 'VALUE_CHANGED',
-      value: value
+      value: value,
+      relevantForResponsesProgress: true
     };
 
     this.responses.emit([response]);
