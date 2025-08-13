@@ -15,6 +15,7 @@ export class ResponsesService {
   unitDefinitionProblem = signal('');
   responseProgress = signal<Progress>('none');
   mainAudioComplete = signal(false);
+  videoComplete = signal(false);
 
   allResponses: Response[] = [];
   variableInfo: VariableInfo[] = [];
@@ -26,6 +27,7 @@ export class ResponsesService {
     this.firstInteractionDone.set(false);
     this.unitDefinitionProblem.set('');
     this.mainAudioComplete.set(false);
+    this.videoComplete.set(false);
     this.responseProgress.set('none');
     this.variableInfo = [];
     this.allResponses = [];
@@ -76,6 +78,9 @@ export class ResponsesService {
       }
       if (response.id === 'mainAudio') {
         this.mainAudioComplete.set(response.value as number >= 1);
+      }
+      if (response.id === 'videoPlayer') {
+        this.videoComplete.set(response.value as number >= 1);
       }
     });
 
