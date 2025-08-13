@@ -41,8 +41,6 @@
         [style.background-color]="unitService.backgroundColor()"
         [parameters]="unitService.parameters()"
         (responses)="responsesService.newResponses($event)"></stars-interaction-video>
-    } @else {
-      <div>Unbekannter Interaktionstyp "{{unitService.interaction}}"</div>
     }
   </div>
 </div>

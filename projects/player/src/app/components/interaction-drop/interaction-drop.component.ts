@@ -1,5 +1,5 @@
 import {
-  Component, signal, effect
+  Component, signal, effect, OnInit
 } from '@angular/core';
 
 import { StarsResponse } from '../../services/responses.service';
@@ -16,9 +16,9 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
   styleUrls: ['./interaction-drop.component.scss']
 })
 
-export class InteractionDropComponent extends InteractionComponentDirective {
+export class InteractionDropComponent extends InteractionComponentDirective implements OnInit {
   localParameters: InteractionDropParams;
-  selectedValue = signal<number>(null);
+  selectedValue = signal<number>(-1);
   // create a signal for handling disabling transition on change
   disabledTransition = signal<boolean>(false);
 
@@ -41,10 +41,20 @@ export class InteractionDropComponent extends InteractionComponentDirective {
     });
   }
 
+  ngOnInit() {
+    this.responses.emit([{
+      // @ts-expect-error access parameter of unknown
+      id: this.parameters().variableId || 'DROP',
+      status: 'DISPLAYED',
+      value: 0,
+      relevantForResponsesProgress: true
+    }]);
+  }
+
   private resetSelection(): void {
     // before resetting, disable transition to move back instantly
     this.disabledTransition.set(true);
-    this.selectedValue.set(null);
+    this.selectedValue.set(-1);
     setTimeout(() => {
       this.disabledTransition.set(false);
     }, 500);
@@ -62,15 +72,12 @@ export class InteractionDropComponent extends InteractionComponentDirective {
   onButtonClick(index: number): void {
     /* Toggle selection: if already selected, deselect it
     (this moves the element back to the original position) */
-    const newSelectedValue = this.selectedValue() === index ? -1 : index;
-    this.selectedValue.set(newSelectedValue);
-
-    const id = this.localParameters.variableId;
+    this.selectedValue.set(this.selectedValue() === index ? -1 : index);
 
     const response: StarsResponse = {
-      id: id,
+      id: this.localParameters.variableId,
       status: 'VALUE_CHANGED',
-      value: newSelectedValue + 1,
+      value: this.selectedValue() + 1,
       relevantForResponsesProgress: true
     };
 

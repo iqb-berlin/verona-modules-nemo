@@ -1,5 +1,5 @@
 import {
-  Component, signal, effect
+  Component, signal, effect, OnInit
 } from '@angular/core';
 
 import { StarsResponse } from '../../services/responses.service';
@@ -19,7 +19,7 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
   styleUrls: ['./interaction-buttons.component.scss']
 })
 
-export class InteractionButtonsComponent extends InteractionComponentDirective {
+export class InteractionButtonsComponent extends InteractionComponentDirective implements OnInit {
   localParameters: InteractionButtonParams;
   // array of booleans for each option
   selectedValues = signal<boolean[]>([]);
@@ -59,6 +59,16 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       this.allOptions = this.createOptions();
       this.optionRows = this.getRowsOptions();
     });
+  }
+
+  ngOnInit() {
+    this.responses.emit([{
+      // @ts-expect-error access parameter of unknown
+      id: this.parameters().variableId || 'BUTTONS',
+      status: 'DISPLAYED',
+      value: 0,
+      relevantForResponsesProgress: true
+    }]);
   }
 
   private resetSelection(): void {
@@ -155,7 +165,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       this.selectedValues.set(selectedValues);
     }
 
-    const id = this.localParameters.variableId;
     /* stringify boolean array to string of 0 and 1 for multiselect or
        index of selected item for single select */
     const value = this.localParameters.multiSelect ?
@@ -163,7 +172,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       (this.selectedValues().findIndex(item => item) + 1).toString();
 
     const response: StarsResponse = {
-      id: id,
+      id: this.localParameters.variableId,
       status: 'VALUE_CHANGED',
       value: value,
       relevantForResponsesProgress: true
