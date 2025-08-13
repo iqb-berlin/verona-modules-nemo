@@ -5,8 +5,8 @@ import {
   fromEvent, Subject, tap, throttleTime
 } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Response } from '@iqbspecs/response/response.interface';
 
+import { StarsResponse } from '../../services/responses.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { InteractionVideoParams } from '../../models/unit-definition';
 
@@ -81,10 +81,11 @@ export class InteractionVideoComponent extends InteractionComponentDirective imp
 
     videoValue += this.playCount;
 
-    const response: Response = {
+    const response: StarsResponse = {
       id: 'videoPlayer',
       value: videoValue,
-      status: 'VALUE_CHANGED'
+      status: 'VALUE_CHANGED',
+      relevantForResponsesProgress: false
     };
 
     this.responses.emit([response]);
