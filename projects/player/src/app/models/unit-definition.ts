@@ -1,4 +1,5 @@
 import { VariableInfo } from './responses';
+import {AudioFeedback} from "./feedback";
 
 export type ContinueButtonEnum = 'ALWAYS' | 'NO' | 'ON_ANY_RESPONSE' |
 'ON_RESPONSES_COMPLETE' | 'ON_MAIN_AUDIO_COMPLETE';
@@ -17,6 +18,7 @@ export interface UnitDefinition {
   interactionType: InteractionEnum;
   interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams | InteractionImageOnlyParams;
   variableInfo: VariableInfo[] | undefined;
+  audioFeedback: AudioFeedback | undefined;
 }
 
 export interface SelectionOption {
