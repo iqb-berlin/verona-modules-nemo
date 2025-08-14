@@ -45,7 +45,7 @@ export class InteractionWriteComponent extends InteractionComponentDirective imp
       id: this.parameters().variableId || 'WRITE',
       status: 'DISPLAYED',
       value: '',
-      relevantForResponsesProgress: true
+      relevantForResponsesProgress: false
     }]);
   }
 
