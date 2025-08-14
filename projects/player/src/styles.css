@@ -86,10 +86,3 @@ stars-player {
   height: 100vh;
   overflow: hidden;
 }
-
-.unit-nav-next {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-}
