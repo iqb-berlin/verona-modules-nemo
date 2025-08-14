@@ -12,7 +12,7 @@ import { UnitService } from './services/unit.service';
 import { VeronaPostService } from './services/verona-post.service';
 import { VeronaSubscriptionService } from './services/verona-subscription.service';
 import { MetadataService } from './services/metadata.service';
-import { ContinueButtonComponent } from './components/continue-button.component';
+import { ContinueButtonComponent } from './components/continue-button/continue-button.component';
 import { StandaloneMenuComponent } from './components/standalone-menu/standalone-menu.component';
 import { MainAudioComponent } from './components/main-audio/main-audio.component';
 import { SafeResourceUrlPipe } from './pipes/safe-resource-url.pipe';
