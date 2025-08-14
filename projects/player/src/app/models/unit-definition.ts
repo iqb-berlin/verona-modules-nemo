@@ -6,6 +6,7 @@ export type InteractionEnum = 'BUTTONS' | 'DROP' | 'WRITE' | 'FIND_ON_IMAGE' | '
 export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED' | 'CLAP_HANDS';
 export type ButtonTypeEnum = 'MEDIUM_SQUARE' | 'BIG_SQUARE' | 'SMALL_SQUARE' | 'TEXT' | 'CIRCLE';
 export type ImagePositionEnum = 'TOP' | 'LEFT';
+export type TargetSizeEnum = 'MEDIUM' | 'LARGE' | 'SMALL';
 
 export interface UnitDefinition {
   id: string;
@@ -15,7 +16,8 @@ export interface UnitDefinition {
   continueButtonShow?: ContinueButtonEnum;
   mainAudio?: MainAudio;
   interactionType: InteractionEnum;
-  interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams | InteractionImageOnlyParams;
+  interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams |
+  InteractionImageOnlyParams | InteractionFindOnImageParams;
   variableInfo: VariableInfo[] | undefined;
 }
 
@@ -71,6 +73,22 @@ export interface InteractionWriteParams {
 
 export interface InteractionImageOnlyParams {
   imageSource: string;
+}
+
+export interface InteractionFindOnImageParams {
+  variableId: string;
+  imageSource: string;
+  text: string;
+  size: TargetSizeEnum;
+}
+
+export interface TargetArea {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  correctResponse: boolean;
 }
 
 export interface InteractionVideoParams {

@@ -41,6 +41,11 @@
         [style.background-color]="unitService.backgroundColor()"
         [parameters]="unitService.parameters()"
         (responses)="responsesService.newResponses($event)"></stars-interaction-video>
+    } @else if (unitService.interaction() === 'FIND_ON_IMAGE') {
+      <stars-interaction-find-on-image class="interaction"
+        [style.background-color]="unitService.backgroundColor()"
+        [parameters]="unitService.parameters()"
+        (responses)="responsesService.newResponses($event)"></stars-interaction-find-on-image>
     }
   </div>
 </div>

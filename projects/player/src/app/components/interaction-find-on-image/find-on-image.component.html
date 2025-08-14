@@ -1,0 +1,16 @@
+<div class="find-on-image-container">
+  <div class="image-wrapper" (click)="onClick($event)">
+    <img #imageElement [src]="localParameters.imageSource" [alt]="">
+    <div class="click-target" [class.disabled]="buttonDisabled()"
+         [class]="localParameters.size.toLowerCase() + '-size'"
+         [style.top]="clickTargetTop()"
+         [style.left]="clickTargetLeft()">
+      <span></span>
+    </div>
+  </div>
+  @if (localParameters.text) {
+    <div class="text-wrapper">
+      <span>{{localParameters.text}}</span>
+    </div>
+  }
+</div>
