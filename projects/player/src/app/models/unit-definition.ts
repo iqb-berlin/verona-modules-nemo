@@ -81,6 +81,7 @@ export interface InteractionFindOnImageParams {
   variableId: string;
   imageSource: string;
   text: string;
+  showArea: string;
   size: TargetSizeEnum;
 }
 
