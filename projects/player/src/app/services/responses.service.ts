@@ -141,6 +141,36 @@ export class ResponsesService {
     }
   }
 
+  private static isPositionInRange(responseValue: string, range: string): boolean {
+    if (responseValue && range) {
+      const responseMatches = responseValue.match(/\d+/g);
+      if (responseMatches && responseMatches.length > 1) {
+        const responseX = Number.parseInt(responseMatches[0], 10);
+        const responseY = Number.parseInt(responseMatches[1], 10);
+        const rangeMatches = range.match(/\d+/g);
+        if (rangeMatches && rangeMatches.length > 3) {
+          const rangeX1 = Number.parseInt(rangeMatches[0], 10);
+          const rangeY1 = Number.parseInt(rangeMatches[1], 10);
+          const rangeX2 = Number.parseInt(rangeMatches[2], 10);
+          const rangeY2 = Number.parseInt(rangeMatches[3], 10);
+          let compareXOk = false;
+          if (rangeX1 < rangeX2) {
+            compareXOk = responseX >= rangeX1 && responseX <= rangeX2;
+          } else {
+            compareXOk = responseX <= rangeX1 && responseX >= rangeX2;
+          }
+          if (compareXOk) {
+            if (rangeY1 < rangeY2) {
+              return responseY >= rangeY1 && responseY <= rangeY2;
+            }
+            return responseY <= rangeY1 && responseY >= rangeY2;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   private getCodedResponse(givenResponse: Response): Response {
     const newResponse = {
       id: givenResponse.id,
@@ -168,6 +198,8 @@ export class ResponsesService {
             let codeFound: boolean;
             if (c.method === 'EQUALS') {
               codeFound = valueAsString === c.parameter;
+            } else if (c.method === 'IN_POSITION_RANGE') {
+              codeFound = ResponsesService.isPositionInRange(valueAsString, c.parameter);
             } else {
               if (!Array.isArray(givenResponse.value) && typeof givenResponse.value === 'string') {
                 valueAsNumber = Number.parseInt(givenResponse.value, 10);
