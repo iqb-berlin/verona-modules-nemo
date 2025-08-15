@@ -5,8 +5,8 @@
   @include variables.flex-center;
   flex-direction: column;
   width: 95%;
-  height: 80%;
-  padding-top: 24px;
+  height: 75%;
+  padding-top: 18px;
 
   .image-wrapper {
     @include variables.flex-center;
@@ -53,7 +53,11 @@
   .text-wrapper {
     height: 10%;
     width: 80%;
-    padding-top: 32px;
+    padding-top: 24px;
     text-align: center;
+
+    span {
+      font-size: 36px;
+    }
   }
 }
