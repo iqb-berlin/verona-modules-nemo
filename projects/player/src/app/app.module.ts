@@ -24,6 +24,7 @@ import { InteractionWriteComponent } from './components/interaction-write/intera
 import { InteractionDropComponent } from './components/interaction-drop/interaction-drop.component';
 import { InteractionImageOnlyComponent } from './components/interaction-image-only/interaction-image-only.component';
 import { InteractionVideoComponent } from './components/interaction-video/interaction-video.component';
+import { InteractionFindOnImageComponent } from './components/interaction-find-on-image/find-on-image.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { InteractionVideoComponent } from './components/interaction-video/intera
     InteractionDropComponent,
     InteractionWriteComponent,
     InteractionImageOnlyComponent,
-    InteractionVideoComponent
+    InteractionVideoComponent,
+    InteractionFindOnImageComponent
   ],
   providers: [
     provideZonelessChangeDetection(),

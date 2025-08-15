@@ -175,7 +175,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
       id: this.localParameters.variableId,
       status: 'VALUE_CHANGED',
       value: value,
-      relevantForResponsesProgress: true
+      relevantForResponsesProgress: false
     };
 
     this.responses.emit([response]);

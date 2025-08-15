@@ -47,7 +47,7 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
       id: this.parameters().variableId || 'DROP',
       status: 'DISPLAYED',
       value: 0,
-      relevantForResponsesProgress: true
+      relevantForResponsesProgress: false
     }]);
   }
 
