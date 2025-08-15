@@ -18,6 +18,14 @@
       padding: 0;
     }
 
+    .area-style {
+      background: rgba(255, 255, 255, 0.3);
+      border: colors.$highlight dashed 1px;
+      position: absolute;
+      z-index: 5;
+      pointer-events: none;
+    }
+
     .click-target {
       position: absolute;
       z-index: 10;

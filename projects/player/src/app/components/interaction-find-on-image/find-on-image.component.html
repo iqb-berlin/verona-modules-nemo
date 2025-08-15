@@ -7,6 +7,9 @@
          [style.left]="clickTargetLeft()">
       <span></span>
     </div>
+    @if (showAreaStyle()) {
+      <div class="area-style" [style]="showAreaStyle()"></div>
+    }
   </div>
   @if (localParameters.text) {
     <div class="text-wrapper">

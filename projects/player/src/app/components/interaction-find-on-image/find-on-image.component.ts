@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component, effect, ElementRef, OnInit, signal, ViewChild
 } from '@angular/core';
 
@@ -11,13 +12,14 @@ import { InteractionFindOnImageParams } from '../../models/unit-definition';
   styleUrls: ['./find-on-image.component.scss']
 })
 
-export class InteractionFindOnImageComponent extends InteractionComponentDirective implements OnInit {
+export class InteractionFindOnImageComponent extends InteractionComponentDirective implements OnInit, AfterViewInit {
   localParameters: InteractionFindOnImageParams;
   clickTargetTop = signal('0px');
   clickTargetLeft = signal('0px');
 
   @ViewChild('imageElement', { static: false }) imageRef!: ElementRef<HTMLImageElement>;
   buttonDisabled = signal(true);
+  showAreaStyle = signal('');
 
   constructor() {
     super();
@@ -29,6 +31,7 @@ export class InteractionFindOnImageComponent extends InteractionComponentDirecti
         this.localParameters.variableId = parameters.variableId || 'FIND_ON_IMAGE';
         this.localParameters.imageSource = parameters.imageSource || '';
         this.localParameters.text = parameters.text || '';
+        this.localParameters.showArea = parameters.showArea || '';
         this.localParameters.size = parameters.size || 'SMALL';
       }
     });
@@ -42,6 +45,22 @@ export class InteractionFindOnImageComponent extends InteractionComponentDirecti
       value: '',
       relevantForResponsesProgress: false
     }]);
+  }
+
+  ngAfterViewInit() {
+    if (this.localParameters?.showArea) {
+      const area = this.localParameters.showArea.match(/\d+/g);
+
+      const xMultiplier = this.imageRef.nativeElement.width / 100;
+      const yMultiplier = this.imageRef.nativeElement.height / 100;
+
+      const x1 = Math.round(Number.parseInt(area[0], 10) * xMultiplier);
+      const y1 = Math.round(Number.parseInt(area[1], 10) * yMultiplier);
+      const x2 = Math.round(Number.parseInt(area[2], 10) * xMultiplier);
+      const y2 = Math.round(Number.parseInt(area[3], 10) * yMultiplier);
+
+      this.showAreaStyle.set(`top: ${y1}px; left: ${x1}px; width: ${x2 - x1}px; height: ${y2 - y1}px;`);
+    }
   }
 
   onClick(event) {
@@ -68,6 +87,7 @@ export class InteractionFindOnImageComponent extends InteractionComponentDirecti
       variableId: '',
       imageSource: '',
       text: '',
+      showArea: '',
       size: 'SMALL'
     };
   }
