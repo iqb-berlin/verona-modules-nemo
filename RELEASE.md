@@ -1,15 +1,22 @@
-# Release Note 0.6.4-beta #
+# Release Note 0.6.5 #
 
 ## Neu
-- Interaktionstyp VIDEO
+- Interaktionstyp FIND_ON_IMAGE (aka Wimmelbild)
+- Kodierung für FIND_ON_IMAGE durch Rechteck
+- zusätzlicher ContinueButton Type ON_AUDIO_AND_RESPONSE
+- Feedback
+
+## Verbesserungen
+- Refactor ContinueButton
+- Optimierung Kodierung
 
 ## Bugfixes
-- Verhalten continueButtonShow
-- Variable für MainAudio enthält Anzahl der Durchläufe
-- Optimierung Kodierung
+- sessionId wurde nicht gespeichert
+- verschiedene Stylings
 
 
 ## stars-unit-definition
 
-- Umsetzung der Version 0.14 der StarS Unit Definition für VIDEO und andere
+- Umsetzung unit-definition@0.15 Image für VIDEO, Feedback
+- Umsetzung unit-definition@0.16 FIND_ON_IMAGE inkl. Kodierung
 

@@ -85,15 +85,6 @@ export interface InteractionFindOnImageParams {
   size: TargetSizeEnum;
 }
 
-export interface TargetArea {
-  id: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  correctResponse: boolean;
-}
-
 export interface InteractionVideoParams {
   variableId: string;
   videoSource: string;
