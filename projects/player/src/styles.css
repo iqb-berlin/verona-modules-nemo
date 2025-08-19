@@ -63,6 +63,10 @@ body {
   font-size: 28px;
 }
 
+button {
+  color: inherit;
+}
+
 /* Apply font family to all elements */
 *, *::before, *::after {
   font-family: 'IQBprimar', 'Quicksand', sans-serif;
