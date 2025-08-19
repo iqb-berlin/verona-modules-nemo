@@ -1,11 +1,13 @@
 import { VariableInfo } from './responses';
+import { AudioFeedback } from './feedback';
 
-export type ContinueButtonEnum = 'ALWAYS' | 'NO' | 'ON_ANY_RESPONSE' |
+export type ContinueButtonEnum = 'ALWAYS' | 'NO' | 'ON_ANY_RESPONSE' | 'ON_AUDIO_AND_RESPONSE' |
 'ON_RESPONSES_COMPLETE' | 'ON_MAIN_AUDIO_COMPLETE' | 'ON_VIDEO_COMPLETE';
 export type InteractionEnum = 'BUTTONS' | 'DROP' | 'WRITE' | 'FIND_ON_IMAGE' | 'VIDEO' | 'IMAGE_ONLY' | 'NONE';
 export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED' | 'CLAP_HANDS';
 export type ButtonTypeEnum = 'MEDIUM_SQUARE' | 'BIG_SQUARE' | 'SMALL_SQUARE' | 'TEXT' | 'CIRCLE';
 export type ImagePositionEnum = 'TOP' | 'LEFT';
+export type TargetSizeEnum = 'MEDIUM' | 'LARGE' | 'SMALL';
 
 export interface UnitDefinition {
   id: string;
@@ -15,8 +17,10 @@ export interface UnitDefinition {
   continueButtonShow?: ContinueButtonEnum;
   mainAudio?: MainAudio;
   interactionType: InteractionEnum;
-  interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams | InteractionImageOnlyParams;
+  interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams |
+  InteractionImageOnlyParams | InteractionFindOnImageParams;
   variableInfo: VariableInfo[] | undefined;
+  audioFeedback: AudioFeedback | undefined;
 }
 
 export interface SelectionOption {
@@ -71,6 +75,14 @@ export interface InteractionWriteParams {
 
 export interface InteractionImageOnlyParams {
   imageSource: string;
+}
+
+export interface InteractionFindOnImageParams {
+  variableId: string;
+  imageSource: string;
+  text: string;
+  showArea: string;
+  size: TargetSizeEnum;
 }
 
 export interface InteractionVideoParams {

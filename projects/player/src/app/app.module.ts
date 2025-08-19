@@ -12,7 +12,7 @@ import { UnitService } from './services/unit.service';
 import { VeronaPostService } from './services/verona-post.service';
 import { VeronaSubscriptionService } from './services/verona-subscription.service';
 import { MetadataService } from './services/metadata.service';
-import { ContinueButtonComponent } from './components/continue-button.component';
+import { ContinueButtonComponent } from './components/continue-button/continue-button.component';
 import { StandaloneMenuComponent } from './components/standalone-menu/standalone-menu.component';
 import { MainAudioComponent } from './components/main-audio/main-audio.component';
 import { SafeResourceUrlPipe } from './pipes/safe-resource-url.pipe';
@@ -24,6 +24,7 @@ import { InteractionWriteComponent } from './components/interaction-write/intera
 import { InteractionDropComponent } from './components/interaction-drop/interaction-drop.component';
 import { InteractionImageOnlyComponent } from './components/interaction-image-only/interaction-image-only.component';
 import { InteractionVideoComponent } from './components/interaction-video/interaction-video.component';
+import { InteractionFindOnImageComponent } from './components/interaction-find-on-image/find-on-image.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { InteractionVideoComponent } from './components/interaction-video/intera
     InteractionDropComponent,
     InteractionWriteComponent,
     InteractionImageOnlyComponent,
-    InteractionVideoComponent
+    InteractionVideoComponent,
+    InteractionFindOnImageComponent
   ],
   providers: [
     provideZonelessChangeDetection(),

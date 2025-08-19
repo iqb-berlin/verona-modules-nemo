@@ -82,3 +82,10 @@ $small-text-font-size: 32px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
+
+@mixin viewportRatio($x, $y) {
+  width: 80vw;
+  height: $y * 80vw / $x;
+  max-width: $x / $y * 80vh;
+  max-height: 80vh;
+}

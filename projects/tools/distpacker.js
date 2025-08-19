@@ -62,12 +62,16 @@ function replaceUrlInCss(jsString, cssPath) {
     // List of illegal file chars: ~ “ # % & * : < > ? / \ { | }
     // : / \ are path delimiters
     // If one of the other characters is found, a must be a variable and must not be replaced.
-    if (a.search(/[~|"|#|%|*|<|>|?|{|}||]/) > -1) {
+    if (a.search(/[~|#|%|*|<|>|?|{|}||]/) > -1) {
+      console.log('return');
       return a;
     }
     const regexFile = /\((.*?)\)/ig;
     const src = regexFile.exec(a)[1].replace(/\'/gi, '').replace(/\"/gi, '').replace('./', '');
     const ext = getExtension(src);
+    console.log('src: ', src);
+    console.log('ext: ', ext);
+    console.log('folder: ', getFolderPath(cssPath));
     const file = `${folder}${getFolderPath(cssPath)}/${src}`;
     if (existsSync(file)) {
       const base64Str = base64Encode(file);
