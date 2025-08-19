@@ -84,8 +84,8 @@ $small-text-font-size: 32px;
 }
 
 @mixin viewportRatio($x, $y) {
-  width: 90vw;
-  height: $y * 90vw / $x;
-  max-width: $x / $y * 90vh;
-  max-height: 90vh;
+  width: 80vw;
+  height: $y * 80vw / $x;
+  max-width: $x / $y * 80vh;
+  max-height: 80vh;
 }
