@@ -20,13 +20,13 @@ export class ContinueButtonComponent {
   responseService = inject(ResponsesService);
   clicked = signal(false);
   audioSource = signal('');
+  isPlaying = signal(false);
 
   @ViewChild('buttonAudio', { static: false }) audioElementRef!: ElementRef<HTMLAudioElement>;
-  isPlaying = false;
   lastAudioSource = '';
 
   handleClick() {
-    if (this.isPlaying) return;
+    if (this.isPlaying()) return;
     this.clicked.set(true);
 
     setTimeout(() => {
@@ -56,10 +56,10 @@ export class ContinueButtonComponent {
   }
 
   onPlay() {
-    this.isPlaying = true;
+    this.isPlaying.set(true);
   }
 
   onPause() {
-    this.isPlaying = false;
+    this.isPlaying.set(false);
   }
 }

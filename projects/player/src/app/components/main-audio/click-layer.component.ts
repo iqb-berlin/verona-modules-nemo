@@ -17,7 +17,8 @@ import {
       height: 100%;
       background-color: transparent;
       cursor: pointer;
-      z-index: 99
+      z-index: 99;
+      -webkit-tap-highlight-color: transparent;
     }
   `
 })
