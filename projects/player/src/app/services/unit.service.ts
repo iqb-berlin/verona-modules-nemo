@@ -18,6 +18,7 @@ export class UnitService {
   parameters = signal<unknown>({});
   hasInteraction = signal(false);
   ribbonBars = signal<boolean>(false);
+  disableInteractionUntilComplete = signal(false);
 
   reset() {
     this.mainAudio.set(null);
@@ -27,6 +28,7 @@ export class UnitService {
     this.parameters.set({});
     this.hasInteraction.set(false);
     this.ribbonBars.set(false);
+    this.disableInteractionUntilComplete.set(false);
   }
 
   setNewData(unitDefinition: unknown) {
@@ -43,5 +45,8 @@ export class UnitService {
     if (def.interactionType) this.interaction.set(def.interactionType);
     if (def.interactionParameters) this.parameters.set(def.interactionParameters);
     if (def.ribbonBars) this.ribbonBars.set(def.ribbonBars);
+    if (def.mainAudio.disableInteractionUntilComplete) {
+      this.disableInteractionUntilComplete.set(def.mainAudio.disableInteractionUntilComplete);
+    }
   }
 }

@@ -17,6 +17,9 @@
     <stars-continue-button
       (navigate)="veronaPostService.sendVopUnitNavigationRequestedNotification('next')"></stars-continue-button>
   }
+  @if (unitService.disableInteractionUntilComplete() && !responsesService.mainAudioComplete() ) {
+    <div class="interaction-disabled-overlay" (click)="disabledOverlay($event)"></div>
+  }
   <div class="content"  [class.ribbon-bars]="hasRibbonBars()" [class.white-background]="isWhiteBackground() && hasRibbonBars()">
     @if (unitService.interaction() === 'BUTTONS') {
       <stars-interaction-buttons class="interaction"

@@ -97,4 +97,5 @@ export interface MainAudio {
   firstClickLayer?: boolean;
   animateButton?: boolean;
   maxPlay?: number;
+  disableInteractionUntilComplete?: boolean;
 }
