@@ -1,17 +1,19 @@
-import { Component, computed, inject } from '@angular/core';
+import {Component, computed, inject, input} from '@angular/core';
 import { UnitService } from '../../services/unit.service';
 
 @Component({
-  selector: 'stars-ribbon-bars',
-  templateUrl: './ribbon-bars.component.html',
+  selector: 'stars-ribbon-bar',
+  template: `
+    <div [class]="ribbonClass()">
+    </div>
+  `,
   styleUrls: ['./ribbon-bars.component.scss']
 })
 export class RibbonBarsComponent {
-  private unitService = inject(UnitService);
+  backgroundColor = input('white');
 
-  isWhiteBackground = computed(() => {
-    const bgColor = this.unitService.backgroundColor().toLowerCase();
-    return bgColor === '#ffffff' || bgColor === '#fff' ||
-      bgColor === '#eeeeee' || bgColor === '#eee';
+  ribbonClass = computed(() => {
+    const bgColorUpper = this.backgroundColor().toUpperCase();
+    return ['#FFF', '#FFFFFF', '#EEE', '#EEEEEE', 'WHITE'].includes(bgColorUpper) ? 'ribbon-bar-white' : 'ribbon-bar';
   });
 }

@@ -2,12 +2,11 @@
 @use 'variables';
 
 // White stripes on training mode
-.ribbon-bar {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
+.ribbon-bar, .ribbon-bar-white {
   height: variables.$ribbon-bar-height;
+}
+
+.ribbon-bar {
   background: repeating-linear-gradient(
       -45deg,
       colors.$white 0px,
@@ -15,19 +14,9 @@
       transparent 8px,
       transparent 16px
   );
-  z-index: 1;
-
-  &--top {
-    top: 0;
-  }
-
-  &--bottom {
-    bottom: 0;
-  }
 }
 
-// Light blue stripes for white backgrounds
-.white-background .ribbon-bar {
+.ribbon-bar-white {
   background: repeating-linear-gradient(
       -45deg,
       colors.$sky 0px,
