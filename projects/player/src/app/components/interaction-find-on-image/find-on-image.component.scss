@@ -4,14 +4,13 @@
 .find-on-image-container {
   @include variables.flex-center;
   flex-direction: column;
-  width: 85%;
-  height: 70%;
-  padding-top: 18px;
+  width: 100%;
+  height: 100%;
 
   .image-wrapper {
     @include variables.flex-center;
-    position: relative;
     @include variables.viewportRatio(16, 9);
+    flex: auto;
 
     img {
       @include variables.responsive-image;
@@ -59,9 +58,7 @@
   }
 
   .text-wrapper {
-    height: 10%;
-    width: 80%;
-    padding-top: 24px;
+    padding-top: 12px;
     text-align: center;
 
     span {

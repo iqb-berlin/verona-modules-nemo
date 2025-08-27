@@ -1,22 +1,13 @@
-# Release Note 0.6.5 #
+# Release Note 0.6.6 #
 
 ## Neu
-- Interaktionstyp FIND_ON_IMAGE (aka Wimmelbild)
-- Kodierung für FIND_ON_IMAGE durch Rechteck
-- zusätzlicher ContinueButton Type ON_AUDIO_AND_RESPONSE
-- Feedback
+- Umsetzung disableInteractionUntilComplete
+- Ausgrauen des Weiter Buttons solange Feedback läuft
+
 
 ## Verbesserungen
-- Refactor ContinueButton
-- Optimierung Kodierung
+- Refactor Ribbon Bars als Component
 
 ## Bugfixes
-- sessionId wurde nicht gespeichert
 - verschiedene Stylings
-
-
-## stars-unit-definition
-
-- Umsetzung unit-definition@0.15 Image für VIDEO, Feedback
-- Umsetzung unit-definition@0.16 FIND_ON_IMAGE inkl. Kodierung
 

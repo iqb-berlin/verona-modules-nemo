@@ -14,18 +14,12 @@ import { VopStartCommand } from './models/verona';
   styleUrls: ['./app.component.scss'],
   standalone: false
 })
+
 export class AppComponent implements OnInit {
   isStandalone: boolean;
   private ngUnsubscribe = new Subject<void>();
   hasRibbonBars(): boolean {
     return this.unitService.ribbonBars();
-  }
-
-  isWhiteBackground(): boolean {
-    const bgColor = this.unitService.backgroundColor().toLowerCase();
-    // Check for white color variations
-    return bgColor === '#ffffff' || bgColor === '#fff' ||
-      bgColor === '#eeeeee' || bgColor === '#eee';
   }
 
   constructor(
@@ -46,6 +40,12 @@ export class AppComponent implements OnInit {
       });
     this.isStandalone = window === window.parent;
     this.veronaPostService.sendReadyNotification(this.metadataService.playerMetadata);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  disabledOverlay(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   @HostListener('window:blur')

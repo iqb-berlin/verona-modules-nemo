@@ -4,27 +4,11 @@
 .drop-select-container {
   @include variables.flex-center;
   flex-direction: column;
-  padding-top: 7%;
-
-  .stimulus-wrapper, .interaction-wrapper {
-    display: block;
-    width: 100%;
-  }
 
   .stimulus-wrapper {
-    height: 70%;
-
     img {
-      display: block;
-      width: auto;
-      height: 80%;
-      padding-top: 40px;
-      margin: 0 auto;
+      @include variables.responsive-image;
     }
-  }
-
-  .interaction-wrapper {
-    height: 30%;
   }
 }
 
@@ -44,22 +28,8 @@
   }
 }
 
-@media screen and (max-height: 700px) {
-  .drop-select-container {
-    padding-top: 13%;
-
-    .stimulus-wrapper {
-      height: 65%;
-    }
-  }
-}
-
-@media screen and (max-height: 700px) {
-  .drop-select-container {
-    padding-top: 12%;
-
-    .stimulus-wrapper {
-      height: 65%;
-    }
+@media screen and (max-height: 600px) {
+  .stimulus-wrapper {
+    height: 330px;
   }
 }
