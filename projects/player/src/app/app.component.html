@@ -17,8 +17,11 @@
     <stars-continue-button
       (navigate)="veronaPostService.sendVopUnitNavigationRequestedNotification('next')"></stars-continue-button>
   }
+  @if (unitService.disableInteractionUntilComplete() && !responsesService.mainAudioComplete() ) {
+    <div class="interaction-disabled-overlay" (click)="disabledOverlay($event)"></div>
+  }
     @if (hasRibbonBars()) {
-      <stars-ribbon-bar [backgroundColor]="unitService.backgroundColor()"></stars-ribbon-bar>
+      <stars-ribbon-bar></stars-ribbon-bar>
     }
     @if (unitService.interaction() === 'BUTTONS') {
       <stars-interaction-buttons class="interaction"
@@ -46,6 +49,6 @@
         (responses)="responsesService.newResponses($event)"></stars-interaction-find-on-image>
     }
     @if (hasRibbonBars()) {
-      <stars-ribbon-bar [backgroundColor]="unitService.backgroundColor()"></stars-ribbon-bar>
+      <stars-ribbon-bar></stars-ribbon-bar>
     }
 </div>
