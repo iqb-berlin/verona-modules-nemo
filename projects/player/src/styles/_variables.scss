@@ -9,6 +9,7 @@ $font-family: 'IQBprimar', 'Quicksand', sans-serif;
 $font-weight-600: 600;
 $big-text-font-size: 112px;
 $small-text-font-size: 32px;
+$ribbon-bar-height: 30px;
 
 /* Mixins */
 
@@ -88,4 +89,9 @@ $small-text-font-size: 32px;
   height: $y * 80vw / $x;
   max-width: $x / $y * 80vh;
   max-height: 80vh;
+}
+
+@mixin ribbon-safe-content {
+  height: calc(100% - #{$ribbon-bar-height * 2}); // 1 ribbon bar at the top and 1 at the bottom
+  box-sizing: border-box;
 }

@@ -22,13 +22,6 @@ export class AppComponent implements OnInit {
     return this.unitService.ribbonBars();
   }
 
-  isWhiteBackground(): boolean {
-    const bgColor = this.unitService.backgroundColor().toLowerCase();
-    // Check for white color variations
-    return bgColor === '#ffffff' || bgColor === '#fff' ||
-      bgColor === '#eeeeee' || bgColor === '#eee';
-  }
-
   constructor(
     public unitService: UnitService,
     public responsesService: ResponsesService,
