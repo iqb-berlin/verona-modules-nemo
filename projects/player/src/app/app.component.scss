@@ -1,4 +1,5 @@
 @use 'colors';
+@use 'variables';
 
 .interaction-body {
   position: fixed;
@@ -13,6 +14,7 @@
 }
 
 .interaction {
+  @include variables.ribbon-safe-content;
   flex: auto;
   display: flex;
   flex-direction: column;
