@@ -25,6 +25,7 @@ import { InteractionDropComponent } from './components/interaction-drop/interact
 import { InteractionImageOnlyComponent } from './components/interaction-image-only/interaction-image-only.component';
 import { InteractionVideoComponent } from './components/interaction-video/interaction-video.component';
 import { InteractionFindOnImageComponent } from './components/interaction-find-on-image/find-on-image.component';
+import { RibbonBarsComponent } from './components/ribbon-bars/ribbon-bars.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { InteractionFindOnImageComponent } from './components/interaction-find-o
     InteractionWriteComponent,
     InteractionImageOnlyComponent,
     InteractionVideoComponent,
-    InteractionFindOnImageComponent
+    InteractionFindOnImageComponent,
+    RibbonBarsComponent
   ],
   providers: [
     provideZonelessChangeDetection(),
