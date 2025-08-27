@@ -14,6 +14,7 @@ import { VopStartCommand } from './models/verona';
   styleUrls: ['./app.component.scss'],
   standalone: false
 })
+
 export class AppComponent implements OnInit {
   isStandalone: boolean;
   private ngUnsubscribe = new Subject<void>();
@@ -46,6 +47,12 @@ export class AppComponent implements OnInit {
       });
     this.isStandalone = window === window.parent;
     this.veronaPostService.sendReadyNotification(this.metadataService.playerMetadata);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  disabledOverlay(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   @HostListener('window:blur')
