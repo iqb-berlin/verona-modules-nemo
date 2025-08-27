@@ -1,5 +1,6 @@
-import {Component, computed, inject, input} from '@angular/core';
-import { UnitService } from '../../services/unit.service';
+import {
+  Component, computed, input
+} from '@angular/core';
 
 @Component({
   selector: 'stars-ribbon-bar',
@@ -7,9 +8,9 @@ import { UnitService } from '../../services/unit.service';
     <div [class]="ribbonClass()">
     </div>
   `,
-  styleUrls: ['./ribbon-bars.component.scss']
+  styleUrls: ['./ribbon-bar.component.scss']
 })
-export class RibbonBarsComponent {
+export class RibbonBarComponent {
   backgroundColor = input('white');
 
   ribbonClass = computed(() => {
