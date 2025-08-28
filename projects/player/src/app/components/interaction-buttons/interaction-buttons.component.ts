@@ -1,5 +1,5 @@
 import {
-  Component, signal, effect, OnInit
+  Component, signal, effect
 } from '@angular/core';
 
 import { StarsResponse } from '../../services/responses.service';
@@ -19,7 +19,7 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
   styleUrls: ['./interaction-buttons.component.scss']
 })
 
-export class InteractionButtonsComponent extends InteractionComponentDirective implements OnInit {
+export class InteractionButtonsComponent extends InteractionComponentDirective {
   localParameters: InteractionButtonParams;
   // array of booleans for each option
   selectedValues = signal<boolean[]>([]);
@@ -53,22 +53,17 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
         } else {
           this.localParameters.imagePosition = 'TOP';
         }
+        this.responses.emit([{
+          id: this.localParameters.variableId,
+          status: 'DISPLAYED',
+          value: 0,
+          relevantForResponsesProgress: false
+        }]);
       }
-
       this.resetSelection();
       this.allOptions = this.createOptions();
       this.optionRows = this.getRowsOptions();
     });
-  }
-
-  ngOnInit() {
-    this.responses.emit([{
-      // @ts-expect-error access parameter of unknown
-      id: this.parameters().variableId || 'BUTTONS',
-      status: 'DISPLAYED',
-      value: 0,
-      relevantForResponsesProgress: false
-    }]);
   }
 
   private resetSelection(): void {
