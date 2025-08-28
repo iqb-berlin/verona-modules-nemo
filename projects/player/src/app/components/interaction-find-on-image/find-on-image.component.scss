@@ -43,16 +43,61 @@
       &.small-size {
         width: 50px;
         height: 50px;
+
+        @media (max-width: 768px) {
+          width: 40px;
+          height: 40px;
+        }
+
+        @media (max-width: 600px) {
+          width: 25px;
+          height: 25px;
+        }
+
+        @media (max-width: 480px) {
+          width: 10px;
+          height: 10px;
+        }
       }
 
       &.medium-size {
         width: 70px;
         height: 70px;
+
+        @media (max-width: 768px) {
+          width: 60px;
+          height: 60px;
+        }
+
+        @media (max-width: 600px) {
+          width: 50px;
+          height: 50px;
+        }
+
+        @media (max-width: 480px) {
+          width: 40px;
+          height: 40px;
+        }
       }
 
       &.large-size {
         width: 100px;
         height: 100px;
+
+        @media (max-width: 768px) {
+          width: 80px;
+          height: 80px;
+        }
+
+        @media (max-width: 600px) {
+          width: 60px;
+          height: 60px;
+        }
+
+        @media (max-width: 480px) {
+          width: 40px;
+          height: 40px;
+        }
       }
     }
   }
