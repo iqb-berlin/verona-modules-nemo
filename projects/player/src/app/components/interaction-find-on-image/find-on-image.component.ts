@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component, effect, ElementRef, OnInit, signal, ViewChild
+  Component, effect, ElementRef, signal, ViewChild
 } from '@angular/core';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
@@ -12,7 +12,7 @@ import { InteractionFindOnImageParams } from '../../models/unit-definition';
   styleUrls: ['./find-on-image.component.scss']
 })
 
-export class InteractionFindOnImageComponent extends InteractionComponentDirective implements OnInit, AfterViewInit {
+export class InteractionFindOnImageComponent extends InteractionComponentDirective implements AfterViewInit {
   localParameters: InteractionFindOnImageParams;
   clickTargetTop = signal('0px');
   clickTargetLeft = signal('0px');
@@ -33,18 +33,14 @@ export class InteractionFindOnImageComponent extends InteractionComponentDirecti
         this.localParameters.text = parameters.text || '';
         this.localParameters.showArea = parameters.showArea || '';
         this.localParameters.size = parameters.size || 'SMALL';
+        this.responses.emit([{
+          id: this.localParameters.variableId,
+          status: 'DISPLAYED',
+          value: '',
+          relevantForResponsesProgress: false
+        }]);
       }
     });
-  }
-
-  ngOnInit() {
-    this.responses.emit([{
-      // @ts-expect-error access parameter of unknown
-      id: this.parameters().variableId || 'FIND_ON_IMAGE',
-      status: 'DISPLAYED',
-      value: '',
-      relevantForResponsesProgress: false
-    }]);
   }
 
   ngAfterViewInit() {

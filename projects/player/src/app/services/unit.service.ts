@@ -45,7 +45,7 @@ export class UnitService {
     if (def.interactionType) this.interaction.set(def.interactionType);
     if (def.interactionParameters) this.parameters.set(def.interactionParameters);
     if (def.ribbonBars) this.ribbonBars.set(def.ribbonBars);
-    if (def.mainAudio.disableInteractionUntilComplete) {
+    if (def.mainAudio?.disableInteractionUntilComplete) {
       this.disableInteractionUntilComplete.set(def.mainAudio.disableInteractionUntilComplete);
     }
   }

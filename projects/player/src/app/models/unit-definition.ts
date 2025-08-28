@@ -74,6 +74,7 @@ export interface InteractionWriteParams {
 }
 
 export interface InteractionImageOnlyParams {
+  variableId: string;
   imageSource: string;
 }
 

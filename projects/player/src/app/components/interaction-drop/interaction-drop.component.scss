@@ -8,6 +8,7 @@
   .stimulus-wrapper {
     img {
       @include variables.responsive-image;
+      padding: unset;
     }
   }
 }

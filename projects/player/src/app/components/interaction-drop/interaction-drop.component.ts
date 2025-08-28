@@ -1,5 +1,5 @@
 import {
-  Component, signal, effect, OnInit
+  Component, signal, effect
 } from '@angular/core';
 
 import { StarsResponse } from '../../services/responses.service';
@@ -16,7 +16,7 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
   styleUrls: ['./interaction-drop.component.scss']
 })
 
-export class InteractionDropComponent extends InteractionComponentDirective implements OnInit {
+export class InteractionDropComponent extends InteractionComponentDirective {
   localParameters: InteractionDropParams;
   selectedValue = signal<number>(-1);
   // create a signal for handling disabling transition on change
@@ -35,20 +35,16 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
         this.localParameters.variableId = parameters.variableId || 'DROP';
         this.localParameters.imageSource = parameters.imageSource || null;
         this.localParameters.text = parameters.text || null;
+        this.responses.emit([{
+          id: this.localParameters.variableId,
+          status: 'DISPLAYED',
+          value: 0,
+          relevantForResponsesProgress: false
+        }]);
       }
 
       this.resetSelection();
     });
-  }
-
-  ngOnInit() {
-    this.responses.emit([{
-      // @ts-expect-error access parameter of unknown
-      id: this.parameters().variableId || 'DROP',
-      status: 'DISPLAYED',
-      value: 0,
-      relevantForResponsesProgress: false
-    }]);
   }
 
   private resetSelection(): void {

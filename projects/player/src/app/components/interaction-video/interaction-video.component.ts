@@ -36,7 +36,13 @@ export class InteractionVideoComponent extends InteractionComponentDirective imp
         this.localParameters.imageSource = parameters.imageSource || null;
         this.localParameters.videoSource = parameters.videoSource || null;
         this.localParameters.text = parameters.text || '';
-        this.localParameters.variableId = parameters.variableId || 'videoPlayer';
+        this.localParameters.variableId = parameters.variableId || 'VIDEO';
+        this.responses.emit([{
+          id: this.localParameters.variableId,
+          status: 'DISPLAYED',
+          value: '',
+          relevantForResponsesProgress: false
+        }]);
 
         this.playing.set(false);
       }

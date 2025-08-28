@@ -1,4 +1,4 @@
-import { Component, effect, OnInit } from '@angular/core';
+import { Component, effect } from '@angular/core';
 
 import { StarsResponse } from '../../services/responses.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
@@ -10,7 +10,7 @@ import { InteractionWriteParams } from '../../models/unit-definition';
   styleUrls: ['interaction-write.component.scss']
 })
 
-export class InteractionWriteComponent extends InteractionComponentDirective implements OnInit {
+export class InteractionWriteComponent extends InteractionComponentDirective {
   localParameters: InteractionWriteParams;
   isDisabled: boolean = false;
   currentText: string = '';
@@ -33,20 +33,16 @@ export class InteractionWriteComponent extends InteractionComponentDirective imp
         this.localParameters.maxInputLength = parameters.maxInputLength || 10;
         this.localParameters.imageSource = parameters.imageSource || null;
         this.localParameters.text = parameters.text || null;
+        this.responses.emit([{
+          id: this.localParameters.variableId,
+          status: 'DISPLAYED',
+          value: '',
+          relevantForResponsesProgress: false
+        }]);
       }
 
       this.currentText = '';
     });
-  }
-
-  ngOnInit() {
-    this.responses.emit([{
-      // @ts-expect-error access parameter of unknown
-      id: this.parameters().variableId || 'WRITE',
-      status: 'DISPLAYED',
-      value: '',
-      relevantForResponsesProgress: false
-    }]);
   }
 
   // eslint-disable-next-line class-methods-use-this
