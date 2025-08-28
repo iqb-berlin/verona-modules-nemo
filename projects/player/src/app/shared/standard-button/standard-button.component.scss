@@ -108,6 +108,20 @@
 
 // Type modifiers
 .button-option {
+
+  input {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+
+    // Remove default browser styling
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    outline: none;
+  }
+
   &.big_square-type {
     @include variables.big-button-size;
   }
