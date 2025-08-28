@@ -95,6 +95,9 @@ export class ResponsesService {
 
   newResponses(responses: StarsResponse[]) {
     responses.forEach(response => {
+      console.log('📥 ResponsesService received responses with IDs=====:',
+        responses.map(r => r.id));
+
       const codedResponse = this.getCodedResponse(response);
       const responseInStore = this.allResponses.find(r => r.id === response.id);
       if (responseInStore) {
