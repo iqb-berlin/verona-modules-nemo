@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component, effect, ElementRef, signal, ViewChild
 } from '@angular/core';
 
@@ -12,10 +13,12 @@ import { InteractionFindOnImageParams } from '../../models/unit-definition';
   styleUrls: ['./find-on-image.component.scss']
 })
 
-export class InteractionFindOnImageComponent extends InteractionComponentDirective {
+export class InteractionFindOnImageComponent extends InteractionComponentDirective implements AfterViewInit {
   localParameters: InteractionFindOnImageParams;
+  pendingShowArea = false;
   clickTargetTop = signal('0px');
   clickTargetLeft = signal('0px');
+  clickTargetSize = signal('0px');
 
   @ViewChild('imageElement', { static: false }) imageRef!: ElementRef<HTMLImageElement>;
   buttonDisabled = signal(true);
@@ -35,18 +38,11 @@ export class InteractionFindOnImageComponent extends InteractionComponentDirecti
         this.localParameters.showArea = parameters.showArea || '';
         this.localParameters.size = parameters.size || 'SMALL';
         if (this.localParameters.showArea) {
-          const area = this.localParameters.showArea.match(/\d+/g);
-          const imgWidth = this.imageRef.nativeElement.width;
-          const imgHeight = this.imageRef.nativeElement.height;
-          const imgTop = this.imageRef.nativeElement.offsetTop;
-          const imgLeft = this.imageRef.nativeElement.offsetLeft;
-
-          const x1 = Math.round((Number.parseInt(area[0], 10) * (imgWidth / 100)) + imgLeft);
-          const y1 = Math.round((Number.parseInt(area[1], 10) * (imgHeight / 100)) + imgTop);
-          const x2 = Math.round((Number.parseInt(area[2], 10) * (imgWidth / 100)) + imgLeft);
-          const y2 = Math.round((Number.parseInt(area[3], 10) * (imgHeight / 100)) + imgTop);
-console.log(`x1: ${x1} y1: ${y1} x2: ${x2} y2: ${y2}`);
-          this.showAreaStyle.set(`top: ${y1}px; left: ${x1}px; width: ${x2 - x1}px; height: ${y2 - y1}px;`);
+          if (this.imageRef) {
+            this.setShowArea();
+          } else {
+            this.pendingShowArea = true;
+          }
         }
         this.responses.emit([{
           id: this.localParameters.variableId,
@@ -58,23 +54,45 @@ console.log(`x1: ${x1} y1: ${y1} x2: ${x2} y2: ${y2}`);
     });
   }
 
-  onClick(event) {
-    this.clickTargetLeft.set(`${event.layerX}px`);
-    this.clickTargetTop.set(`${event.layerY}px`);
-    if (this.buttonDisabled()) this.buttonDisabled.set(false);
+  ngAfterViewInit() {
+    if (this.pendingShowArea) this.setShowArea();
+  }
 
+  setShowArea() {
+    const area = this.localParameters.showArea.match(/\d+/g);
+    const imgWidthFactor = this.imageRef.nativeElement.width / 100;
+    const imgHeightFactor = this.imageRef.nativeElement.height / 100;
+    const imgTop = this.imageRef.nativeElement.offsetTop;
+    const imgLeft = this.imageRef.nativeElement.offsetLeft;
+
+    const x1 = Math.round((Number.parseInt(area[0], 10) * imgWidthFactor) + imgLeft);
+    const y1 = Math.round((Number.parseInt(area[1], 10) * imgHeightFactor) + imgTop);
+    const x2 = Math.round((Number.parseInt(area[2], 10) * imgWidthFactor) + imgLeft);
+    const y2 = Math.round((Number.parseInt(area[3], 10) * imgHeightFactor) + imgTop);
+    this.showAreaStyle.set(`top: ${y1}px; left: ${x1}px; width: ${x2 - x1}px; height: ${y2 - y1}px;`);
+  }
+  setClickVisualisationAbsolute(x: number, y: number, imageWidth: number) {
+    this.clickTargetLeft.set(`${x}px`);
+    this.clickTargetTop.set(`${y}px`);
+    let sizeFactor = 5;
+    if (this.localParameters.size !== 'SMALL') sizeFactor = this.localParameters.size === 'LARGE' ? 15 : 10;
+    this.clickTargetSize.set(`${sizeFactor * (imageWidth / 100)}px`);
+    if (this.buttonDisabled()) this.buttonDisabled.set(false);
+  }
+
+  onClick(event) {
     const imgWidth = this.imageRef.nativeElement.width;
+    this.setClickVisualisationAbsolute(event.layerX, event.layerY, imgWidth);
     const imgHeight = this.imageRef.nativeElement.height;
     const imgTop = this.imageRef.nativeElement.offsetTop;
     const imgLeft = this.imageRef.nativeElement.offsetLeft;
     const x = Math.round(((event.layerX - imgLeft) / imgWidth) * 100);
     const y = Math.round(((event.layerY - imgTop) / imgHeight) * 100);
 
-    const value = `${x},${y}`;
     this.responses.emit([{
       id: this.localParameters.variableId,
       status: 'VALUE_CHANGED',
-      value: value,
+      value: `${x},${y}`,
       relevantForResponsesProgress: true
     }]);
   }

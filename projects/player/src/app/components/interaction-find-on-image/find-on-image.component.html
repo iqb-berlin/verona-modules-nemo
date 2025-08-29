@@ -2,7 +2,8 @@
   <div class="image-wrapper">
     <img #imageElement [src]="localParameters.imageSource" [alt]="" (click)="onClick($event)">
     <div class="click-target" [class.disabled]="buttonDisabled()"
-         [class]="localParameters.size.toLowerCase() + '-size'"
+         [style.width]="clickTargetSize()"
+         [style.height]="clickTargetSize()"
          [style.top]="clickTargetTop()"
          [style.left]="clickTargetLeft()">
       <span></span>
