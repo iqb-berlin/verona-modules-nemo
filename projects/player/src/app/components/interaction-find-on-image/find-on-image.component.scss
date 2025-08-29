@@ -16,8 +16,8 @@
     }
 
     .area-style {
-      background: rgba(255, 255, 255, 0.3);
-      border: colors.$highlight dashed 1px;
+      background: rgba(255, 255, 255, 0.5);
+      border: colors.$highlight dashed 2px;
       position: absolute;
       z-index: 5;
       pointer-events: none;
