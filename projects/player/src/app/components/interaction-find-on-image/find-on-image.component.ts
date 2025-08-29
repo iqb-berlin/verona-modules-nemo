@@ -71,6 +71,7 @@ export class InteractionFindOnImageComponent extends InteractionComponentDirecti
     const y2 = Math.round((Number.parseInt(area[3], 10) * imgHeightFactor) + imgTop);
     this.showAreaStyle.set(`top: ${y1}px; left: ${x1}px; width: ${x2 - x1}px; height: ${y2 - y1}px;`);
   }
+
   setClickVisualisationAbsolute(x: number, y: number, imageWidth: number) {
     this.clickTargetLeft.set(`${x}px`);
     this.clickTargetTop.set(`${y}px`);
