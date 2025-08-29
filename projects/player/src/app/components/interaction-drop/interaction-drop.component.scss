@@ -4,8 +4,10 @@
 .drop-select-container {
   @include variables.flex-center;
   flex-direction: column;
+  padding-top: 8%;
 
   .stimulus-wrapper {
+    padding-right: variables.$small-gap-margin;
     img {
       @include variables.responsive-image;
       padding: unset;
@@ -17,11 +19,10 @@
   @include variables.flex-center;
   flex-direction: row;
   width: 100%;
-  /* align center to stimulus pic with half of gap/box-shadow */
-  padding-left: 12px;
 }
 
 .animate-wrapper {
+  margin: 0;
   transition: all 1s ease-in-out;
 
   &.no-transition {
@@ -31,6 +32,6 @@
 
 @media screen and (max-height: 600px) {
   .stimulus-wrapper {
-    height: 330px;
+    height: 300px;
   }
 }

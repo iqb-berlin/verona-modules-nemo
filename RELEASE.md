@@ -1,6 +1,5 @@
-# Release Note 0.6.8 #
+# Release Note 0.6.9 #
 
 ## Bugfixes
-- Lösung des Timing-Problems, bei dem Antworten gesendet wurden, bevor die sessionId verfügbar war
-- verschiedene Stylings
+- Änderungen der Styles für die Interaction Drop Component, damit sich die Buttons nicht mit der Audio-Wellen-Animation überlappen.
 

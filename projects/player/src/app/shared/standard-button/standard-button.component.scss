@@ -10,8 +10,8 @@
     top: 0;
     left: 0;
     /* gap size here */
-    bottom: 24px;
-    right: 24px;
+    bottom: variables.$small-gap-margin;
+    right: variables.$small-gap-margin;
 
     background-color: colors.$white;
     border: 8px solid colors.$white;
