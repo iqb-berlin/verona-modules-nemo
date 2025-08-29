@@ -1,4 +1,4 @@
-# Release Note 0.6.11 #
+# Release Note 0.6.12 #
 
 ## Bugfixes
-- Änderungen der Styles für die Find on Image Component
+- Find on Image Component: response fehler gefixt
