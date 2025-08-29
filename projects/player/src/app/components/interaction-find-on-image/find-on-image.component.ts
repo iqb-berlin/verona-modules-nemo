@@ -87,8 +87,8 @@ export class InteractionFindOnImageComponent extends InteractionComponentDirecti
     const imgHeight = this.imageRef.nativeElement.height;
     const imgTop = this.imageRef.nativeElement.offsetTop;
     const imgLeft = this.imageRef.nativeElement.offsetLeft;
-    const x = Math.round(((event.layerX - imgLeft) / imgWidth) * 100);
-    const y = Math.round(((event.layerY - imgTop) / imgHeight) * 100);
+    const x = Math.round(((event.clientX - imgLeft) / imgWidth) * 100);
+    const y = Math.round(((event.clientY - imgTop) / imgHeight) * 100);
 
     this.responses.emit([{
       id: this.localParameters.variableId,
