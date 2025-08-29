@@ -14,7 +14,6 @@
 }
 
 .interaction {
-  @include variables.ribbon-safe-content;
   flex: auto;
   display: flex;
   flex-direction: column;

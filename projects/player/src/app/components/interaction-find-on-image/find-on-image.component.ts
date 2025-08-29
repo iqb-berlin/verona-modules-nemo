@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   Component, effect, ElementRef, signal, ViewChild
 } from '@angular/core';
 
@@ -9,10 +8,11 @@ import { InteractionFindOnImageParams } from '../../models/unit-definition';
 @Component({
   selector: 'stars-interaction-find-on-image',
   templateUrl: './find-on-image.component.html',
+  standalone: true,
   styleUrls: ['./find-on-image.component.scss']
 })
 
-export class InteractionFindOnImageComponent extends InteractionComponentDirective implements AfterViewInit {
+export class InteractionFindOnImageComponent extends InteractionComponentDirective {
   localParameters: InteractionFindOnImageParams;
   clickTargetTop = signal('0px');
   clickTargetLeft = signal('0px');
@@ -27,12 +27,26 @@ export class InteractionFindOnImageComponent extends InteractionComponentDirecti
     effect(() => {
       const parameters = this.parameters() as InteractionFindOnImageParams;
       this.localParameters = this.createDefaultParameters();
+      this.buttonDisabled.set(true);
       if (parameters) {
         this.localParameters.variableId = parameters.variableId || 'FIND_ON_IMAGE';
         this.localParameters.imageSource = parameters.imageSource || '';
         this.localParameters.text = parameters.text || '';
         this.localParameters.showArea = parameters.showArea || '';
         this.localParameters.size = parameters.size || 'SMALL';
+        if (this.localParameters?.showArea) {
+          const area = this.localParameters.showArea.match(/\d+/g);
+
+          const xMultiplier = this.imageRef.nativeElement.width / 100;
+          const yMultiplier = this.imageRef.nativeElement.height / 100;
+
+          const x1 = Math.round(Number.parseInt(area[0], 10) * xMultiplier);
+          const y1 = Math.round(Number.parseInt(area[1], 10) * yMultiplier);
+          const x2 = Math.round(Number.parseInt(area[2], 10) * xMultiplier);
+          const y2 = Math.round(Number.parseInt(area[3], 10) * yMultiplier);
+
+          this.showAreaStyle.set(`top: ${y1}px; left: ${x1}px; width: ${x2 - x1}px; height: ${y2 - y1}px;`);
+        }
         this.responses.emit([{
           id: this.localParameters.variableId,
           status: 'DISPLAYED',
@@ -43,25 +57,9 @@ export class InteractionFindOnImageComponent extends InteractionComponentDirecti
     });
   }
 
-  ngAfterViewInit() {
-    if (this.localParameters?.showArea) {
-      const area = this.localParameters.showArea.match(/\d+/g);
-
-      const xMultiplier = this.imageRef.nativeElement.width / 100;
-      const yMultiplier = this.imageRef.nativeElement.height / 100;
-
-      const x1 = Math.round(Number.parseInt(area[0], 10) * xMultiplier);
-      const y1 = Math.round(Number.parseInt(area[1], 10) * yMultiplier);
-      const x2 = Math.round(Number.parseInt(area[2], 10) * xMultiplier);
-      const y2 = Math.round(Number.parseInt(area[3], 10) * yMultiplier);
-
-      this.showAreaStyle.set(`top: ${y1}px; left: ${x1}px; width: ${x2 - x1}px; height: ${y2 - y1}px;`);
-    }
-  }
-
   onClick(event) {
     if (this.buttonDisabled()) this.buttonDisabled.set(false);
-
+console.log(event);
     this.clickTargetLeft.set(`${event.layerX}px`);
     this.clickTargetTop.set(`${event.layerY}px`);
 

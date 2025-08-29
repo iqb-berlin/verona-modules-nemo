@@ -90,8 +90,3 @@ $ribbon-bar-height: 30px;
   max-width: $x / $y * 80vh;
   max-height: 80vh;
 }
-
-@mixin ribbon-safe-content {
-  height: calc(100% - #{$ribbon-bar-height * 2}); // 1 ribbon bar at the top and 1 at the bottom
-  box-sizing: border-box;
-}
