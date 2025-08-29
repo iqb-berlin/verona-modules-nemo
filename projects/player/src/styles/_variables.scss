@@ -10,6 +10,7 @@ $font-weight-600: 600;
 $big-text-font-size: 112px;
 $small-text-font-size: 32px;
 $ribbon-bar-height: 30px;
+$audio-waves-animation-height: 100px;
 
 /* Mixins */
 
@@ -92,6 +93,8 @@ $ribbon-bar-height: 30px;
 }
 
 @mixin ribbon-safe-content {
-  height: calc(100% - #{$ribbon-bar-height * 2}); // 1 ribbon bar at the top and 1 at the bottom
+  height: calc(100% - #{$ribbon-bar-height * 2} - #{$audio-waves-animation-height});
   box-sizing: border-box;
+  overflow: hidden;
+
 }

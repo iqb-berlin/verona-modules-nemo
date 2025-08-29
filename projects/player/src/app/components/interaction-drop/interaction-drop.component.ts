@@ -58,11 +58,22 @@ export class InteractionDropComponent extends InteractionComponentDirective {
 
   animateStyle(index: number): string {
     if (this.selectedValue() !== index) return '';
+    const totalButtons = this.localParameters.options.length;
+    const buttonContainerWidth = 170; // Because we are using SMALL_SQUARE as the type of standard button
+    const gapWidth = 24;
+    const borderOffset = 8;
+    const buttonWidth = buttonContainerWidth - gapWidth;
+    const totalWidth = totalButtons * buttonContainerWidth; // Total width of the button container
+    const containerCenter = totalWidth / 2; // Center of button container
+    const buttonCenter = buttonWidth / 2; // // Distance from container edge to a button center
 
-    // each button has 200px incl 24px gap/shadow
-    // minus half it's size to set target to the center of div
-    const offset = ((200 * this.localParameters.options.length) / 2) - 100 - (index * 200);
-    return `translate(${offset}px,270px)`;
+    // Current button's position
+    const currentButtonCenter = (index * buttonContainerWidth) + buttonCenter + borderOffset; // X position of THIS button's center
+
+    // Move button to a container center
+    const offsetX = containerCenter - currentButtonCenter;
+
+    return `translate(${offsetX}px, 230px)`;
   }
 
   onButtonClick(index: number): void {
