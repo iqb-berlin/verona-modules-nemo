@@ -59,12 +59,15 @@ export class InteractionFindOnImageComponent extends InteractionComponentDirecti
 
   onClick(event) {
     if (this.buttonDisabled()) this.buttonDisabled.set(false);
-console.log(event);
     this.clickTargetLeft.set(`${event.layerX}px`);
     this.clickTargetTop.set(`${event.layerY}px`);
+    const imgWidth = this.imageRef.nativeElement.width;
+    const imgHeight = this.imageRef.nativeElement.height;
+    const imgTop = this.imageRef.nativeElement.offsetTop;
+    const imgLeft = this.imageRef.nativeElement.offsetLeft;
 
-    const x = Math.round((event.layerX / this.imageRef.nativeElement.width) * 100);
-    const y = Math.round((event.layerY / this.imageRef.nativeElement.height) * 100);
+    const x = Math.round(((event.layerX - imgLeft) / imgWidth) * 100);
+    const y = Math.round(((event.layerY - imgTop) / imgHeight) * 100);
 
     const value = `${x},${y}`;
     this.responses.emit([{
