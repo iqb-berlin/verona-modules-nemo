@@ -9,7 +9,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "validate-data": "validate-json projects/player/test/unitdata/imageOnly stars-unit-definition 0.12",
+    "validate-data": "validate-json projects/player/test/unitdata/drop stars-unit-definition 0.17",
     "build": "ng build --configuration production --output-hashing=none",
     "e2e": "npx cypress run",
     "postbuild": "node projects/tools/distpacker.js dist/stars-player/browser index_packed.html"
