@@ -11,6 +11,7 @@
     "start": "ng serve",
     "validate-data": "validate-json projects/player/test/unitdata stars-unit-definition 0.16",
     "build": "ng build --configuration production --output-hashing=none",
+    "e2e": "npx cypress run",
     "postbuild": "node projects/tools/distpacker.js dist/stars-player/browser index_packed.html"
   },
   "dependencies": {
@@ -45,6 +46,7 @@
     "@typescript-eslint/parser": "7.18.0",
     "@typescript-eslint/utils": "^7.16.0",
     "chromedriver": "119.0.1",
+    "cypress": "^15.0.0",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-config-prettier": "10.1.5",
