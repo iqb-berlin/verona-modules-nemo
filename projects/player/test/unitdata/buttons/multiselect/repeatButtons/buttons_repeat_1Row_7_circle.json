@@ -1,6 +1,6 @@
 {
   "id": "stars-unit-definition",
-  "version": "0.16",
+  "version": "0.17",
   "backgroundColor": "#FFD4AC",
   "continueButtonShow": "ON_ANY_RESPONSE",
   "mainAudio": {
@@ -11,7 +11,7 @@
   },
   "interactionType": "BUTTONS",
   "interactionParameters": {
-    "variableId": "BUTTONS",
+    "variableId": "CIRCLES",
     "imageSource": "",
     "imagePosition": "LEFT",
     "text": "",
@@ -20,6 +20,9 @@
     "numberOfRows": 1,
     "options": {
       "repeatButton": {
+        "option": {
+          "icon": "CLOSE_RED"
+        },
         "numberOfOptions": 7
       }
     }
