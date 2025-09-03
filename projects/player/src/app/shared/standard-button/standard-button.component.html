@@ -1,6 +1,7 @@
 <div class="button-option input-wrapper"
      [class]="type().toLowerCase() +'-type'"
-     [class.text-button-mode]="textMode()">
+     [class.text-button-mode]="textMode()"
+     data-testid="input-wrapper">
   <input
     [type]="inputType()"
     [name]="id()"
@@ -8,6 +9,7 @@
     [value]="value()"
     (click)="onClick()"
     [checked]="selected()"
+    [attr.data-selected]="selected()"
   />
   <label [for]="id() + '_' + value()">
     @if (type() !== 'CIRCLE') {

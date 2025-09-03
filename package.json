@@ -9,9 +9,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "validate-data": "validate-json projects/player/test/unitdata/drop stars-unit-definition 0.17",
+    "validate-data": "validate-json projects/player/test/unitdata/drop stars-unit-definition 0.18",
     "build": "ng build --configuration production --output-hashing=none",
     "e2e": "npx cypress run",
+    "test": "npx cypress open --browser chrome cypress/e2e/interaction-buttons/interaction.buttons.spec.cy.ts",
     "postbuild": "node projects/tools/distpacker.js dist/stars-player/browser index_packed.html"
   },
   "dependencies": {
