@@ -1,18 +1,16 @@
 export function testContinueButtonFeatures(interactionType: string, configFile: string) {
   describe(`Continue Button Features - ${interactionType}`, () => {
-
     let testData: any;
 
     beforeEach(() => {
-      cy.fixture(`${configFile}.json`).then(data => {
+      cy.setupTestData(configFile, interactionType);
+      cy.get('@testData').then(data => {
         testData = data;
       });
-      cy.visit('http://localhost:4200');
-      cy.loadUnit(configFile);
     });
 
     it('Should handle different values', () => {
-      const continueButtonRules = ['ON_ANY_RESPONSE', 'ALWAYS'];
+      const continueButtonRules = ['ALWAYS', 'NO', 'ON_ANY_RESPONSE', 'ON_AUDIO_AND_RESPONSE', 'ON_RESPONSES_COMPLETE', 'ON_MAIN_AUDIO_COMPLETE', 'ON_VIDEO_COMPLETE'];
 
       continueButtonRules.forEach((rule) => {
         cy.then(() => {

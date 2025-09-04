@@ -35,9 +35,6 @@
 //     }
 //   }
 // }
-Cypress.Commands.add('openPlayer', () => {
-  cy.visit('http://localhost:4200/');
-});
 
 Cypress.Commands.add('loadUnit', (filename: string) => {
   cy.fixture(filename).as('unit').then(unit => {
@@ -50,3 +47,20 @@ Cypress.Commands.add('loadUnit', (filename: string) => {
     });
   });
 });
+
+Cypress.Commands.add('setupTestData', (configFile: string, interactionType: string) => {
+  const fullPath = `${interactionType}/${configFile}`;
+  cy.fixture(fullPath).as('testData');
+  cy.visit('http://localhost:4200');
+  cy.loadUnit(fullPath);
+});
+
+/* eslint-disable @typescript-eslint/no-namespace */
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      loadUnit(filename: string): Chainable<void>
+      setupTestData(configFile: string, interactionType: string): Chainable<void>
+    }
+  }
+}

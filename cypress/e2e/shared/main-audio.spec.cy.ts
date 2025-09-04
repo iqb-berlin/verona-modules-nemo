@@ -3,11 +3,10 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
     let testData: any;
 
     beforeEach(() => {
-      cy.fixture(`${configFile}.json`).then(data => {
+      cy.setupTestData(configFile, interactionType);
+      cy.get('@testData').then(data => {
         testData = data;
       });
-      cy.visit('http://localhost:4200');
-      cy.loadUnit(configFile);
     });
 
     it('should handle firstClickLayer correctly', () => {

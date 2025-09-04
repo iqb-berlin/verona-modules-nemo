@@ -4,16 +4,10 @@ import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 describe('BUTTONS Interaction E2E Tests', () => {
   let testData: any;
   beforeEach(() => {
-    // Use the same file for both test assertions AND app data
-    const configFile = 'buttons_test';
-
-    cy.fixture(`${configFile}.json`).then(data => {
+    cy.setupTestData('buttons_test', 'buttons');
+    cy.get('@testData').then(data => {
       testData = data;
     });
-
-    cy.visit('http://localhost:4200');
-
-    cy.loadUnit(configFile);
   });
 
   it('1. should have continue button', () => {
@@ -45,21 +39,10 @@ describe('BUTTONS Interaction E2E Tests', () => {
   });
 
   it('3b. should handle multi-selection when enabled', () => {
-    // Modify the test data to enable multi-select
-    const modifiedTestData = { ...testData };
-    modifiedTestData.mainAudio.firstClickLayer = false;
-    modifiedTestData.mainAudio.disableInteractionUntilComplete = false;
-    modifiedTestData.interactionParameters.multiSelect = true;
-
-    // Write the modified data to a temporary fixture file
-    cy.writeFile('cypress/fixtures/temp_multiselect_test.json', modifiedTestData);
-
-    // Visit the page
-    cy.visit('http://localhost:4200');
-
-    // Load the temporary fixture
-    cy.loadUnit('temp_multiselect_test');
-
+    cy.setupTestData('buttons_multiselect_true_test', 'buttons');
+    cy.get('@testData').then(data => {
+      testData = data;
+    });
     // Wait for the component to re-render
     cy.get('[data-testid="button-0"]').should('exist');
 
@@ -69,11 +52,9 @@ describe('BUTTONS Interaction E2E Tests', () => {
 
     cy.get('[data-testid="button-0"] input').should('have.attr', 'data-selected', 'true');
     cy.get('[data-testid="button-1"] input').should('have.attr', 'data-selected', 'true');
-
-    // Clean up temporary file
-    cy.task('deleteFile', `cypress/fixtures/${modifiedTestData}`);
   });
 
+  // TODO: test all the possible layout examples
   it('4. should respect button layout (numberOfRows)', () => {
     // Based on interactionParameters.numberOfRows: 2
     const expectedRows = testData.interactionParameters?.numberOfRows || 1;
@@ -129,9 +110,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  // TODO: seperate test case when there is not imageSource parameter
-  // TODO: add multiple test files to test different cases instead of temporarily creating and then cleaning up
-  it('6. should have an image on the given position, if there is an imageSource parameter', () => {
+  it('6a. should have an image on the given position, if there is an imageSource parameter', () => {
     const imageSource = testData.interactionParameters?.imageSource;
     const imagePosition = testData.interactionParameters?.imagePosition;
 
@@ -145,8 +124,24 @@ describe('BUTTONS Interaction E2E Tests', () => {
       if (imagePosition === 'LEFT') {
         cy.get('[data-testid="buttons-container"]').should('have.class', 'flex-row');
       }
-    } else {
-      cy.get('[data-testid="stimulus-image"]').should('not.exist');
+    }
+  });
+
+  it('6b. should not have an image on the given position, if imageSource parameter is empty', () => {
+    cy.setupTestData('buttons_imageSource_empty_test', 'buttons');
+    cy.get('@testData').then(data => {
+      testData = data;
+    });
+
+    const imageSource = testData.interactionParameters?.imageSource;
+    if (imageSource === '') {
+      // Remove click layer if needed
+      if (testData.mainAudio?.firstClickLayer) {
+        cy.get('[data-testid="click-layer"]')
+          .click();
+      }
+      cy.get('[data-testid="stimulus-image"]')
+        .should('not.exist');
     }
   });
 
@@ -161,18 +156,10 @@ describe('BUTTONS Interaction E2E Tests', () => {
   });
 
   it('7b. should not display instruction text when text parameter is empty string', () => {
-    const tempFileName = 'temp_empty_text_test.json';
-
-    // Create modified test data with empty text
-    const modifiedTestData = { ...testData };
-    modifiedTestData.interactionParameters.text = '';
-
-    // Write temporary fixture file
-    cy.writeFile(`cypress/fixtures/${tempFileName}`, modifiedTestData);
-
-    // Visit and load the modified data
-    cy.visit('http://localhost:4200');
-    cy.loadUnit(tempFileName);
+    cy.setupTestData('buttons_text_empty_test', 'buttons');
+    cy.get('@testData').then(data => {
+      testData = data;
+    });
 
     // Remove click layer if needed
     if (testData.mainAudio?.firstClickLayer) {
@@ -184,10 +171,11 @@ describe('BUTTONS Interaction E2E Tests', () => {
 
     // Verify that instruction text does not exist when text is empty string
     cy.get('[data-testid="instruction-text"]').should('not.exist');
-
-    // Clean up temporary file
-    cy.task('deleteFile', `cypress/fixtures/${tempFileName}`);
   });
+
+  // TODO: add test case when options.buttons has icon or text instead of imageSource
+  // it('should validate response data structure', () => {
+  // });
 
   // it('should validate response data structure', () => {
   // });

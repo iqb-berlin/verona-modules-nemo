@@ -20,13 +20,13 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
 })
 
 export class InteractionButtonsComponent extends InteractionComponentDirective {
-  localParameters: InteractionButtonParams;
+  localParameters!: InteractionButtonParams;
   // array of booleans for each option
   selectedValues = signal<boolean[]>([]);
   // options sorted by rows
-  optionRows: Array<Array<RowOption>> = null;
+  optionRows: Array<Array<RowOption>> = [];
   // Array of all options aka Buttons to be shown
-  allOptions: Array<SelectionOption> = null;
+  allOptions: Array<SelectionOption> = [];
   // imagePosition for stimulus image if available
   imagePosition: string = 'TOP';
 
@@ -39,14 +39,14 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       this.localParameters = this.createDefaultParameters();
 
       if (parameters) {
-        this.localParameters.options = parameters.options || null;
+        this.localParameters.options = parameters.options || {};
         this.localParameters.variableId = parameters.variableId || 'BUTTONS';
-        this.localParameters.imageSource = parameters.imageSource || null;
+        this.localParameters.imageSource = parameters.imageSource || '';
         this.localParameters.numberOfRows = parameters.numberOfRows || 1;
         this.localParameters.multiSelect = parameters.multiSelect || false;
         this.localParameters.buttonType = parameters.buttonType || 'MEDIUM_SQUARE';
         this.localParameters.numberOfRows = parameters.numberOfRows || 1;
-        this.localParameters.text = parameters.text || null;
+        this.localParameters.text = parameters.text || '';
 
         if (this.localParameters.imageSource) {
           this.localParameters.imagePosition = parameters.imagePosition || 'LEFT';
@@ -82,20 +82,21 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     if (!this.localParameters.options) return [];
 
     // eslint-disable-next-line
-    let options:any[];
+    let options: SelectionOption[];
 
     if (this.localParameters.options?.repeatButton) {
+      const repeatButton = this.localParameters.options.repeatButton;
       options = Array.from(
-        { length: this.localParameters.options.repeatButton.numberOfOptions },
+        { length: repeatButton.numberOfOptions },
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _ => ({
-          text: this.localParameters.options.repeatButton.option?.text || null,
-          imageSource: this.localParameters.options.repeatButton.option?.imageSource || null,
-          icon: this.localParameters.options.repeatButton.option?.icon || null
+          text: repeatButton.option?.text || '',
+          imageSource: repeatButton.option?.imageSource || '',
+          icon: repeatButton.option?.icon || 'CLOSE_RED'
         })
       );
     } else {
-      options = this.localParameters.options?.buttons || null;
+      options = this.localParameters.options?.buttons || [];
     }
 
     if (this.localParameters.imageSource) {
@@ -110,7 +111,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   getRowsOptions():Array<Array<RowOption>> {
     if (!this.localParameters.options) return [];
 
-    const numberOfRows = this.localParameters.numberOfRows;
+    const numberOfRows = this.localParameters.numberOfRows || 1;
     const rows: Array<Array<RowOption>> = [];
 
     let options = this.allOptions;
@@ -180,10 +181,10 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   private createDefaultParameters(): InteractionButtonParams {
     return {
       variableId: 'BUTTONS',
-      options: null,
-      imageSource: null,
+      options: {},
+      imageSource: '',
       imagePosition: 'TOP',
-      text: null,
+      text: '',
       multiSelect: false,
       numberOfRows: 1,
       buttonType: 'MEDIUM_SQUARE'

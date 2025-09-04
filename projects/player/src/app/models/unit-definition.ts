@@ -39,12 +39,6 @@ export interface InteractionOptions {
   repeatButton?: RepeatButtonConfig;
 }
 
-export interface Coding {
-  value: number | string;
-  code: number;
-  score: number;
-}
-
 export interface InteractionButtonParams {
   variableId: string;
   options: InteractionOptions;

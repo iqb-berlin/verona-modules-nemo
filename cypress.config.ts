@@ -4,7 +4,7 @@ import path from 'path';
 
 export default defineConfig({
   e2e: {
-    setupNodeEvents(on, config) {
+    setupNodeEvents(on) {
       // Register the deleteFile task
       on('task', {
         deleteFile(filePath) {
@@ -16,6 +16,8 @@ export default defineConfig({
             }
             return `File not found: ${filePath}`;
           } catch (error) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
             throw new Error(`Failed to delete file: ${error.message}`);
           }
         }
