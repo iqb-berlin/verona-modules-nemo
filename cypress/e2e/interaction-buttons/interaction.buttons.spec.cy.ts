@@ -54,59 +54,92 @@ describe('BUTTONS Interaction E2E Tests', () => {
     cy.get('[data-testid="button-1"] input').should('have.attr', 'data-selected', 'true');
   });
 
-  // TODO: test all the possible layout examples
   it('4. should respect button layout (numberOfRows)', () => {
-    // Based on interactionParameters.numberOfRows: 2
-    const expectedRows = testData.interactionParameters?.numberOfRows || 1;
-    const totalButtons = testData.interactionParameters?.options?.buttons?.length || 0;
 
-    // Remove click layer if needed
-    if (testData.mainAudio?.firstClickLayer) {
-      cy.get('[data-testid="click-layer"]').click();
-    }
+    const layoutConfigs = [
+      // 1 Row layouts
+      { rows: 1, layout: [2], file: 'buttons_1Row_2_test.json' },
+      { rows: 1, layout: [3], file: 'buttons_1Row_3_test.json' },
+      { rows: 1, layout: [4], file: 'buttons_1Row_4_test.json' },
+      { rows: 1, layout: [5], file: 'buttons_1Row_5_test.json' },
 
-    // Check that the correct number of rows exists
-    cy.get('[data-testid^="button-row-"]').should('have.length', expectedRows);
+      // 2 Row layouts
+      { rows: 2, layout: [1, 1], file: 'buttons_2Rows_1-1_test.json' },
+      { rows: 2, layout: [2, 2], file: 'buttons_2Rows_2-2_test.json' },
+      { rows: 2, layout: [3, 3], file: 'buttons_2Rows_3-3_test.json' },
+      { rows: 2, layout: [4, 3], file: 'buttons_2Rows_4-3_test.json' },
+      { rows: 2, layout: [4, 4], file: 'buttons_2Rows_4-4_test.json' },
+      { rows: 2, layout: [5, 4], file: 'buttons_2Rows_5-4_test.json' },
+      { rows: 2, layout: [5, 5], file: 'buttons_2Rows_5-5_test.json' },
 
-    // Check that the correct number of buttons exists
-    cy.get('stars-standard-button[data-testid^="button-"]').should('have.length', totalButtons);
+      // 3 Row layouts
+      { rows: 3, layout: [2, 2, 2], file: 'buttons_3Rows_2-2-2_test.json' },
+      { rows: 3, layout: [5, 5, 1], file: 'buttons_3Rows_5-5-1_test.json' }
+    ];
+
+    layoutConfigs.forEach(({ rows, layout, file }) => {
+      cy.log(`Testing layout: ${rows} rows with ${layout.join('-')} buttons`);
+
+      cy.setupTestData(file, 'buttons');
+      cy.get('@testData').then(data => {
+        testData = data;
+      });
+
+      // Check that the correct number of rows exists
+      cy.get('[data-testid^="button-row-"]').should('have.length', rows).then(() => {
+        cy.log(`Verified ${rows} rows exist`);
+      });
+
+      // Check each row has the correct number of buttons
+      layout.forEach((expectedButtonsInRow, rowIndex) => {
+        cy.log(`Testing row ${rowIndex}: expecting ${expectedButtonsInRow} buttons`);
+
+        // Get the specific row (rows are indexed from 0)
+        cy.get(`[data-testid="button-row-${rowIndex}"]`)
+          .should('exist')
+          .within(() => {
+            // Count buttons within this specific row
+            cy.get('stars-standard-button[data-testid^="button-"]')
+              .should('have.length', expectedButtonsInRow)
+              .then(() => {
+                cy.log(`Row ${rowIndex} has ${expectedButtonsInRow} buttons`);
+              });
+          });
+      });
+
+      // Check that the correct number of total buttons exists
+      const totalButtons = layout.reduce((sum, count) => sum + count, 0);
+      cy.get('stars-standard-button[data-testid^="button-"]').should('have.length', totalButtons).then(() => {
+        cy.log(`Total buttons: ${totalButtons}`);
+      });
+    });
   });
 
   it('5. should handle different button types (BIG_SQUARE, TEXT, etc.)', () => {
-    const buttonTypes = ['MEDIUM_SQUARE', 'BIG_SQUARE', 'SMALL_SQUARE', 'TEXT', 'CIRCLE'];
+    const buttonTypeConfigs = [
+      { buttonType: 'MEDIUM_SQUARE', file: 'buttons_buttonType_mediumSquare_test.json' },
+      { buttonType: 'BIG_SQUARE', file: 'buttons_buttonType_bigSquare_test.json' },
+      { buttonType: 'SMALL_SQUARE', file: 'buttons_buttonType_smallSquare_test.json' },
+      { buttonType: 'TEXT', file: 'buttons_buttonType_text_test.json' },
+      { buttonType: 'CIRCLE', file: 'buttons_buttonType_circle_test.json' }
+    ];
 
-    buttonTypes.forEach((buttonType, index) => {
-      cy.then(() => {
-        // Create modified test data
-        const modifiedTestData = { ...testData };
-        modifiedTestData.interactionParameters.buttonType = buttonType;
+    buttonTypeConfigs.forEach(({ buttonType, file }) => {
+      cy.log(`Testing buttonType: ${buttonType}`);
 
-        const tempFileName = `temp_${buttonType.toLowerCase()}_test.json`;
-
-        // Write temporary fixture
-        cy.writeFile(`cypress/fixtures/${tempFileName}`, modifiedTestData);
-
-        // Visit and load
-        cy.visit('http://localhost:4200');
-        cy.loadUnit(tempFileName);
-
-        // Handle click layer
-        if (testData.mainAudio?.firstClickLayer) {
-          cy.get('[data-testid="click-layer"]').click();
-        }
-
-        // Wait for component to render
-        cy.get('[data-testid="button-0"]').should('exist');
-
-        // Test the specific button type
-        const expectedClass = `${buttonType.toLowerCase()}-type`;
-
-        cy.get('[data-testid="button-0"]')
-          .find('[data-testid="input-wrapper"]')
-          .should('have.class', expectedClass);
-        // Clean up temporary file
-        cy.task('deleteFile', `cypress/fixtures/${tempFileName}`);
+      cy.setupTestData(file, 'buttons');
+      cy.get('@testData').then(data => {
+        testData = data;
       });
+      // Wait for the component to render
+      cy.get('[data-testid="button-0"]').should('exist');
+
+      // Test the specific button type
+      const expectedClass = `${buttonType.toLowerCase()}-type`;
+
+      cy.get('[data-testid="button-0"]')
+        .find('[data-testid="input-wrapper"]')
+        .should('have.class', expectedClass);
     });
   });
 
@@ -135,11 +168,6 @@ describe('BUTTONS Interaction E2E Tests', () => {
 
     const imageSource = testData.interactionParameters?.imageSource;
     if (imageSource === '') {
-      // Remove click layer if needed
-      if (testData.mainAudio?.firstClickLayer) {
-        cy.get('[data-testid="click-layer"]')
-          .click();
-      }
       cy.get('[data-testid="stimulus-image"]')
         .should('not.exist');
     }
@@ -161,11 +189,6 @@ describe('BUTTONS Interaction E2E Tests', () => {
       testData = data;
     });
 
-    // Remove click layer if needed
-    if (testData.mainAudio?.firstClickLayer) {
-      cy.get('[data-testid="click-layer"]').click();
-    }
-
     // Wait for buttons to be rendered
     cy.get('[data-testid="button-0"]').should('exist');
 
@@ -182,5 +205,5 @@ describe('BUTTONS Interaction E2E Tests', () => {
 });
 
 // Import and run shared tests for buttons
-testMainAudioFeatures('BUTTONS', 'buttons_test');
-testContinueButtonFeatures('BUTTONS', 'buttons_test');
+testMainAudioFeatures('buttons', 'buttons_test');
+testContinueButtonFeatures('buttons', 'buttons_test');

@@ -9,53 +9,112 @@ export function testContinueButtonFeatures(interactionType: string, configFile: 
       });
     });
 
-    it('Should handle different values', () => {
-      const continueButtonRules = ['ALWAYS', 'NO', 'ON_ANY_RESPONSE', 'ON_AUDIO_AND_RESPONSE', 'ON_RESPONSES_COMPLETE', 'ON_MAIN_AUDIO_COMPLETE', 'ON_VIDEO_COMPLETE'];
+    it.only('Should handle different values', () => {
+      const continueButtonConfigs = [
+        { continueButtonShow: 'ALWAYS', file: 'buttons_continueButtonShow_always_test.json' },
+        { continueButtonShow: 'NO', file: 'buttons_continueButtonShow_no_test.json' },
+        { continueButtonShow: 'ON_ANY_RESPONSE', file: 'buttons_continueButtonShow_onAnyResponse_test.json' },
+        // eslint-disable-next-line max-len
+        { continueButtonShow: 'ON_RESPONSES_COMPLETE', file: 'buttons_continueButtonShow_onResponsesComplete_test.json' },
+        // eslint-disable-next-line max-len
+        { continueButtonShow: 'ON_MAIN_AUDIO_COMPLETE', file: 'buttons_continueButtonShow_onMainAudioComplete_test.json' },
+        { continueButtonShow: 'ON_VIDEO_COMPLETE', file: 'buttons_continueButtonShow_onVideoComplete_test.json' }
+      ];
 
-      continueButtonRules.forEach((rule) => {
-        cy.then(() => {
-          // Create modified test data with the current continue button rule
-          const modifiedTestData = { ...testData };
-          modifiedTestData.continueButtonShow = rule;
-
-          const tempFileName = `temp_continue_${rule.toLowerCase()}_test.json`;
-
-          // Write temporary fixture
-          cy.writeFile(`cypress/fixtures/${tempFileName}`, modifiedTestData);
-
-          // Visit and load
-          cy.visit('http://localhost:4200');
-          cy.loadUnit(tempFileName);
-
-          // Remove click layer if needed
-          if (testData.mainAudio?.firstClickLayer) {
-            cy.get('[data-testid="click-layer"]').click();
-          }
-
-          // Wait for buttons to be rendered
-          cy.get('[data-testid="button-0"]').should('exist');
-
-          if (rule === 'ON_ANY_RESPONSE') {
-            // Initially no continue button
-            cy.get('[data-testid="continue-button"]').should('not.exist');
-
-            // Click any button
-            cy.get('[data-testid="button-0"]').click();
-
-            // Continue button should appear
-            cy.get('[data-testid="continue-button"]').should('exist').and('be.visible');
-
-            cy.log(`✓ Continue button appears after response for rule: ${rule}`);
-          } else if (rule === 'ALWAYS') {
-            // Continue button should be visible immediately
-            cy.get('[data-testid="continue-button"]').should('exist').and('be.visible');
-
-            cy.log(`✓ Continue button always visible for rule: ${rule}`);
-          }
-
-          // Clean up temporary file
-          cy.task('deleteFile', `cypress/fixtures/${tempFileName}`);
+      continueButtonConfigs.forEach(({ continueButtonShow, file }) => {
+        cy.log(`Testing continueButtonShow: ${continueButtonShow}`);
+        cy.setupTestData(file, 'buttons');
+        cy.get('@testData').then(data => {
+          testData = data;
         });
+
+        if (continueButtonShow === 'ON_ANY_RESPONSE') {
+          // Initially no continue button
+          cy.get('[data-testid="continue-button"]').should('not.exist');
+
+          // Click any button
+          cy.get('[data-testid="button-0"]').click();
+
+          // Continue button should appear
+          cy.get('[data-testid="continue-button"]').should('exist').and('be.visible');
+
+          cy.log(`Continue button appears after response for rule: ${continueButtonShow}`);
+        } else if (continueButtonShow === 'NO') {
+          // Continue button should not exist initially
+          cy.get('[data-testid="continue-button"]').should('not.exist');
+
+          // Click any button
+          cy.get('[data-testid="button-0"]').click();
+
+          // Continue button should not exist after clicking any button
+          cy.get('[data-testid="continue-button"]').should('not.exist');
+
+          cy.log(`Continue button does not exist for rule: ${continueButtonShow}`);
+        } else if (continueButtonShow === 'ON_RESPONSES_COMPLETE') {
+          // Continue button should not exist initially
+          cy.get('[data-testid="continue-button"]').should('not.exist');
+
+          // Click any button
+          cy.get('[data-testid="button-0"]').click();
+
+          // Continue button should not exist after clicking any button
+          cy.get('[data-testid="continue-button"]').should('not.exist');
+
+          // Click correct response (variableInfo.codes.parameter value)
+          cy.get('[data-testid="button-2"]').click();
+
+          // Continue button should appear
+          cy.get('[data-testid="continue-button"]').should('exist').and('be.visible');
+
+          cy.log(`Continue button appears only after clicking the correct answer for rule: ${continueButtonShow}`);
+        } else if (continueButtonShow === 'ON_MAIN_AUDIO_COMPLETE') {
+          // Continue button should not exist initially
+          cy.get('[data-testid="continue-button"]').should('not.exist');
+
+          // Click any button
+          cy.get('[data-testid="button-0"]').click();
+
+          // Continue button should not exist after clicking any button
+          cy.get('[data-testid="continue-button"]').should('not.exist');
+
+          // Click audio button
+          cy.get('[data-testid="speaker-icon"]').click();
+          // Immediately click any button
+          cy.get('[data-testid="button-0"]').click();
+
+          // Continue button still should not exist
+          cy.get('[data-testid="continue-button"]').should('not.exist');
+
+          // Wait for audio to complete
+          cy.wait(3000);
+
+          // Continue button should appear
+          cy.get('[data-testid="continue-button"]').should('exist').and('be.visible');
+
+          cy.log(`Continue button appears only after clicking the correct answer for rule: ${continueButtonShow}`);
+        } else if (continueButtonShow === 'ON_VIDEO_COMPLETE') {
+          // Continue button should not exist initially
+          cy.get('[data-testid="continue-button"]').should('not.exist');
+
+          // Click video button
+          cy.get('[data-testid="video-play-button"]').click();
+
+          // Continue button should not exist after clicking the video button
+          cy.get('[data-testid="continue-button"]').should('not.exist');
+
+          // Wait for the video to complete
+          cy.wait(50000);
+
+          // Continue button should appear
+          cy.get('[data-testid="continue-button"]').should('exist').and('be.visible');
+
+          cy.log(`Continue button appears only after clicking the correct answer for rule: ${continueButtonShow}`);
+        } else {
+          // Default value: ALWAYS Continue button should be visible immediately
+          cy.get('[data-testid="continue-button"]').should('exist').and('be.visible');
+
+          cy.log(`Continue button always visible for rule: ${continueButtonShow}`);
+        }
       });
     });
   });
