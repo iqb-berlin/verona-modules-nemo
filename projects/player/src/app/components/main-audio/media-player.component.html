@@ -1,4 +1,4 @@
-<div class="audio-button-container"data-testid="audio-button-container">
+<div class="audio-button-container" [class.disabled]="disabled()" [attr.data-testid]="disabled() ? 'audio-button-container-disabled' : 'audio-button-container'" >
   <div class="custom-audio-button" (click)="play()" [class.moving-button]="movingButton()">
     <div class="speaker-icon" data-testid="speaker-icon">
       <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">

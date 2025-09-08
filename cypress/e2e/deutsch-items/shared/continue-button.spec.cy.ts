@@ -1,15 +1,6 @@
 export function testContinueButtonFeatures(interactionType: string, configFile: string) {
   describe(`Continue Button Features - ${interactionType}`, () => {
-    let testData: any;
-
-    beforeEach(() => {
-      cy.setupTestData(configFile, interactionType);
-      cy.get('@testData').then(data => {
-        testData = data;
-      });
-    });
-
-    it.only('Should handle different values', () => {
+    it('Should handle different values', () => {
       const continueButtonConfigs = [
         { continueButtonShow: 'ALWAYS', file: 'buttons_continueButtonShow_always_test.json' },
         { continueButtonShow: 'NO', file: 'buttons_continueButtonShow_no_test.json' },
@@ -24,9 +15,6 @@ export function testContinueButtonFeatures(interactionType: string, configFile: 
       continueButtonConfigs.forEach(({ continueButtonShow, file }) => {
         cy.log(`Testing continueButtonShow: ${continueButtonShow}`);
         cy.setupTestData(file, 'buttons');
-        cy.get('@testData').then(data => {
-          testData = data;
-        });
 
         if (continueButtonShow === 'ON_ANY_RESPONSE') {
           // Initially no continue button

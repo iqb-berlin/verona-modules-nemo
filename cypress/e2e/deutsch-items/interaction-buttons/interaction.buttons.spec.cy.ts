@@ -15,27 +15,21 @@ describe('BUTTONS Interaction E2E Tests', () => {
   });
 
   it('2. should have audio button', () => {
-    if (testData.mainAudio?.audioSource) {
-      cy.get('[data-testid="speaker-icon"]').should('exist');
-    }
+    cy.get('[data-testid="speaker-icon"]').should('exist');
   });
 
   it('3a. should handle single button selection when multiSelect is false\n', () => {
-    if (!testData.interactionParameters?.multiSelect) {
-      // Remove click layer if needed
-      if (testData.mainAudio?.firstClickLayer) {
-        cy.get('[data-testid="click-layer"]').click();
-      }
+    // Remove click layer if needed
+    cy.get('[data-testid="click-layer"]').click();
 
-      // Click first button
-      cy.get('[data-testid="button-0"]').click();
-      cy.get('[data-testid="button-0"] input').should('have.attr', 'data-selected', 'true');
+    // Click first button
+    cy.get('[data-testid="button-0"]').click();
+    cy.get('[data-testid="button-0"] input').should('have.attr', 'data-selected', 'true');
 
-      // Click second button - should deselect first
-      cy.get('[data-testid="button-1"]').click();
-      cy.get('[data-testid="button-0"] input').should('have.attr', 'data-selected', 'false');
-      cy.get('[data-testid="button-1"] input').should('have.attr', 'data-selected', 'true');
-    }
+    // Click second button - should deselect first
+    cy.get('[data-testid="button-1"]').click();
+    cy.get('[data-testid="button-0"] input').should('have.attr', 'data-selected', 'false');
+    cy.get('[data-testid="button-1"] input').should('have.attr', 'data-selected', 'true');
   });
 
   it('3b. should handle multi-selection when enabled', () => {
@@ -55,7 +49,6 @@ describe('BUTTONS Interaction E2E Tests', () => {
   });
 
   it('4. should respect button layout (numberOfRows)', () => {
-
     const layoutConfigs = [
       // 1 Row layouts
       { rows: 1, layout: [2], file: 'buttons_1Row_2_test.json' },
@@ -196,12 +189,59 @@ describe('BUTTONS Interaction E2E Tests', () => {
     cy.get('[data-testid="instruction-text"]').should('not.exist');
   });
 
-  // TODO: add test case when options.buttons has icon or text instead of imageSource
-  // it('should validate response data structure', () => {
-  // });
+  it('8. should handle different button options (image, icon, text)', () => {
+    const buttonOptionsConfigs = [
+      {
+        options: {
+          buttons: [
+            {
+              imageSource: 'data:image/png;base64,'
+            }
+          ]
+        },
+        file: 'buttons_test.json'
+      },
+      {
+        options: {
+          buttons: [
+            {
+              icon: 'CHECK_GREEN'
+            }
+          ]
+        },
+        file: 'buttons_option_icon_test.json'
+      },
+      {
+        options: {
+          buttons: [
+            {
+              text: 'A'
+            }
+          ]
+        },
+        file: 'buttons_option_text_test.json'
+      }
+    ];
 
-  // it('should validate response data structure', () => {
-  // });
+    buttonOptionsConfigs.forEach(({ options: { buttons }, file }) => {
+      const button = buttons[0];
+
+      let key: string;
+      if ('imageSource' in button) key = 'imageSource';
+      else if ('icon' in button) key = 'icon';
+      else if ('text' in button) key = 'text';
+      else throw new Error('Unknown button type');
+
+      cy.log(`Testing button options: ${key}`);
+
+      cy.setupTestData(file, 'buttons');
+      cy.get('@testData').then(data => {
+        testData = data;
+      });
+
+      cy.get(`[data-testid=button-with-${key}]`).should('exist');
+    });
+  });
 });
 
 // Import and run shared tests for buttons

@@ -4,12 +4,17 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
-      loadUnit(value: string): Chainable<JQuery<HTMLElement>>;
+      /**
+       * Load unit definition example file for component testing
+       * @param fileName - Test data file name
+       */
+      loadUnit(fileName: string): Chainable<JQuery<HTMLElement>>;
+      /**
+       * Setup test data for component testing
+       * @param configFile - Test data file name
+       * @param interactionType - interactionType parameter of component being tested
+       */
       setupTestData(configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>
-      // openPlayer(): Chainable<JQuery<HTMLElement>>;
-      // saveUnit(filepath?: string): Chainable<JQuery<HTMLElement>>;
-      // switchToTabbedViewMode(): Chainable<JQuery<HTMLElement>>;
-      // getByAlias(alias: string): Chainable<JQuery<HTMLElement>>;
     }
   }
 }

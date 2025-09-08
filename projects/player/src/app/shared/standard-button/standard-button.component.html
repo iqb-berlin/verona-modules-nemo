@@ -14,7 +14,7 @@
   <label [for]="id() + '_' + value()">
     @if (type() !== 'CIRCLE') {
       @if (image()) {
-        <img [src]="image()" [alt]="" data-testid="button-with-image">
+        <img [src]="image()" [alt]="" data-testid="button-with-imageSource">
       } @else if (icon()) {
         @if (icon() === 'CHECK_GREEN') {
           <svg class="accept-icon" width="92" height="78" viewBox="0 0 92 78" fill="none" xmlns="http://www.w3.org/2000/svg" data-testid="button-with-icon">

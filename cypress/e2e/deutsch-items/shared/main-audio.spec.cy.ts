@@ -49,10 +49,27 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
       }
     });
 
-    // TODO: write a test about maxPLay time
     it('should be consistent with maxPLay time', () => {
-      // write a test about maxPLay time
+      cy.setupTestData('buttons_maxPlay_3_test', 'buttons');
+      cy.get('@testData').then(data => {
+        testData = data;
+      });
+      const maxPLayTime = testData.mainAudio?.maxPlay;
+
+      // Initially audio button container should be enabled
+      cy.get('[data-testid="audio-button-container"]').should('exist');
+      if (maxPLayTime > 0) {
+        // Click the audio button maxPLayTime times
+        for (let i = 0; i < maxPLayTime; i++) {
+          cy.get('[data-testid="speaker-icon"]').click();
+          cy.wait(3000); // pause between clicks
+        }
+        // After maxPlayTime exceeded, the container should be disabled
+        cy.get('[data-testid="audio-button-container-disabled"]').should('exist');
+      }
     });
+
+    // TODO: write a test to check that the icon is multiple times clickable when maxPLayTime is 0
 
     // TODO: check if this is still needed and add the test case
     // it('the button should move when animateButton is true', () => {
