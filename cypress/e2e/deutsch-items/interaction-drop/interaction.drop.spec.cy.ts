@@ -2,23 +2,19 @@ import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 
 describe('DROP Interaction E2E Tests', () => {
+  const itemName = 'deutsch';
+  const interactionType = 'drop';
+  const defaultTestFile = 'drop_4_option_test';
 
-  const testFile = 'drop_4_option_test.json';
+  // Import and run shared tests for buttons
+  testContinueButtonFeatures(itemName, interactionType, defaultTestFile);
+  testMainAudioFeatures(itemName, interactionType, defaultTestFile);
 
   beforeEach(() => {
-    cy.setupTestData(testFile, 'drop');
+    cy.setupTestData(itemName, defaultTestFile, interactionType);
   });
 
-  it('1. Should have continue button', () => {
-    // Check if continue button exists
-    cy.get('[data-testid="continue-button"]').should('exist');
-  });
-
-  it('2. Should have audio button', () => {
-    // Check if speaker icon exists
-    cy.get('[data-testid="speaker-icon"]').should('exist');
-  });
-  it('3. Should have correct number of options', () => {
+  it('1. Should have correct number of options', () => {
     let testData: any;
     cy.get('@testData').then(data => {
       testData = data;
@@ -30,7 +26,8 @@ describe('DROP Interaction E2E Tests', () => {
       });
     });
   });
-  it('4. Should apply correct transform values when option is clicked', () => {
+
+  it('2. Should apply correct transform values when option is clicked', () => {
     // Remove click layer
     cy.get('[data-testid="click-layer"]').click();
 
@@ -54,7 +51,8 @@ describe('DROP Interaction E2E Tests', () => {
         expect(xValue.trim()).to.match(/^-?\d+(\.\d+)?px$/);
       });
   });
-  it('5. Should move the option back to initial position when clicked again', () => {
+
+  it('3. Should move the option back to initial position when clicked again', () => {
     // Remove click layer
     cy.get('[data-testid="click-layer"]').click();
 
@@ -79,7 +77,3 @@ describe('DROP Interaction E2E Tests', () => {
       });
   });
 });
-
-// Import and run shared tests for buttons
-testMainAudioFeatures('drop', 'drop_4_option_test');
-testContinueButtonFeatures('drop');
