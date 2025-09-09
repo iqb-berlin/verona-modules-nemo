@@ -1,11 +1,13 @@
-<div class="drop-select-container">
+<div class="drop-select-container" data-testid="drop-container">
   <div class="interaction-wrapper">
     <div class="buttons-container" role="group">
       @for (option of localParameters.options; track $index) {
         <div
             class="animate-wrapper"
             [style.transform]="animateStyle($index)"
-            [class.no-transition]="disabledTransition()">
+            [class.no-transition]="disabledTransition()"
+            data-testid="drop-animate-wrapper"
+        >
           <stars-standard-button
                   [id]="$index.toString()"
                   [value]="$index"
@@ -14,6 +16,7 @@
                   [image]="option.imageSource"
                   [selected]="this.selectedValue() === $index"
                   [type]="'SMALL_SQUARE'"
+                  [attr.data-testid]="'button-' + $index"
                   (buttonClick)="onButtonClick($index)">
           </stars-standard-button>
         </div>
