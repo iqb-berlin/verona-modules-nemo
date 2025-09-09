@@ -52,3 +52,4 @@ Thumbs.db
 # E2E test data
 e2e/downloads
 e2e/screenshots
+cypress/screenshots/

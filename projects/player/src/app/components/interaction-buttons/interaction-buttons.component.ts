@@ -20,13 +20,13 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
 })
 
 export class InteractionButtonsComponent extends InteractionComponentDirective {
-  localParameters: InteractionButtonParams;
+  localParameters!: InteractionButtonParams;
   // array of booleans for each option
   selectedValues = signal<boolean[]>([]);
   // options sorted by rows
-  optionRows: Array<Array<RowOption>> = null;
+  optionRows: Array<Array<RowOption>> = [];
   // Array of all options aka Buttons to be shown
-  allOptions: Array<SelectionOption> = null;
+  allOptions: Array<SelectionOption> = [];
   // imagePosition for stimulus image if available
   imagePosition: string = 'TOP';
 
@@ -39,14 +39,14 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       this.localParameters = this.createDefaultParameters();
 
       if (parameters) {
-        this.localParameters.options = parameters.options || null;
+        this.localParameters.options = parameters.options || {};
         this.localParameters.variableId = parameters.variableId || 'BUTTONS';
-        this.localParameters.imageSource = parameters.imageSource || null;
+        this.localParameters.imageSource = parameters.imageSource || '';
         this.localParameters.numberOfRows = parameters.numberOfRows || 1;
         this.localParameters.multiSelect = parameters.multiSelect || false;
         this.localParameters.buttonType = parameters.buttonType || 'MEDIUM_SQUARE';
         this.localParameters.numberOfRows = parameters.numberOfRows || 1;
-        this.localParameters.text = parameters.text || null;
+        this.localParameters.text = parameters.text || '';
 
         if (this.localParameters.imageSource) {
           this.localParameters.imagePosition = parameters.imagePosition || 'LEFT';
@@ -82,20 +82,21 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     if (!this.localParameters.options) return [];
 
     // eslint-disable-next-line
-    let options:any[];
+    let options: SelectionOption[];
 
     if (this.localParameters.options?.repeatButton) {
+      const repeatButton = this.localParameters.options.repeatButton;
       options = Array.from(
-        { length: this.localParameters.options.repeatButton.numberOfOptions },
+        { length: repeatButton.numberOfOptions },
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _ => ({
-          text: this.localParameters.options.repeatButton.option?.text || null,
-          imageSource: this.localParameters.options.repeatButton.option?.imageSource || null,
-          icon: this.localParameters.options.repeatButton.option?.icon || null
+          text: repeatButton.option?.text || '',
+          imageSource: repeatButton.option?.imageSource || '',
+          icon: repeatButton.option?.icon || 'CLOSE_RED'
         })
       );
     } else {
-      options = this.localParameters.options?.buttons || null;
+      options = this.localParameters.options?.buttons || [];
     }
 
     if (this.localParameters.imageSource) {
@@ -110,34 +111,109 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   getRowsOptions():Array<Array<RowOption>> {
     if (!this.localParameters.options) return [];
 
-    const numberOfRows = this.localParameters.numberOfRows;
+    const numberOfRows = this.localParameters.numberOfRows || 1;
     const rows: Array<Array<RowOption>> = [];
 
-    let options = this.allOptions;
+    const options = this.allOptions;
     const baseId = this.localParameters.variableId;
+    const totalOptions = options.length;
 
-    // calculate number of options in each row, last row might be shorter
-    const numberOfOptionsPerRow = Math.ceil(options.length / numberOfRows);
+    const optionsPerRow = this.getCustomDistribution(totalOptions, numberOfRows);
 
-    // generate arrays of options for each row
-    while (options.length > 0) {
-      const startIndex = rows.length * numberOfOptionsPerRow;
+    let currentIndex = 0;
+
+    optionsPerRow.forEach(optionsInThisRow => {
+      // Skip if no options for this row
+      if (optionsInThisRow <= 0) {
+        return; // continue to next iteration
+      }
+
+      // Make sure we don't exceed available options
+      const availableOptions = options.length - currentIndex;
+      const actualOptionsForRow = Math.min(optionsInThisRow, availableOptions);
+
+      if (actualOptionsForRow <= 0) {
+        return; // continue to next iteration
+      }
+
       const singleRowOptionsIndexed: RowOption[] = options
-        .slice(0, numberOfOptionsPerRow)
-        /* generate array of object containing option data and generated id
-           and keep track of index in allOptions array */
+        .slice(currentIndex, currentIndex + actualOptionsForRow)
         .map((option, i) => ({
           option,
-          index: startIndex + i,
-          id: this.localParameters.multiSelect ? `${baseId}_${startIndex + i}` : baseId
+          index: currentIndex + i,
+          id: this.localParameters.multiSelect ? `${baseId}_${currentIndex + i}` : baseId
         }));
 
       rows.push(singleRowOptionsIndexed);
-      // slice off options of current row and go to the next chunk of options
-      options = options.slice(numberOfOptionsPerRow);
-    }
+      currentIndex += actualOptionsForRow;
+    });
 
     return rows;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private getCustomDistribution(totalOptions: number, numberOfRows: number): number[] {
+    if (numberOfRows === 1) {
+      return [totalOptions];
+    }
+
+    if (numberOfRows === 2) {
+      const firstRow = Math.ceil(totalOptions / 2);
+      return [firstRow, totalOptions - firstRow];
+    }
+
+    if (numberOfRows === 3) {
+      // For 3 rows: check if we can distribute evenly first
+      if (totalOptions % numberOfRows === 0) {
+        const evenAmount = totalOptions / numberOfRows;
+        return [evenAmount, evenAmount, evenAmount];
+      }
+
+      if (totalOptions <= 3) {
+        const result: number[] = [];
+        for (let i = 0; i < numberOfRows; i++) {
+          result.push(i < totalOptions ? 1 : 0);
+        }
+        return result;
+      }
+
+      // 5-5-1 layout
+      if (totalOptions >= 10) {
+        const forLastRow = 1;
+        const remaining = totalOptions - forLastRow;
+        const forFirstRow = Math.ceil(remaining / 2);
+        const forSecondRow = remaining - forFirstRow;
+        return [forFirstRow, forSecondRow, forLastRow];
+      } else {
+        const baseAmount = Math.floor(totalOptions / numberOfRows);
+        const remainder = totalOptions % numberOfRows;
+
+        const result: number[] = [];
+        for (let i = 0; i < numberOfRows; i++) {
+          result.push(baseAmount + (i < remainder ? 1 : 0));
+        }
+        return result;
+      }
+    }
+
+    // For more than 3 rows
+    const distribution: number[] = [];
+    let remainingOptions = totalOptions;
+
+    for (let i = 0; i < numberOfRows; i++) {
+      const remainingRows = numberOfRows - i;
+
+      if (remainingRows === 1) {
+        distribution.push(remainingOptions);
+      } else {
+        const mustLeaveForOthers = remainingRows - 1;
+        const canTakeNow = Math.max(1, remainingOptions - mustLeaveForOthers);
+        distribution.push(canTakeNow);
+        remainingOptions -= canTakeNow;
+      }
+    }
+
+    return distribution;
   }
 
   onButtonClick(index: number): void {
@@ -180,10 +256,10 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   private createDefaultParameters(): InteractionButtonParams {
     return {
       variableId: 'BUTTONS',
-      options: null,
-      imageSource: null,
+      options: {},
+      imageSource: '',
       imagePosition: 'TOP',
-      text: null,
+      text: '',
       multiSelect: false,
       numberOfRows: 1,
       buttonType: 'MEDIUM_SQUARE'

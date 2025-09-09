@@ -1,4 +1,4 @@
-<div class="interaction-body" [style.background-color]="unitService.backgroundColor()">
+<div class="interaction-body" [style.background-color]="unitService.backgroundColor()" data-testid="interaction-body">
   @if (isStandalone) {
     <stars-standalone-menu></stars-standalone-menu>
   }
@@ -7,8 +7,6 @@
   }
   @if (unitService.continueButton() === "ALWAYS" ||
       (unitService.continueButton() === "ON_MAIN_AUDIO_COMPLETE" && responsesService.mainAudioComplete()) ||
-      (unitService.continueButton() === "ON_AUDIO_AND_RESPONSE" && responsesService.mainAudioComplete() &&
-        (responsesService.responseProgress() === "complete" || responsesService.responseProgress() === "some")) ||
       (unitService.continueButton() === "ON_VIDEO_COMPLETE" && responsesService.videoComplete()) ||
       (unitService.continueButton() === "ON_ANY_RESPONSE" &&
         (responsesService.responseProgress() === "some" || responsesService.responseProgress() === "complete")) ||
@@ -18,7 +16,7 @@
       (navigate)="veronaPostService.sendVopUnitNavigationRequestedNotification('next')"></stars-continue-button>
   }
   @if (unitService.disableInteractionUntilComplete() && !responsesService.mainAudioComplete() ) {
-    <div class="interaction-disabled-overlay" (click)="disabledOverlay($event)"></div>
+    <div class="interaction-disabled-overlay" (click)="disabledOverlay($event)" data-testid="interaction-disabled-overlay"></div>
   }
     @if (hasRibbonBars()) {
       <stars-ribbon-bar></stars-ribbon-bar>
