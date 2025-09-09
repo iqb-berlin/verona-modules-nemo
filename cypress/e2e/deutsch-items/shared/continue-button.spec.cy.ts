@@ -1,15 +1,15 @@
-export function testContinueButtonFeatures(interactionType: string, configFile: string) {
+export function testContinueButtonFeatures(interactionType: string) {
   describe(`Continue Button Features - ${interactionType}`, () => {
     it('Should handle different values', () => {
       const continueButtonConfigs = [
-        { continueButtonShow: 'ALWAYS', file: 'buttons_continueButtonShow_always_test.json' },
-        { continueButtonShow: 'NO', file: 'buttons_continueButtonShow_no_test.json' },
-        { continueButtonShow: 'ON_ANY_RESPONSE', file: 'buttons_continueButtonShow_onAnyResponse_test.json' },
+        { continueButtonShow: 'ALWAYS', file: `${interactionType}_continueButtonShow_always_test.json` },
+        { continueButtonShow: 'NO', file: `${interactionType}_continueButtonShow_no_test.json` },
+        { continueButtonShow: 'ON_ANY_RESPONSE', file: `${interactionType}_continueButtonShow_onAnyResponse_test.json` },
         // eslint-disable-next-line max-len
-        { continueButtonShow: 'ON_RESPONSES_COMPLETE', file: 'buttons_continueButtonShow_onResponsesComplete_test.json' },
+        { continueButtonShow: 'ON_RESPONSES_COMPLETE', file: `${interactionType}_continueButtonShow_onResponsesComplete_test.json` },
         // eslint-disable-next-line max-len
-        { continueButtonShow: 'ON_MAIN_AUDIO_COMPLETE', file: 'buttons_continueButtonShow_onMainAudioComplete_test.json' },
-        { continueButtonShow: 'ON_VIDEO_COMPLETE', file: 'buttons_continueButtonShow_onVideoComplete_test.json' }
+        { continueButtonShow: 'ON_MAIN_AUDIO_COMPLETE', file: `${interactionType}_continueButtonShow_onMainAudioComplete_test.json` },
+        { continueButtonShow: 'ON_VIDEO_COMPLETE', file: `${interactionType}_continueButtonShow_onVideoComplete_test.json` }
       ];
 
       continueButtonConfigs.forEach(({ continueButtonShow, file }) => {

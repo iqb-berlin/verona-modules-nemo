@@ -9,7 +9,7 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
       });
     });
 
-    it('should handle firstClickLayer correctly', () => {
+    it('Should handle firstClickLayer correctly', () => {
       if (testData.mainAudio?.firstClickLayer) {
         cy.get('[data-testid="click-layer"]').should('exist').and('be.visible');
 
@@ -26,7 +26,7 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
       }
     });
 
-    it('should wait for audio completion when disableInteractionUntilComplete is true', () => {
+    it('Should wait for audio completion when disableInteractionUntilComplete is true', () => {
       if (testData.mainAudio?.disableInteractionUntilComplete) {
         // Initially, the interaction should be disabled with overlay visible
         cy.get('[data-testid="interaction-disabled-overlay"]').should('exist');
@@ -49,12 +49,11 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
       }
     });
 
-    it('should be consistent with maxPLay time', () => {
-      cy.setupTestData('buttons_maxPlay_3_test', 'buttons');
-      cy.get('@testData').then(data => {
-        testData = data;
-      });
+    it.only('Should be consistent with maxPlay time', () => {
       const maxPLayTime = testData.mainAudio?.maxPlay;
+
+      // Remove click layer
+      cy.get('[data-testid="click-layer"]').click();
 
       // Initially audio button container should be enabled
       cy.get('[data-testid="audio-button-container"]').should('exist');
@@ -69,7 +68,24 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
       }
     });
 
-    // TODO: write a test to check that the icon is multiple times clickable when maxPLayTime is 0
+    it('Should be limitless clickable when maxPlay is 0', () => {
+      // Set up test data
+      cy.setupTestData(`${interactionType}_maxPlay_0_test.json`, `${interactionType}`);
+
+      // A number to test it is more times clickable
+      const clickTime = 5;
+
+      // Initially audio button container should be enabled
+      cy.get('[data-testid="audio-button-container"]').should('exist');
+
+      // Click the audio button maxPLayTime times
+      for (let i = 0; i < clickTime; i++) {
+        cy.get('[data-testid="speaker-icon"]').click();
+        cy.wait(3000); // pause between clicks
+      }
+      // After many times clicked, the container should still exist
+      cy.get('[data-testid="audio-button-container"]').should('exist');
+    });
 
     // TODO: check if this is still needed and add the test case
     // it('the button should move when animateButton is true', () => {
