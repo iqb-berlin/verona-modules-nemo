@@ -1,15 +1,20 @@
-export function testMainAudioFeatures(interactionType: string, configFile: string) {
+export function testMainAudioFeatures(itemName: string, interactionType: string, configFile: string) {
   describe(`Main Audio Features - ${interactionType}`, () => {
     let testData: any;
 
     beforeEach(() => {
-      cy.setupTestData(configFile, interactionType);
+      cy.setupTestData(itemName, configFile, interactionType);
       cy.get('@testData').then(data => {
         testData = data;
       });
     });
 
-    it('Should handle firstClickLayer correctly', () => {
+    it('1. Should have audio button', () => {
+      // Check if the speaker icon exists
+      cy.get('[data-testid="speaker-icon"]').should('exist');
+    });
+
+    it('2. Should handle firstClickLayer correctly', () => {
       if (testData.mainAudio?.firstClickLayer) {
         cy.get('[data-testid="click-layer"]').should('exist').and('be.visible');
 
@@ -26,7 +31,7 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
       }
     });
 
-    it('Should wait for audio completion when disableInteractionUntilComplete is true', () => {
+    it('3. Should wait for audio completion when disableInteractionUntilComplete is true', () => {
       if (testData.mainAudio?.disableInteractionUntilComplete) {
         // Initially, the interaction should be disabled with overlay visible
         cy.get('[data-testid="interaction-disabled-overlay"]').should('exist');
@@ -49,7 +54,7 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
       }
     });
 
-    it.only('Should be consistent with maxPlay time', () => {
+    it('4. Should be consistent with maxPlay time', () => {
       const maxPLayTime = testData.mainAudio?.maxPlay;
 
       // Remove click layer
@@ -68,9 +73,9 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
       }
     });
 
-    it('Should be limitless clickable when maxPlay is 0', () => {
+    it('5. Should be limitless clickable when maxPlay is 0', () => {
       // Set up test data
-      cy.setupTestData(`${interactionType}_maxPlay_0_test.json`, `${interactionType}`);
+      cy.setupTestData(itemName, `${interactionType}_maxPlay_0_test.json`, `${interactionType}`);
 
       // A number to test it is more times clickable
       const clickTime = 5;
