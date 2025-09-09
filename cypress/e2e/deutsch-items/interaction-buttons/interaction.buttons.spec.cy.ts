@@ -2,24 +2,17 @@ import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 
 describe('BUTTONS Interaction E2E Tests', () => {
+  const itemName = 'deutsch';
+  const interactionType = 'buttons';
+  const defaultTestFile = 'buttons_test';
 
-  it('1. Should have continue button', () => {
-    // Set up test data
-    cy.setupTestData('buttons_test', 'buttons');
-    // Check if continue button exists
-    cy.get('[data-testid="continue-button"]').should('exist');
-  });
+  // Import and run shared tests for buttons
+  testContinueButtonFeatures(itemName, interactionType, defaultTestFile);
+  testMainAudioFeatures(itemName, interactionType, defaultTestFile);
 
-  it('2. Should have audio button', () => {
+  it('1a. Should handle single button selection when multiSelect is false\n', () => {
     // Set up test data
-    cy.setupTestData('buttons_test', 'buttons');
-    // Check if speaker icon exists
-    cy.get('[data-testid="speaker-icon"]').should('exist');
-  });
-
-  it('3a. Should handle single button selection when multiSelect is false\n', () => {
-    // Set up test data
-    cy.setupTestData('buttons_test', 'buttons');
+    cy.setupTestData(itemName, defaultTestFile, interactionType);
 
     // Remove click layer
     cy.get('[data-testid="click-layer"]').click();
@@ -34,9 +27,9 @@ describe('BUTTONS Interaction E2E Tests', () => {
     cy.get('[data-testid="button-1"] input').should('have.attr', 'data-selected', 'true');
   });
 
-  it('3b. Should handle multi-selection when enabled', () => {
+  it('1b. Should handle multi-selection when enabled', () => {
     // Set up test data
-    cy.setupTestData('buttons_multiselect_true_test', 'buttons');
+    cy.setupTestData(itemName, 'buttons_multiselect_true_test', interactionType);
 
     // Wait for the component to re-render
     cy.get('[data-testid="button-0"]').should('exist');
@@ -49,7 +42,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
     cy.get('[data-testid="button-1"] input').should('have.attr', 'data-selected', 'true');
   });
 
-  it('4. Should respect button layout (numberOfRows)', () => {
+  it('2. Should respect button layout (numberOfRows)', () => {
     const layoutConfigs = [
       // 1 Row layouts
       { rows: 1, layout: [2], file: 'buttons_1Row_2_test.json' },
@@ -75,7 +68,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
       cy.log(`Testing layout: ${rows} rows with ${layout.join('-')} buttons`);
 
       // Set up test data
-      cy.setupTestData(file, 'buttons');
+      cy.setupTestData(itemName, file, interactionType);
 
       // Check that the correct number of rows exists
       cy.get('[data-testid^="button-row-"]').should('have.length', rows).then(() => {
@@ -107,7 +100,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  it('5. Should handle different button types (BIG_SQUARE, TEXT, etc.)', () => {
+  it('3. Should handle different button types (BIG_SQUARE, TEXT, etc.)', () => {
     const buttonTypeConfigs = [
       { buttonType: 'MEDIUM_SQUARE', file: 'buttons_buttonType_mediumSquare_test.json' },
       { buttonType: 'BIG_SQUARE', file: 'buttons_buttonType_bigSquare_test.json' },
@@ -120,7 +113,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
       cy.log(`Testing buttonType: ${buttonType}`);
 
       // Set up test data
-      cy.setupTestData(file, 'buttons');
+      cy.setupTestData(itemName, file, interactionType);
 
       // Wait for the component to render
       cy.get('[data-testid="button-0"]').should('exist');
@@ -134,10 +127,10 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  it('6a. Should have an image on the given position, if there is an imageSource parameter', () => {
+  it('4a. Should have an image on the given position, if there is an imageSource parameter', () => {
     let testData: any;
     // Set up test data
-    cy.setupTestData('buttons_test', 'buttons');
+    cy.setupTestData(itemName, defaultTestFile, interactionType);
     cy.get('@testData').then(data => {
       testData = data;
 
@@ -158,11 +151,11 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  it('6b. Should not have an image on the given position, if imageSource parameter is empty', () => {
+  it('4b. Should not have an image on the given position, if imageSource parameter is empty', () => {
     let testData: any;
 
     // Set up test data
-    cy.setupTestData('buttons_imageSource_empty_test', 'buttons');
+    cy.setupTestData(itemName, 'buttons_imageSource_empty_test', interactionType);
     cy.get('@testData').then(data => {
       testData = data;
 
@@ -174,10 +167,10 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  it('7a. Should have a text under the buttons, If there is a text parameter', () => {
+  it('5a. Should have a text under the buttons, If there is a text parameter', () => {
     let testData: any;
     // Set up test data
-    cy.setupTestData('buttons_test', 'buttons');
+    cy.setupTestData(itemName, defaultTestFile, interactionType);
     cy.get('@testData').then(data => {
       testData = data;
 
@@ -189,9 +182,9 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  it('7b. Should not display instruction text when text parameter is empty string', () => {
+  it('5b. Should not display instruction text when text parameter is empty string', () => {
     // Set up test data
-    cy.setupTestData('buttons_text_empty_test', 'buttons');
+    cy.setupTestData(itemName, 'buttons_text_empty_test', interactionType);
 
     // Wait for buttons to be rendered
     cy.get('[data-testid="button-0"]').should('exist');
@@ -200,7 +193,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
     cy.get('[data-testid="instruction-text"]').should('not.exist');
   });
 
-  it('8. Should handle different button options (imageSource, icon, text)', () => {
+  it('6. Should handle different button options (imageSource, icon, text)', () => {
     const buttonOptionsConfigs = [
       {
         options: {
@@ -210,7 +203,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
             }
           ]
         },
-        file: 'buttons_test.json'
+        file: `${defaultTestFile}.json`
       },
       {
         options: {
@@ -235,7 +228,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
     ];
 
     buttonOptionsConfigs.forEach(({ options: { buttons }, file }) => {
-      const button = buttons[0];
+      const button = buttons![0]!;
 
       let key: string;
       if ('imageSource' in button) key = 'imageSource';
@@ -246,13 +239,9 @@ describe('BUTTONS Interaction E2E Tests', () => {
       cy.log(`Testing button options: ${key}`);
 
       // Set up test data
-      cy.setupTestData(file, 'buttons');
+      cy.setupTestData(itemName, file, interactionType);
 
       cy.get(`[data-testid=button-with-${key}]`).should('exist');
     });
   });
 });
-
-// Import and run shared tests for buttons
-testMainAudioFeatures('buttons', 'buttons_test');
-testContinueButtonFeatures('buttons');
