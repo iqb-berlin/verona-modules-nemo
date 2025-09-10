@@ -48,8 +48,8 @@ Cypress.Commands.add('loadUnit', (filename: string) => {
   });
 });
 
-Cypress.Commands.add('setupTestData', (itemName: string, configFile: string, interactionType: string) => {
-  const fullPath = `${itemName}-items/interaction-${interactionType}/${configFile}`;
+Cypress.Commands.add('setupTestData', (subject: string, configFile: string, interactionType: string) => {
+  const fullPath = `${subject}/interaction-${interactionType}/${configFile}`;
   cy.fixture(fullPath).as('testData');
   cy.visit('http://localhost:4200');
   cy.loadUnit(fullPath);

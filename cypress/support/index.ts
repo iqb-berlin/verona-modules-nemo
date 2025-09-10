@@ -11,11 +11,11 @@ declare global {
       loadUnit(fileName: string): Chainable<JQuery<HTMLElement>>;
       /**
        * Setup test data for component testing
-       * @param itemName - Test data item name (eg: deutsch, mathe...)
+       * @param subject - Test subject (eg: deutsch, mathe...)
        * @param configFile - Test data file name (eg: buttons_test...)
        * @param interactionType - interactionType parameter of component being tested (eg: buttons, drop...)
        */
-      setupTestData(iemName:string, configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>
+      setupTestData(subject:string, configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>
     }
   }
 }

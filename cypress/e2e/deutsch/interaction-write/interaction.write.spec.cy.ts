@@ -2,44 +2,44 @@ import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 
 describe('WRITE Interaction E2E Tests', () => {
-  const itemName = 'deutsch';
+  const subject = 'deutsch';
   const interactionType = 'write';
   const defaultTestFile = 'write_test';
 
   // Import and run shared tests for buttons
-  testContinueButtonFeatures(itemName, interactionType, defaultTestFile);
-  testMainAudioFeatures(itemName, interactionType, defaultTestFile);
+  testContinueButtonFeatures(subject, interactionType, defaultTestFile);
+  testMainAudioFeatures(subject, interactionType, defaultTestFile);
 
   beforeEach(() => {
-    cy.setupTestData(itemName, defaultTestFile, interactionType);
+    cy.setupTestData(subject, defaultTestFile, interactionType);
   });
 
   it('1. Should have stimulus wrapper with an image inside', () => {
-    cy.get('[data-testid=stimulus-wrapper]')
-      .find('[data-testid=stimulus-image]')
+    cy.get('[data-cy=stimulus-wrapper]')
+      .find('[data-cy=stimulus-image]')
       .should('exist');
   });
 
   it('2. Should have a text-wrapper and text-display elements', () => {
-    cy.get('[data-testid=text-wrapper]')
-      .find('[data-testid=text-display]')
+    cy.get('[data-cy=text-wrapper]')
+      .find('[data-cy=text-display]')
       .should('exist');
   });
 
   it('3. Should have a keyboard wrapper', () => {
-    cy.get('[data-testid=keyboard-wrapper]').should('exist');
+    cy.get('[data-cy=keyboard-wrapper]').should('exist');
   });
 
   it('4. Should display the text written by keyboard', () => {
     const text = ['k', 'o', 'p', 'f'];
 
     // Remove click layer
-    cy.get('[data-testid="click-layer"]').click();
+    cy.get('[data-cy="click-layer"]').click();
 
     text.forEach(char => {
-      cy.get(`[data-testid=character-button-${char}]`).click();
+      cy.get(`[data-cy=character-button-${char}]`).click();
     });
-    cy.get('[data-testid=text-span]').should('contain', 'Kopf');
+    cy.get('[data-cy=text-span]').should('contain', 'Kopf');
   });
 
   it('5. Should allow the text maxInputLength length', () => {
@@ -55,21 +55,21 @@ describe('WRITE Interaction E2E Tests', () => {
       });
 
       // Remove click layer
-      cy.get('[data-testid="click-layer"]').click();
+      cy.get('[data-cy="click-layer"]').click();
 
       letters.forEach(letter => {
-        cy.get(`[data-testid=character-button-${letter}]`).click();
+        cy.get(`[data-cy=character-button-${letter}]`).click();
       });
 
       // Check if the text is displayed correctly
-      cy.get('[data-testid=text-span]')
+      cy.get('[data-cy=text-span]')
         .invoke('text')
         .then(text => {
           expect(text.length).to.equal(maxInputLength);
         });
 
       // Check if I can type more characters
-      cy.get('[data-testid=character-button-k]').should('be.disabled');
+      cy.get('[data-cy=character-button-k]').should('be.disabled');
     });
   });
 
@@ -80,7 +80,7 @@ describe('WRITE Interaction E2E Tests', () => {
       const addBackspaceKey = testData.interactionParameters?.addBackspaceKey;
 
       if (addBackspaceKey) {
-        cy.get('[data-testid=backspace-button]').should('exist');
+        cy.get('[data-cy=backspace-button]').should('exist');
         cy.log('Backspace button exists');
       }
     });
@@ -95,7 +95,7 @@ describe('WRITE Interaction E2E Tests', () => {
 
       if (addUmlautKeys) {
         umlautKeys.forEach(key => {
-          cy.get(`[data-testid=grapheme-button-${key}]`).should('exist');
+          cy.get(`[data-cy=grapheme-button-${key}]`).should('exist');
           cy.log(`${key} grapheme key exists`);
         });
       }
@@ -111,7 +111,7 @@ describe('WRITE Interaction E2E Tests', () => {
 
       if (extraKeyboardKeys.length > 0) {
         extraKeyboardKeys.forEach((key:string) => {
-          cy.get(`[data-testid=keyboard-button-${key}]`).should('exist');
+          cy.get(`[data-cy=keyboard-button-${key}]`).should('exist');
           cy.log(`${key} extra keyboard key exists`);
         });
       }
