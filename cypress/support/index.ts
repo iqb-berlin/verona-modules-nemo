@@ -1,3 +1,5 @@
+import { VopStartCommand } from './types';
+
 export {};
 
 declare global {
@@ -16,6 +18,8 @@ declare global {
        * @param interactionType - interactionType parameter of component being tested (eg: buttons, drop...)
        */
       setupTestData(subject:string, configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>
+      mockParentWindow(): Chainable<JQuery<HTMLElement>>;
+      sendMessageFromParent(data: VopStartCommand, origin?: string): Chainable<void>;
     }
   }
 }

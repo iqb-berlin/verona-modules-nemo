@@ -10,7 +10,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
   testContinueButtonFeatures(subject, interactionType, defaultTestFile);
   testMainAudioFeatures(subject, interactionType, defaultTestFile);
 
-  it.only('1a. Should handle single button selection when multiSelect is false\n', () => {
+  it('1a. Should handle single button selection when multiSelect is false\n', () => {
     // Set up test data
     cy.setupTestData(subject, defaultTestFile, interactionType);
 
@@ -243,5 +243,16 @@ describe('BUTTONS Interaction E2E Tests', () => {
 
       cy.get(`[data-cy=button-with-${key}]`).should('exist');
     });
+  });
+
+  it.only('7. Should communicate with the parent via postMessages', () => {
+    // Set up test data
+    //cy.setupTestData(subject, defaultTestFile, interactionType);
+
+    cy.mockParentWindow();
+    cy.sendMessageFromParent({
+      type: 'vopStartCommand',
+      unitDefinition: JSON.stringify(defaultTestFile)
+    }, '*');
   });
 });

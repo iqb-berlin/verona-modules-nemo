@@ -35,6 +35,7 @@
 //     }
 //   }
 // }
+import { VopStartCommand } from './types';
 
 Cypress.Commands.add('loadUnit', (filename: string) => {
   cy.fixture(filename).as('unit').then(unit => {
@@ -53,4 +54,36 @@ Cypress.Commands.add('setupTestData', (subject: string, configFile: string, inte
   cy.fixture(fullPath).as('testData');
   cy.visit('http://localhost:4200');
   cy.loadUnit(fullPath);
+});
+
+Cypress.Commands.add('mockParentWindow', () => {
+  cy.window().then(win => {
+    const messageLog: Array<{
+      data: VopStartCommand;
+      origin: string;
+    }> = [];
+
+    const mockParent = {
+      postMessage: (data: VopStartCommand, origin: string) => {
+        messageLog.push({ data, origin });
+      }
+    };
+
+    Object.defineProperty(win, 'parent', {
+      value: mockParent,
+      writable: true
+    });
+
+    cy.wrap(messageLog).as('parentMessageLog');
+  });
+});
+
+Cypress.Commands.add('sendMessageFromParent', (data, origin = '*') => {
+  cy.window().then(win => {
+    cy.log('Sending message from parent', JSON.stringify(data));
+
+    // Console logging (appears in browser dev tools)
+    console.log('🟡 Sending message from parent to child:', { data, origin });
+    win.postMessage(data, origin);
+  });
 });
