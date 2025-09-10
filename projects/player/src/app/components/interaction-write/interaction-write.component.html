@@ -4,7 +4,7 @@
   </div>
 
   <div class="text-wrapper" data-testid="text-wrapper">
-    <div class="text-display">
+    <div class="text-display" data-testid="text-display">
       <div class="text-content">
         @if (currentText) {
           <span data-testid="text-span">{{ currentText }}</span>
@@ -21,7 +21,9 @@
                   class="keyboard-button"
                   [attr.aria-label]="currentText.length === 0 ? button.toUpperCase() : button"
                   (click)="addChar(button)"
-                  [disabled]="isDisabled">
+                  [disabled]="isDisabled"
+                  [attr.data-testid]="'character-button-' + button"
+          >
             {{ currentText.length === 0 ? button.toUpperCase() : button }}
           </button>
         }
@@ -35,7 +37,7 @@
                     [attr.aria-label]="currentText.length === 0 ? button.toUpperCase() : button"
                     (click)="addChar(button)"
                     [disabled]="isDisabled"
-                    [attr.data-testid]="'grapheme-button-' + $index"
+                    [attr.data-testid]="'grapheme-button-' + button"
             >
               {{ currentText.length === 0  ? button.toUpperCase() : button }}
             </button>
@@ -47,7 +49,7 @@
                   [attr.aria-label]="currentText.length === 0 ? capitalize(button) : button"
                   (click)="addChar(button)"
                   [disabled]="isDisabled"
-                  [attr.data-testid]="'keyboard-button-' + $index"
+                  [attr.data-testid]="'keyboard-button-' + button"
           >
             {{ currentText.length === 0  ? capitalize(button) : button }}
           </button>
