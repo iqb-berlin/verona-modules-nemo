@@ -36,7 +36,7 @@ export function testMainAudioFeatures(itemName: string, interactionType: string,
       }
     });
 
-    it.only('3. Should wait for audio completion when disableInteractionUntilComplete is true', () => {
+    it('3. Should wait for audio completion when disableInteractionUntilComplete is true', () => {
       if (testData.mainAudio?.disableInteractionUntilComplete) {
         // Initially, the interaction should be disabled with overlay visible
         cy.get('[data-testid="interaction-disabled-overlay"]').should('exist');
