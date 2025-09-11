@@ -11,7 +11,7 @@ import { InteractionWriteParams } from '../../models/unit-definition';
 })
 
 export class InteractionWriteComponent extends InteractionComponentDirective {
-  localParameters: InteractionWriteParams;
+  localParameters!: InteractionWriteParams;
   isDisabled: boolean = false;
   currentText: string = '';
   characterList = [...'abcdefghijklmnopqrstuvwxyz'];
@@ -31,8 +31,8 @@ export class InteractionWriteComponent extends InteractionComponentDirective {
         this.localParameters.keysToAdd = parameters.keysToAdd || [];
         this.localParameters.variableId = parameters.variableId || 'WRITE';
         this.localParameters.maxInputLength = parameters.maxInputLength || 10;
-        this.localParameters.imageSource = parameters.imageSource || null;
-        this.localParameters.text = parameters.text || null;
+        this.localParameters.imageSource = parameters.imageSource || '';
+        this.localParameters.text = parameters.text || '';
         this.responses.emit([{
           id: this.localParameters.variableId,
           status: 'DISPLAYED',
@@ -89,8 +89,8 @@ export class InteractionWriteComponent extends InteractionComponentDirective {
   private createDefaultParameters(): InteractionWriteParams {
     return {
       variableId: 'WRITE',
-      imageSource: null,
-      text: null,
+      imageSource: '',
+      text: '',
       addBackspaceKey: true,
       addUmlautKeys: true,
       keysToAdd: [],

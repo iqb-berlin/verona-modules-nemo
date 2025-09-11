@@ -1,14 +1,7 @@
 export function testContinueButtonFeatures(itemName: string, interactionType: string, configFile: string) {
   describe(`Continue Button Features - ${interactionType}`, () => {
 
-    it('1. Should have continue button', () => {
-      // Set up test data
-      cy.setupTestData(itemName, configFile, interactionType);
-      // Check if continue button exists
-      cy.get('[data-testid="continue-button"]').should('exist');
-    });
-
-    it('2 .Should handle different values', () => {
+    it('1 .Should comply with continueButtonShow value to show/hide continue button', () => {
       const continueButtonConfigs = [
         { continueButtonShow: 'ALWAYS', file: `${interactionType}_continueButtonShow_always_test.json` },
         { continueButtonShow: 'NO', file: `${interactionType}_continueButtonShow_no_test.json` },
@@ -27,8 +20,13 @@ export function testContinueButtonFeatures(itemName: string, interactionType: st
           // Initially no continue button
           cy.get('[data-testid="continue-button"]').should('not.exist');
 
-          // Click any button
-          cy.get('[data-testid="button-0"]').click();
+          if (interactionType === 'write') {
+            // Click any letter
+            cy.get('[data-testid=character-button-a]').click();
+          } else {
+            // Click any button
+            cy.get('[data-testid="button-0"]').click();
+          }
 
           // Continue button should appear
           cy.get('[data-testid="continue-button"]').should('exist').and('be.visible');
@@ -38,8 +36,13 @@ export function testContinueButtonFeatures(itemName: string, interactionType: st
           // Continue button should not exist initially
           cy.get('[data-testid="continue-button"]').should('not.exist');
 
-          // Click any button
-          cy.get('[data-testid="button-0"]').click();
+          if (interactionType === 'write') {
+            // Click any letter
+            cy.get('[data-testid=character-button-a]').click();
+          } else {
+            // Click any button
+            cy.get('[data-testid="button-0"]').click();
+          }
 
           // Continue button should not exist after clicking any button
           cy.get('[data-testid="continue-button"]').should('not.exist');
@@ -49,14 +52,30 @@ export function testContinueButtonFeatures(itemName: string, interactionType: st
           // Continue button should not exist initially
           cy.get('[data-testid="continue-button"]').should('not.exist');
 
-          // Click any button
-          cy.get('[data-testid="button-0"]').click();
+          if (interactionType === 'write') {
+            // Click any letter
+            cy.get('[data-testid=character-button-a]').click();
+          } else {
+            // Click any button
+            cy.get('[data-testid="button-0"]').click();
+          }
 
           // Continue button should not exist after clicking any button
           cy.get('[data-testid="continue-button"]').should('not.exist');
 
           // Click correct response (variableInfo.codes.parameter value)
-          cy.get('[data-testid="button-2"]').click();
+          if (interactionType === 'write') {
+            const text = ['k', 'o', 'p', 'f'];
+
+            // Delete text that was written previously
+            cy.get('[data-testid=backspace-button]').click();
+            text.forEach(char => {
+              cy.get(`[data-testid=character-button-${char}]`).click();
+            });
+          } else {
+            // Click correct button
+            cy.get('[data-testid="button-2"]').click();
+          }
 
           // Continue button should appear
           cy.get('[data-testid="continue-button"]').should('exist').and('be.visible');
@@ -66,16 +85,27 @@ export function testContinueButtonFeatures(itemName: string, interactionType: st
           // Continue button should not exist initially
           cy.get('[data-testid="continue-button"]').should('not.exist');
 
-          // Click any button
-          cy.get('[data-testid="button-0"]').click();
+          if (interactionType === 'write') {
+            // Click any letter
+            cy.get('[data-testid=character-button-a]').click();
+          } else {
+            // Click any button
+            cy.get('[data-testid="button-0"]').click();
+          }
 
           // Continue button should not exist after clicking any button
           cy.get('[data-testid="continue-button"]').should('not.exist');
 
           // Click audio button
           cy.get('[data-testid="speaker-icon"]').click();
-          // Immediately click any button
-          cy.get('[data-testid="button-0"]').click();
+          // Immediately click
+          if (interactionType === 'write') {
+            // any letter
+            cy.get('[data-testid=character-button-a]').click();
+          } else {
+            // any button
+            cy.get('[data-testid="button-0"]').click();
+          }
 
           // Continue button still should not exist
           cy.get('[data-testid="continue-button"]').should('not.exist');
@@ -86,7 +116,7 @@ export function testContinueButtonFeatures(itemName: string, interactionType: st
           // Continue button should appear
           cy.get('[data-testid="continue-button"]').should('exist').and('be.visible');
 
-          cy.log(`Continue button appears only after clicking the correct answer for rule: ${continueButtonShow}`);
+          cy.log(`Continue button appears only after the main audio is complete for rule: ${continueButtonShow}`);
         } else {
           // Default value: ALWAYS Continue button should be visible immediately
           cy.get('[data-testid="continue-button"]').should('exist').and('be.visible');

@@ -25,8 +25,13 @@ export function testMainAudioFeatures(itemName: string, interactionType: string,
         cy.get('[data-testid="click-layer"]').should('not.exist');
         // Now interactions should be possible (unless disableInteractionUntilComplete is also true)
         if (!testData.mainAudio?.disableInteractionUntilComplete) {
-          cy.get('[data-testid="button-0"]').should('be.visible').click();
-          cy.get('[data-testid="button-0"]').should('have.class', 'selected');
+          if (interactionType === 'write') {
+            cy.get('[data-testid=character-button-a]').click();
+            cy.get('[data-testid=text-span]').should('contain', 'a');
+          } else {
+            cy.get('[data-testid="button-0"]').should('be.visible').click();
+            cy.get('[data-testid="button-0"]').should('have.class', 'selected');
+          }
         }
       }
     });
@@ -48,9 +53,14 @@ export function testMainAudioFeatures(itemName: string, interactionType: string,
         // After audio completion, the overlay should disappear
         cy.get('[data-testid="interaction-disabled-overlay"]').should('not.exist');
 
-        // Now buttons should be clickable
-        cy.get('[data-testid="button-0"]').click();
-        cy.get('[data-testid="button-0"] input').should('have.attr', 'data-selected');
+        if (interactionType === 'write') {
+          // Keyboard should be clickable
+          cy.get('[data-testid=character-button-a]').should('not.be.disabled');
+        } else {
+          // Buttons should be clickable
+          cy.get('[data-testid="button-0"]').click();
+          cy.get('[data-testid="button-0"] input').should('have.attr', 'data-selected');
+        }
       }
     });
 
