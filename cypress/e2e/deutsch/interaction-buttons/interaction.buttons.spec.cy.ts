@@ -1,14 +1,11 @@
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
+import { testPostMessagesCommunication } from '../shared/postMessages.spec.cy';
 
 describe('BUTTONS Interaction E2E Tests', () => {
   const subject = 'deutsch';
   const interactionType = 'buttons';
   const defaultTestFile = 'buttons_test';
-
-  // Import and run shared tests for buttons
-  testContinueButtonFeatures(subject, interactionType, defaultTestFile);
-  testMainAudioFeatures(subject, interactionType, defaultTestFile);
 
   it('1a. Should handle single button selection when multiSelect is false\n', () => {
     // Set up test data
@@ -245,14 +242,8 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  it.only('7. Should communicate with the parent via postMessages', () => {
-    // Set up test data
-    //cy.setupTestData(subject, defaultTestFile, interactionType);
-
-    cy.mockParentWindow();
-    cy.sendMessageFromParent({
-      type: 'vopStartCommand',
-      unitDefinition: JSON.stringify(defaultTestFile)
-    }, '*');
-  });
+  // Import and run shared tests for buttons
+  testContinueButtonFeatures(subject, interactionType, defaultTestFile);
+  testMainAudioFeatures(subject, interactionType, defaultTestFile);
+  testPostMessagesCommunication(subject, interactionType, defaultTestFile);
 });

@@ -1,4 +1,4 @@
-import { VopStartCommand } from './types';
+import { VopStartCommand } from '../../projects/player/src/app/models/verona';
 
 export {};
 
@@ -17,8 +17,19 @@ declare global {
        * @param configFile - Test data file name (eg: buttons_test...)
        * @param interactionType - interactionType parameter of component being tested (eg: buttons, drop...)
        */
-      setupTestData(subject:string, configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>
-      mockParentWindow(): Chainable<JQuery<HTMLElement>>;
+      setupTestData(subject:string, configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>;
+      /**
+       * Setup test data for postMessages testing
+       * @param subject - Test subject (eg: deutsch, mathe...)
+       * @param configFile - Test data file name (eg: buttons_test...)
+       * @param interactionType - interactionType parameter of component being tested (eg: buttons, drop...)
+       */
+      setupTestDataWithPostMessageMock(subject:string, configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>
+      /**
+       * Send message from parent window
+       * @param data - Message data
+       * @param origin - Message origin
+       */
       sendMessageFromParent(data: VopStartCommand, origin?: string): Chainable<void>;
     }
   }

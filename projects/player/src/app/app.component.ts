@@ -37,7 +37,6 @@ export class AppComponent implements OnInit {
         this.unitService.setNewData(unitDefinition);
         this.veronaPostService.sessionID = message.sessionId;
         this.responsesService.setNewData(unitDefinition);
-        console.log('message is=========', message, 'session id is', message.sessionId);
       });
     this.isStandalone = window === window.parent;
     this.veronaPostService.sendReadyNotification(this.metadataService.playerMetadata);
