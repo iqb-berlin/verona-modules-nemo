@@ -1,3 +1,4 @@
+import { InteractionDropParams, UnitDefinition } from '../../../../projects/player/src/app/models/unit-definition';
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 
@@ -15,12 +16,13 @@ describe('DROP Interaction E2E Tests', () => {
   });
 
   it('1. Should have correct number of options', () => {
-    let testData: any;
+    let testData: UnitDefinition;
     cy.get('@testData').then(data => {
-      testData = data;
+      testData = data as unknown as UnitDefinition;
 
-      const optionsLength = testData.interactionParameters?.options?.length;
-      // Check if correct number of options exist (rows are indexed from 0)
+      const dropParams = testData.interactionParameters as InteractionDropParams;
+      const optionsLength = dropParams.options?.length;
+      // Check if the correct number of options exist (rows are indexed from 0)
       cy.get('stars-standard-button[data-cy^="button-"]').should('have.length', optionsLength).then(() => {
         cy.log(`Total options: ${optionsLength}`);
       });

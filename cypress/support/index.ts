@@ -24,6 +24,7 @@ declare global {
        * @param configFile - Test data file name (eg: buttons_test...)
        * @param interactionType - interactionType parameter of component being tested (eg: buttons, drop...)
        */
+      // eslint-disable-next-line max-len
       setupTestDataWithPostMessageMock(subject:string, configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>
       /**
        * Send message from parent window

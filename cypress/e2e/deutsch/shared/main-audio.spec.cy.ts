@@ -1,11 +1,13 @@
+import { UnitDefinition } from '../../../../projects/player/src/app/models/unit-definition';
+
 export function testMainAudioFeatures(subject: string, interactionType: string, configFile: string) {
   describe(`Main Audio Features - ${interactionType}`, () => {
-    let testData: any;
+    let testData: UnitDefinition;
 
     beforeEach(() => {
       cy.setupTestData(subject, configFile, interactionType);
       cy.get('@testData').then(data => {
-        testData = data;
+        testData = data as unknown as UnitDefinition;
       });
     });
 
@@ -65,7 +67,7 @@ export function testMainAudioFeatures(subject: string, interactionType: string, 
     });
 
     it('4. Should be consistent with maxPlay time', () => {
-      const maxPLayTime = testData.mainAudio?.maxPlay;
+      const maxPLayTime = testData.mainAudio?.maxPlay ?? 1;
 
       // Remove click layer
       cy.get('[data-cy="click-layer"]').click();

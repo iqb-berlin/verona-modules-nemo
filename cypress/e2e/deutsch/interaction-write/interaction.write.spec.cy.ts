@@ -1,3 +1,4 @@
+import { InteractionWriteParams, UnitDefinition } from '../../../../projects/player/src/app/models/unit-definition';
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 
@@ -43,10 +44,12 @@ describe('WRITE Interaction E2E Tests', () => {
   });
 
   it('5. Should allow the text maxInputLength length', () => {
-    let testData: any;
+    let testData: UnitDefinition;
     cy.get('@testData').then(data => {
-      testData = data;
-      const maxInputLength = testData.interactionParameters?.maxInputLength;
+      testData = data as unknown as UnitDefinition;
+
+      const writeParams = testData.interactionParameters as InteractionWriteParams;
+      const maxInputLength = writeParams.maxInputLength;
 
       // Create an array of maxInputLength letters
       const letters = Array.from({ length: maxInputLength }, () => {
@@ -74,10 +77,12 @@ describe('WRITE Interaction E2E Tests', () => {
   });
 
   it('6. Should add a backspace key if addBackspaceKey param is true', () => {
-    let testData: any;
+    let testData: UnitDefinition;
     cy.get('@testData').then(data => {
-      testData = data;
-      const addBackspaceKey = testData.interactionParameters?.addBackspaceKey;
+      testData = data as unknown as UnitDefinition;
+
+      const writeParams = testData.interactionParameters as InteractionWriteParams;
+      const addBackspaceKey = writeParams.addBackspaceKey;
 
       if (addBackspaceKey) {
         cy.get('[data-cy=backspace-button]').should('exist');
@@ -87,11 +92,13 @@ describe('WRITE Interaction E2E Tests', () => {
   });
 
   it('7. Should add äöü if addUmlautKeys param is true', () => {
-    let testData: any;
+    let testData: UnitDefinition;
     const umlautKeys = ['ä', 'ö', 'ü'];
     cy.get('@testData').then(data => {
-      testData = data;
-      const addUmlautKeys = testData.interactionParameters?.addUmlautKeys;
+      testData = data as unknown as UnitDefinition;
+
+      const writeParams = testData.interactionParameters as InteractionWriteParams;
+      const addUmlautKeys = writeParams.addUmlautKeys;
 
       if (addUmlautKeys) {
         umlautKeys.forEach(key => {
@@ -103,11 +110,13 @@ describe('WRITE Interaction E2E Tests', () => {
   });
 
   it('8. Should add the buttons inside keysToAdd param', () => {
-    let testData: any;
+    let testData: UnitDefinition;
 
     cy.get('@testData').then(data => {
-      testData = data;
-      const extraKeyboardKeys = testData.interactionParameters?.keysToAdd;
+      testData = data as unknown as UnitDefinition;
+
+      const writeParams = testData.interactionParameters as InteractionWriteParams;
+      const extraKeyboardKeys = writeParams.keysToAdd;
 
       if (extraKeyboardKeys.length > 0) {
         extraKeyboardKeys.forEach((key:string) => {

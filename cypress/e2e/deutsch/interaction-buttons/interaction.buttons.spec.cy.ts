@@ -1,3 +1,4 @@
+import { InteractionButtonParams, UnitDefinition } from '../../../../projects/player/src/app/models/unit-definition';
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 import { testPostMessagesCommunication } from '../shared/postMessages.spec.cy';
@@ -125,14 +126,16 @@ describe('BUTTONS Interaction E2E Tests', () => {
   });
 
   it('4a. Should have an image on the given position, if there is an imageSource parameter', () => {
-    let testData: any;
+    let testData: UnitDefinition;
     // Set up test data
     cy.setupTestData(subject, defaultTestFile, interactionType);
     cy.get('@testData').then(data => {
-      testData = data;
+      testData = data as unknown as UnitDefinition;
 
-      const imageSource = testData.interactionParameters?.imageSource;
-      const imagePosition = testData.interactionParameters?.imagePosition;
+      const buttonParams = testData.interactionParameters as InteractionButtonParams;
+
+      const imageSource = buttonParams.imageSource;
+      const imagePosition = buttonParams.imagePosition;
 
       if (imageSource && imageSource.trim() !== '') {
         // Remove click layer
@@ -149,14 +152,15 @@ describe('BUTTONS Interaction E2E Tests', () => {
   });
 
   it('4b. Should not have an image on the given position, if imageSource parameter is empty', () => {
-    let testData: any;
+    let testData: UnitDefinition;
 
     // Set up test data
     cy.setupTestData(subject, 'buttons_imageSource_empty_test', interactionType);
     cy.get('@testData').then(data => {
-      testData = data;
+      testData = data as unknown as UnitDefinition;
 
-      const imageSource = testData.interactionParameters?.imageSource;
+      const buttonParams = testData.interactionParameters as InteractionButtonParams;
+      const imageSource = buttonParams.imageSource;
       if (imageSource === '') {
         cy.get('[data-cy="stimulus-image"]')
           .should('not.exist');
@@ -165,13 +169,14 @@ describe('BUTTONS Interaction E2E Tests', () => {
   });
 
   it('5a. Should have a text under the buttons, If there is a text parameter', () => {
-    let testData: any;
+    let testData: UnitDefinition;
     // Set up test data
     cy.setupTestData(subject, defaultTestFile, interactionType);
     cy.get('@testData').then(data => {
-      testData = data;
+      testData = data as unknown as UnitDefinition;
 
-      const instructionText = testData.interactionParameters?.text;
+      const buttonParams = testData.interactionParameters as InteractionButtonParams;
+      const instructionText = buttonParams.text;
 
       if (instructionText && instructionText.trim() !== '') {
         cy.get('[data-cy="instruction-text"]').should('exist').and('contain', instructionText);
