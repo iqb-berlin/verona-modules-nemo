@@ -7,10 +7,6 @@ describe('DROP Interaction E2E Tests', () => {
   const interactionType = 'drop';
   const defaultTestFile = 'drop_4_option_test';
 
-  // Import and run shared tests for buttons
-  testContinueButtonFeatures(subject, interactionType, defaultTestFile);
-  testMainAudioFeatures(subject, interactionType, defaultTestFile);
-
   beforeEach(() => {
     cy.setupTestData(subject, defaultTestFile, interactionType);
   });
@@ -78,4 +74,8 @@ describe('DROP Interaction E2E Tests', () => {
         }
       });
   });
+
+  // Import and run shared tests for drop interaction
+  testContinueButtonFeatures(subject, interactionType, defaultTestFile);
+  testMainAudioFeatures(subject, interactionType, defaultTestFile);
 });

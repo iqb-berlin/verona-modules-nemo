@@ -7,10 +7,6 @@ describe('WRITE Interaction E2E Tests', () => {
   const interactionType = 'write';
   const defaultTestFile = 'write_test';
 
-  // Import and run shared tests for buttons
-  testContinueButtonFeatures(subject, interactionType, defaultTestFile);
-  testMainAudioFeatures(subject, interactionType, defaultTestFile);
-
   beforeEach(() => {
     cy.setupTestData(subject, defaultTestFile, interactionType);
   });
@@ -126,4 +122,8 @@ describe('WRITE Interaction E2E Tests', () => {
       }
     });
   });
+
+  // Import and run shared tests for write interaction
+  testContinueButtonFeatures(subject, interactionType, defaultTestFile);
+  testMainAudioFeatures(subject, interactionType, defaultTestFile);
 });

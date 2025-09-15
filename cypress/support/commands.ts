@@ -73,7 +73,6 @@ Cypress.Commands.add('setupTestDataWithPostMessageMock', (subject: string, confi
       const outgoingMessages: Array<{
         data: any;
         origin: string;
-        timestamp: number;
       }> = [];
 
       const mockParent = {
@@ -81,8 +80,7 @@ Cypress.Commands.add('setupTestDataWithPostMessageMock', (subject: string, confi
           console.log('Child → Parent message:', data);
           outgoingMessages.push({
             data,
-            origin,
-            timestamp: Date.now()
+            origin
           });
         }
       };
@@ -96,7 +94,6 @@ Cypress.Commands.add('setupTestDataWithPostMessageMock', (subject: string, confi
       const incomingMessages: Array<{
         data: VopStartCommand;
         origin: string;
-        timestamp: number;
       }> = [];
 
       // Listen for actual MessageEvents
@@ -104,8 +101,7 @@ Cypress.Commands.add('setupTestDataWithPostMessageMock', (subject: string, confi
         console.log('Parent → Child message event:', event.data);
         incomingMessages.push({
           data: event.data,
-          origin: event.origin,
-          timestamp: Date.now()
+          origin: event.origin
         });
       }, true);
 

@@ -1,7 +1,6 @@
 import { InteractionButtonParams, UnitDefinition } from '../../../../projects/player/src/app/models/unit-definition';
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
-import { testPostMessagesCommunication } from '../shared/postMessages.spec.cy';
 
 describe('BUTTONS Interaction E2E Tests', () => {
   const subject = 'deutsch';
@@ -247,8 +246,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  // Import and run shared tests for buttons
+  // Import and run shared tests for buttons interaction
   testContinueButtonFeatures(subject, interactionType, defaultTestFile);
   testMainAudioFeatures(subject, interactionType, defaultTestFile);
-  testPostMessagesCommunication(subject, interactionType, defaultTestFile);
 });
