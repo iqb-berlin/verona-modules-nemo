@@ -1,20 +1,22 @@
-<div class="find-on-image-container">
+<div class="find-on-image-container" data-cy="find-on-image-container">
   <div class="image-wrapper">
-    <img #imageElement [src]="localParameters.imageSource" [alt]="" (click)="onClick($event)">
+    <img #imageElement [src]="localParameters.imageSource" [alt]="" (click)="onClick($event)" data-cy="image-element">
     <div class="click-target" [class.disabled]="buttonDisabled()"
          [style.width]="clickTargetSize()"
          [style.height]="clickTargetSize()"
          [style.top]="clickTargetTop()"
-         [style.left]="clickTargetLeft()">
+         [style.left]="clickTargetLeft()"
+         data-cy="click-target"
+    >
       <span></span>
     </div>
     @if (showAreaStyle()) {
-      <div class="area-style" [style]="showAreaStyle()"></div>
+      <div class="area-style" [style]="showAreaStyle()" data-cy="show-area"></div>
     }
   </div>
   @if (localParameters.text) {
     <div class="text-wrapper">
-      <span>{{localParameters.text}}</span>
+      <span data-cy="component-text">{{localParameters.text}}</span>
     </div>
   }
 </div>
