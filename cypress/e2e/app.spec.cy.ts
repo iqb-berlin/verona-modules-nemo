@@ -5,7 +5,7 @@ describe('App component', () => {
   const configFile = 'buttons_test.json';
   const interactionType = 'buttons';
 
-  it.only('Should communicate via postMessages when the app is in iframe', () => {
+  it('1. Should communicate via postMessages when the app is in iframe', () => {
     cy.setupTestDataWithPostMessageMock(subject, configFile, interactionType);
 
     type MockMessage = { data: VopMessage; origin: string };
