@@ -1,19 +1,19 @@
-<div class="write-container" data-testid="write-container">
-  <div class="stimulus-wrapper" data-testid="stimulus-wrapper">
-    <img [src]="localParameters.imageSource" [alt]="" data-testid="stimulus-image">
+<div class="write-container" data-cy="write-container">
+  <div class="stimulus-wrapper" data-cy="stimulus-wrapper">
+    <img [src]="localParameters.imageSource" [alt]="" data-cy="stimulus-image">
   </div>
 
-  <div class="text-wrapper" data-testid="text-wrapper">
-    <div class="text-display" data-testid="text-display">
+  <div class="text-wrapper" data-cy="text-wrapper">
+    <div class="text-display" data-cy="text-display">
       <div class="text-content">
         @if (currentText) {
-          <span data-testid="text-span">{{ currentText }}</span>
+          <span data-cy="text-span">{{ currentText }}</span>
         }
       </div>
     </div>
   </div>
 
-  <div class="keyboard-wrapper" data-testid="keyboard-wrapper">
+  <div class="keyboard-wrapper" data-cy="keyboard-wrapper">
     <div>
       <div class="character-list">
         @for (button of characterList; track $index) {
@@ -22,7 +22,7 @@
                   [attr.aria-label]="currentText.length === 0 ? button.toUpperCase() : button"
                   (click)="addChar(button)"
                   [disabled]="isDisabled"
-                  [attr.data-testid]="'character-button-' + button"
+                  [attr.data-cy]="'character-button-' + button"
           >
             {{ currentText.length === 0 ? button.toUpperCase() : button }}
           </button>
@@ -37,7 +37,7 @@
                     [attr.aria-label]="currentText.length === 0 ? button.toUpperCase() : button"
                     (click)="addChar(button)"
                     [disabled]="isDisabled"
-                    [attr.data-testid]="'grapheme-button-' + button"
+                    [attr.data-cy]="'grapheme-button-' + button"
             >
               {{ currentText.length === 0  ? button.toUpperCase() : button }}
             </button>
@@ -49,7 +49,7 @@
                   [attr.aria-label]="currentText.length === 0 ? capitalize(button) : button"
                   (click)="addChar(button)"
                   [disabled]="isDisabled"
-                  [attr.data-testid]="'keyboard-button-' + button"
+                  [attr.data-cy]="'keyboard-button-' + button"
           >
             {{ currentText.length === 0  ? capitalize(button) : button }}
           </button>
@@ -63,7 +63,7 @@
               [attr.aria-label]="'Backspace'"
               (click)="deleteChar()"
               [disabled]="currentText.length === 0"
-              [attr.data-testid]="'backspace-button'"
+              [attr.data-cy]="'backspace-button'"
       >
         <svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 -960 960 960" width="32"
              fill="currentColor">

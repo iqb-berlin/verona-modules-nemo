@@ -17,7 +17,7 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
 })
 
 export class InteractionDropComponent extends InteractionComponentDirective {
-  localParameters: InteractionDropParams;
+  localParameters!: InteractionDropParams;
   selectedValue = signal<number>(-1);
   // create a signal for handling disabling transition on change
   disabledTransition = signal<boolean>(false);
@@ -31,10 +31,10 @@ export class InteractionDropComponent extends InteractionComponentDirective {
       this.localParameters = this.createDefaultParameters();
 
       if (parameters) {
-        this.localParameters.options = parameters.options || null;
+        this.localParameters.options = parameters.options || [];
         this.localParameters.variableId = parameters.variableId || 'DROP';
-        this.localParameters.imageSource = parameters.imageSource || null;
-        this.localParameters.text = parameters.text || null;
+        this.localParameters.imageSource = parameters.imageSource || '';
+        this.localParameters.text = parameters.text || '';
         this.responses.emit([{
           id: this.localParameters.variableId,
           status: 'DISPLAYED',
@@ -68,6 +68,7 @@ export class InteractionDropComponent extends InteractionComponentDirective {
     const buttonCenter = buttonWidth / 2; // // Distance from container edge to a button center
 
     // Current button's position
+    // eslint-disable-next-line max-len
     const currentButtonCenter = (index * buttonContainerWidth) + buttonCenter + borderOffset; // X position of THIS button's center
 
     // Move button to a container center
@@ -95,9 +96,9 @@ export class InteractionDropComponent extends InteractionComponentDirective {
   private createDefaultParameters(): InteractionDropParams {
     return {
       variableId: 'DROP',
-      options: null,
-      imageSource: null,
-      text: null
+      options: [],
+      imageSource: '',
+      text: ''
     };
   }
 }

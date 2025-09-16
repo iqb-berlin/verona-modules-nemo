@@ -1,3 +1,5 @@
+import { VopStartCommand } from '../../projects/player/src/app/models/verona';
+
 export {};
 
 declare global {
@@ -11,11 +13,25 @@ declare global {
       loadUnit(fileName: string): Chainable<JQuery<HTMLElement>>;
       /**
        * Setup test data for component testing
-       * @param itemName - Test data item name (eg: deutsch, mathe...)
+       * @param subject - Test subject (eg: deutsch, mathe...)
        * @param configFile - Test data file name (eg: buttons_test...)
        * @param interactionType - interactionType parameter of component being tested (eg: buttons, drop...)
        */
-      setupTestData(iemName:string, configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>
+      setupTestData(subject:string, configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>;
+      /**
+       * Setup test data for postMessages testing
+       * @param subject - Test subject (eg: deutsch, mathe...)
+       * @param configFile - Test data file name (eg: buttons_test...)
+       * @param interactionType - interactionType parameter of component being tested (eg: buttons, drop...)
+       */
+      // eslint-disable-next-line max-len
+      setupTestDataWithPostMessageMock(subject:string, configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>
+      /**
+       * Send message from parent window
+       * @param data - Message data
+       * @param origin - Message origin
+       */
+      sendMessageFromParent(data: VopStartCommand, origin?: string): Chainable<void>;
     }
   }
 }

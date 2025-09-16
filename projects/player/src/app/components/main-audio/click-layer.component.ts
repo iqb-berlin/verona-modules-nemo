@@ -5,7 +5,7 @@ import {
 @Component({
   selector: 'stars-click-layer',
   template: `
-    <div #starsClickLayer class="layer" data-testid="click-layer"></div>
+    <div #starsClickLayer class="layer" data-cy="click-layer"></div>
   `,
 
   styles: `

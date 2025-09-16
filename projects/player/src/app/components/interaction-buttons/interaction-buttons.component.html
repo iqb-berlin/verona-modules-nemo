@@ -1,15 +1,15 @@
-<div class="buttons-container" data-testid="buttons-container"
+<div class="buttons-container" data-cy="buttons-container"
      [class.flex-row]="imagePosition === 'LEFT'">
   @if (localParameters.imageSource) {
     <div class="stimulus-wrapper"
          [class]="localParameters.imagePosition?.toLowerCase() + '-position' || ''">
-      <img [src]="localParameters.imageSource" [alt]="" data-testid="stimulus-image">
+      <img [src]="localParameters.imageSource" [alt]="" data-cy="stimulus-image">
     </div>
   }
 
   <div class="buttons-wrapper">
     @for (row of optionRows; track $index) {
-      <div class="row" [attr.data-testid]="'button-row-' + $index">
+      <div class="row" [attr.data-cy]="'button-row-' + $index">
         @for (button of row; track $index) {
           <stars-standard-button
             [id]="button.id"
@@ -20,7 +20,7 @@
             [icon]="button.option.icon"
             [selected]="selectedValues()[button.index]"
             [type]="localParameters.buttonType"
-            [attr.data-testid]="'button-' + button.index"
+            [attr.data-cy]="'button-' + button.index"
             (buttonClick)="onButtonClick(button.index)">
           </stars-standard-button>
         }
@@ -30,7 +30,7 @@
 
   @if (localParameters.text) {
     <div class="text-wrapper">
-      <span data-testid="instruction-text">{{localParameters.text}}</span>
+      <span data-cy="instruction-text">{{localParameters.text}}</span>
     </div>
   }
 </div>
