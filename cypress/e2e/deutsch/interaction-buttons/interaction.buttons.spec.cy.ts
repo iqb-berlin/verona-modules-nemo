@@ -7,12 +7,20 @@ describe('BUTTONS Interaction E2E Tests', () => {
   const interactionType = 'buttons';
   const defaultTestFile = 'buttons_test';
 
+  const assertRemoveClickLayer = () => {
+    cy.get('[data-cy="click-layer"]').click();
+  };
+
+  const assertButtonExists = () => {
+    cy.get('[data-cy="button-0"]').should('exist');
+  };
+
   it('1a. Should handle single button selection when multiSelect is false\n', () => {
     // Set up test data
     cy.setupTestData(subject, defaultTestFile, interactionType);
 
     // Remove click layer
-    cy.get('[data-cy="click-layer"]').click();
+    assertRemoveClickLayer();
 
     // Click first button
     cy.get('[data-cy="button-0"]').click();
@@ -29,7 +37,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
     cy.setupTestData(subject, 'buttons_multiselect_true_test', interactionType);
 
     // Wait for the component to re-render
-    cy.get('[data-cy="button-0"]').should('exist');
+    assertButtonExists();
 
     // Test multi-selection
     cy.get('[data-cy="button-0"]').click();
@@ -113,7 +121,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
       cy.setupTestData(subject, file, interactionType);
 
       // Wait for the component to render
-      cy.get('[data-cy="button-0"]').should('exist');
+      assertButtonExists();
 
       // Test the specific button type
       const expectedClass = `${buttonType.toLowerCase()}-type`;
@@ -138,7 +146,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
 
       if (imageSource && imageSource.trim() !== '') {
         // Remove click layer
-        cy.get('[data-cy="click-layer"]').click();
+        assertRemoveClickLayer();
         // Check if there is an image
         cy.get('[data-cy="stimulus-image"]').should('exist').and('be.visible');
 
@@ -188,7 +196,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
     cy.setupTestData(subject, 'buttons_text_empty_test', interactionType);
 
     // Wait for buttons to be rendered
-    cy.get('[data-cy="button-0"]').should('exist');
+    assertButtonExists();
 
     // Verify that instruction text does not exist when text is empty string
     cy.get('[data-cy="instruction-text"]').should('not.exist');

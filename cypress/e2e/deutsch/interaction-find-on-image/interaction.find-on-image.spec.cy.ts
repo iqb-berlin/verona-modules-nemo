@@ -97,5 +97,5 @@ describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
   });
 
   // Import and run shared tests for buttons interaction
-  testContinueButtonFeatures(subject, interactionType, defaultTestFile);
+  testContinueButtonFeatures(subject, interactionType);
 });
