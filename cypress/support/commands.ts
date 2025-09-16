@@ -35,7 +35,6 @@
 //     }
 //   }
 // }
-import { VopStartCommand } from '../../projects/player/src/app/models/verona';
 
 Cypress.Commands.add('loadUnit', (filename: string) => {
   cy.fixture(filename).as('unit').then(unit => {
@@ -58,63 +57,67 @@ Cypress.Commands.add('setupTestData', (subject: string, configFile: string, inte
 });
 
 Cypress.Commands.add('setupTestDataWithPostMessageMock', (subject: string, configFile: string, interactionType: string) => {
+  // 1. FIRST load fixture data
   const fullPath = `${subject}/interaction-${interactionType}/${configFile}`;
-
-  cy.fixture(fullPath).then(unit => {
+  return cy.fixture(fullPath).then(unit => {
     const unitJson = JSON.stringify(unit);
     cy.wrap(unit, { log: false }).as('testData');
     cy.wrap(unitJson, { log: false }).as('unitJson');
-  });
 
-  // Do the mock setup and visit localhost:4200
-  cy.visit('http://localhost:4200', {
-    onBeforeLoad(win) {
-      // Capture messages from child to parent (outgoing)
-      const outgoingMessages: Array<{
-        data: any;
-        origin: string;
-      }> = [];
+    // 2. THEN visit with mock setup
+    cy.visit('http://localhost:4200', {
+      onBeforeLoad(win) {
+        // eslint-disable-next-line no-underscore-dangle
+        (win as any).__E2E__ = true;
+        // Capture messages from child to parent (outgoing)
+        const outgoingMessages: Array<{
+          data: any;
+          origin: string;
+        }> = [];
 
-      const mockParent = {
-        postMessage: (data: any, origin: string) => {
-          console.log('Child → Parent message:', data);
-          outgoingMessages.push({
-            data,
-            origin
-          });
-        }
-      };
+        const mockParent = {
+          postMessage: (data: any, origin: string) => {
+            console.log('Child → Parent message:', data);
+            outgoingMessages.push({
+              data,
+              origin
+            });
+          }
+        };
 
-      Object.defineProperty(win, 'parent', {
-        value: mockParent,
-        configurable: true
-      });
-
-      // Capture messages sent from parent to child (incoming)
-      const incomingMessages: Array<{
-        data: VopStartCommand;
-        origin: string;
-      }> = [];
-
-      // Listen for actual MessageEvents
-      win.addEventListener('message', (event: MessageEvent) => {
-        console.log('Parent → Child message event:', event.data);
-        incomingMessages.push({
-          data: event.data,
-          origin: event.origin
+        Object.defineProperty(win, 'parent', {
+          value: mockParent,
+          configurable: true
         });
-      }, true);
 
-      // Store on window
-      (win as any).incomingMockMessage = incomingMessages;
-      (win as any).outgoingMockMessage = outgoingMessages;
-    }
-  });
+        // Capture messages sent from parent to child (incoming)
+        const incomingMessages: Array<{
+          data: any;
+          origin: string;
+        }> = [];
 
-  // After the page is loaded, expose aliases for assertions
-  cy.window().then(win => {
-    cy.wrap((win as any).incomingMockMessage).as('incomingMessages');
-    cy.wrap((win as any).outgoingMockMessage).as('outgoingMessages');
+        // Listen for actual MessageEvents - only store vopStartCommand
+        win.addEventListener('message', (event: MessageEvent) => {
+          if (event.data?.type === 'vopStartCommand') {
+            console.log('Parent → Child message event:', event.data);
+            incomingMessages.push({
+              data: event.data,
+              origin: event.origin
+            });
+          }
+        }, true);
+
+        // Store on window
+        (win as any).incomingMockMessage = incomingMessages;
+        (win as any).outgoingMockMessage = outgoingMessages;
+      }
+    });
+
+    // 3. AFTER visit, expose aliases
+    cy.window().then(win => {
+      cy.wrap((win as any).incomingMockMessage).as('incomingMessages');
+      cy.wrap((win as any).outgoingMockMessage).as('outgoingMessages');
+    });
   });
 });
 

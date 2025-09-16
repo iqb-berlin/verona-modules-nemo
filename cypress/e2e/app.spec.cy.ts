@@ -1,22 +1,20 @@
-import { VopMessage } from '../../projects/player/src/app/models/verona';
-
 describe('App component', () => {
   const subject = 'deutsch';
   const configFile = 'buttons_test.json';
   const interactionType = 'buttons';
 
-  it('1. Should communicate via postMessages when the app is in iframe', () => {
+  it.only('1. Should communicate via postMessages when the app is in iframe', () => {
     cy.setupTestDataWithPostMessageMock(subject, configFile, interactionType);
 
-    type MockMessage = { data: VopMessage; origin: string };
+    type MockMessage = { data: { type: string }, origin: string };
 
     // Wait until child sends ready (child -> parent)
     cy.get('@outgoingMessages').then(messages => {
       const outgoingArr = messages as unknown as MockMessage[];
       expect(outgoingArr.length, 'at least one outgoing message').to.be.greaterThan(0);
-
-      const msgFromChild = outgoingArr[0];
-      expect(msgFromChild?.data?.type).to.equal('vopReadyNotification');
+      const firstMessage = outgoingArr[0] ?? (() => { throw new Error('No messages found'); })();
+      const { type } = firstMessage.data;
+      expect(type).to.equal('vopReadyNotification');
     });
 
     // Parent responds with start (parent -> child)
@@ -28,8 +26,20 @@ describe('App component', () => {
       }, '*');
     });
 
-    // Wait until parent sends ready (parent -> child)
-    cy.wait(500);
+    // And the UI should be up
+    cy.get('[data-cy=buttons-container]').should('exist');
+
+    // Send state changed notification (child -> parent)
+    cy.window().then((win: any) => {
+      if (win.testStars?.sendStateChanged()) {
+        win.testStars.sendStateChanged({
+          unitStateDataType: 'iqb-standard@1.1',
+          dataParts: { responses: '[]' }, // String representation of responses array
+          responseProgress: 'none'
+        });
+      }
+    });
+
     cy.get('@incomingMessages').then(msgs => {
       const incomingArr = msgs as unknown as MockMessage[];
       expect(incomingArr.length, 'at least one incoming message').to.be.greaterThan(0);
@@ -37,7 +47,12 @@ describe('App component', () => {
       expect(msgFromParent.type).to.equal('vopStartCommand');
     });
 
-    // And the UI should be up
-    cy.get(`[data-cy=${interactionType}-container]`).should('exist');
+    // outgoingMessages contains vopStateChangedNotification (child -> parent)
+    cy.get('@outgoingMessages').then(messages => {
+      const arr = messages as unknown as MockMessage[];
+      const stateChangedMessages = arr.filter(msg => msg.data.type === 'vopStateChangedNotification'
+      );
+      expect(stateChangedMessages.length).to.be.greaterThan(0);
+    });
   });
 });
