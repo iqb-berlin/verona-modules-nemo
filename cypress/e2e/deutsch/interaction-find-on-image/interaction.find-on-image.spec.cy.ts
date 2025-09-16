@@ -2,6 +2,7 @@ import {
   InteractionFindOnImageParams,
   UnitDefinition
 } from '../../../../projects/player/src/app/models/unit-definition';
+import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 
 describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
   const subject = 'deutsch';
@@ -31,8 +32,6 @@ describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
     cy.setupTestData(subject, 'find_on_image_with_showArea_test', interactionType);
     cy.get('@testData').then(data => {
       testData = data as unknown as UnitDefinition;
-
-      console.log('test data is', testData);
 
       const findOnImageParams = testData.interactionParameters as InteractionFindOnImageParams;
 
@@ -86,7 +85,7 @@ describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
       });
   });
 
-  it.only('6. Should handle touch events on mobile devices', () => {
+  it('6. Should handle touch events on mobile devices', () => {
     cy.viewport('ipad-mini');
 
     cy.get('[data-cy="image-element"]')
@@ -96,4 +95,7 @@ describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
     cy.get('[data-cy="click-target"]')
       .should('exist');
   });
+
+  // Import and run shared tests for buttons interaction
+  testContinueButtonFeatures(subject, interactionType, defaultTestFile);
 });

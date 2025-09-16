@@ -124,6 +124,6 @@ describe('WRITE Interaction E2E Tests', () => {
   });
 
   // Import and run shared tests for write interaction
-  testContinueButtonFeatures(subject, interactionType, defaultTestFile);
+  testContinueButtonFeatures(subject, interactionType);
   testMainAudioFeatures(subject, interactionType, defaultTestFile);
 });

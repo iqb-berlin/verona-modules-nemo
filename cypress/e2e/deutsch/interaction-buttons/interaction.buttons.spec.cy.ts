@@ -247,6 +247,6 @@ describe('BUTTONS Interaction E2E Tests', () => {
   });
 
   // Import and run shared tests for buttons interaction
-  testContinueButtonFeatures(subject, interactionType, defaultTestFile);
+  testContinueButtonFeatures(subject, interactionType);
   testMainAudioFeatures(subject, interactionType, defaultTestFile);
 });

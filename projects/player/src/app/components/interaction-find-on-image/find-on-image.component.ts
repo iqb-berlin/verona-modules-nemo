@@ -65,8 +65,6 @@ export class InteractionFindOnImageComponent extends InteractionComponentDirecti
     const imgTop = this.imageRef.nativeElement.offsetTop;
     const imgLeft = this.imageRef.nativeElement.offsetLeft;
 
-    console.log('AREA IS', area);
-
     if (area && area.length >= 4) {
       const x1 = Math.round((Number.parseInt(area[0]!, 10) * imgWidthFactor) + imgLeft);
       const y1 = Math.round((Number.parseInt(area[1]!, 10) * imgHeightFactor) + imgTop);
