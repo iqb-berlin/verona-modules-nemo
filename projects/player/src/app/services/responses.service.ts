@@ -132,7 +132,8 @@ export class ResponsesService {
       if (this.hasParentWindow) {
         // tslint:disable-next-line:no-console
         console.log('unit state changed: ', unitState);
-      } else if (this.veronaPostService) {
+      }
+      if (this.veronaPostService) {
         this.veronaPostService.sendVopStateChangedNotification({ unitState });
       }
       if (this.feedbackDefinitions.length > 0 && responses.length > 0) {

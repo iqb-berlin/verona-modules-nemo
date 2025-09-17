@@ -17,7 +17,7 @@ import { InteractionVideoParams } from '../../models/unit-definition';
 })
 
 export class InteractionVideoComponent extends InteractionComponentDirective implements AfterViewInit {
-  localParameters: InteractionVideoParams;
+  localParameters!: InteractionVideoParams;
   playing = signal(false);
 
   playCount = 0;
@@ -33,8 +33,8 @@ export class InteractionVideoComponent extends InteractionComponentDirective imp
       this.localParameters = this.createDefaultParameters();
 
       if (parameters) {
-        this.localParameters.imageSource = parameters.imageSource || null;
-        this.localParameters.videoSource = parameters.videoSource || null;
+        this.localParameters.imageSource = parameters.imageSource || '';
+        this.localParameters.videoSource = parameters.videoSource || '';
         this.localParameters.text = parameters.text || '';
         this.localParameters.variableId = parameters.variableId || 'VIDEO';
         this.responses.emit([{
@@ -101,8 +101,8 @@ export class InteractionVideoComponent extends InteractionComponentDirective imp
   private createDefaultParameters(): InteractionVideoParams {
     return {
       variableId: 'videoPlayer',
-      imageSource: null,
-      videoSource: null,
+      imageSource: '',
+      videoSource: '',
       text: ''
     };
   }

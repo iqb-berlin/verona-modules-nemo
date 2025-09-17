@@ -98,13 +98,11 @@ Cypress.Commands.add('setupTestDataWithPostMessageMock', (subject: string, confi
 
         // Listen for actual MessageEvents - only store vopStartCommand
         win.addEventListener('message', (event: MessageEvent) => {
-          if (event.data?.type === 'vopStartCommand') {
-            console.log('Parent → Child message event:', event.data);
-            incomingMessages.push({
-              data: event.data,
-              origin: event.origin
-            });
-          }
+          console.log('Parent → Child message event:', event.data);
+          incomingMessages.push({
+            data: event.data,
+            origin: event.origin
+          });
         }, true);
 
         // Store on window
