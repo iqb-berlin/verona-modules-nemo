@@ -11,6 +11,10 @@ describe('WRITE Interaction E2E Tests', () => {
     cy.setupTestData(subject, defaultTestFile, interactionType);
   });
 
+  const assertRemoveClickLayer = () => {
+    cy.get('[data-cy="click-layer"]').click();
+  };
+
   it('1. Should have stimulus wrapper with an image inside', () => {
     cy.get('[data-cy=stimulus-wrapper]')
       .find('[data-cy=stimulus-image]')
@@ -31,7 +35,7 @@ describe('WRITE Interaction E2E Tests', () => {
     const text = ['k', 'o', 'p', 'f'];
 
     // Remove click layer
-    cy.get('[data-cy="click-layer"]').click();
+    assertRemoveClickLayer();
 
     text.forEach(char => {
       cy.get(`[data-cy=character-button-${char}]`).click();
@@ -54,7 +58,7 @@ describe('WRITE Interaction E2E Tests', () => {
       });
 
       // Remove click layer
-      cy.get('[data-cy="click-layer"]').click();
+      assertRemoveClickLayer();
 
       letters.forEach(letter => {
         cy.get(`[data-cy=character-button-${letter}]`).click();
@@ -124,6 +128,6 @@ describe('WRITE Interaction E2E Tests', () => {
   });
 
   // Import and run shared tests for write interaction
-  testContinueButtonFeatures(subject, interactionType, defaultTestFile);
+  testContinueButtonFeatures(subject, interactionType);
   testMainAudioFeatures(subject, interactionType, defaultTestFile);
 });

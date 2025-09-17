@@ -11,6 +11,10 @@ describe('DROP Interaction E2E Tests', () => {
     cy.setupTestData(subject, defaultTestFile, interactionType);
   });
 
+  const assertRemoveClickLayer = () => {
+    cy.get('[data-cy="click-layer"]').click();
+  };
+
   it('1. Should have correct number of options', () => {
     let testData: UnitDefinition;
     cy.get('@testData').then(data => {
@@ -27,7 +31,7 @@ describe('DROP Interaction E2E Tests', () => {
 
   it('2. Should apply correct transform values when option is clicked', () => {
     // Remove click layer
-    cy.get('[data-cy="click-layer"]').click();
+    assertRemoveClickLayer();
 
     // Button to click
     const buttonIndex = 0;
@@ -52,7 +56,7 @@ describe('DROP Interaction E2E Tests', () => {
 
   it('3. Should move the option back to initial position when clicked again', () => {
     // Remove click layer
-    cy.get('[data-cy="click-layer"]').click();
+    assertRemoveClickLayer();
 
     // Button to click
     const buttonIndex = 0;
@@ -76,6 +80,6 @@ describe('DROP Interaction E2E Tests', () => {
   });
 
   // Import and run shared tests for drop interaction
-  testContinueButtonFeatures(subject, interactionType, defaultTestFile);
+  testContinueButtonFeatures(subject, interactionType);
   testMainAudioFeatures(subject, interactionType, defaultTestFile);
 });
