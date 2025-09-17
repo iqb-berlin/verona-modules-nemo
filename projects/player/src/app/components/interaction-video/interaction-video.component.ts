@@ -77,6 +77,11 @@ export class InteractionVideoComponent extends InteractionComponentDirective imp
     this.playCount += 1;
 
     this.sendPlaybackTimeChanged();
+
+    // Reset the video to show the poster again
+    this.currentTime = 0;
+    this.videoPlayerRef.nativeElement.currentTime = 0;
+    this.videoPlayerRef.nativeElement.load();
   }
 
   sendPlaybackTimeChanged(): void {

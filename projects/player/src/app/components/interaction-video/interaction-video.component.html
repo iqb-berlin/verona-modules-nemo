@@ -1,8 +1,8 @@
 <div class="video-container" data-cy="video-container">
-  <div class="video-wrapper" [class.playing]="playing()">
+  <div class="video-wrapper" [class.playing]="playing()" [class.ended]="!playing()" data-cy="video-wrapper">
     <div class="video">
       <video #videoPlayer [poster]="localParameters.imageSource" (ended)="ended()" data-cy="video-player">
-        <source [src]="localParameters.videoSource">
+        <source [src]="localParameters.videoSource" data-cy="video-player-source">
       </video>
     </div>
     <button class="play-button" (click)="play()" data-cy="video-play-button" data-cy="video-play-button">
