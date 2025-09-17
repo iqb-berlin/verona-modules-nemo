@@ -2,7 +2,6 @@ import {
   InteractionVideoParams,
   UnitDefinition
 } from '../../../../projects/player/src/app/models/unit-definition';
-//import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 
 describe('VIDEO Interaction E2E Tests', () => {
   const subject = 'deutsch';
@@ -13,9 +12,13 @@ describe('VIDEO Interaction E2E Tests', () => {
     cy.setupTestData(subject, defaultTestFile, interactionType);
   });
 
+  const assertPlayVideo = () => {
+    cy.get('[data-cy="video-play-button"]').click();
+  };
+
   const assertCheckIfVideoElementVisible = () => {
     // Click on the play button to remove it on top of the video element
-    cy.get('[data-cy="video-play-button"]').click();
+    assertPlayVideo();
 
     // Check if a video element is visible
     cy.get('[data-cy="video-player"]').should('exist').and('be.visible');
@@ -39,7 +42,8 @@ describe('VIDEO Interaction E2E Tests', () => {
 
   it('2. Should start playing when clicked on the play button', () => {
     // Play the video
-    cy.get('[data-cy="video-play-button"]').click();
+    assertPlayVideo();
+
     // There should be a playing class on the video wrapper
     cy.get('[data-cy="video-wrapper"]').should($el => {
       expect($el).to.have.class('playing');
@@ -52,7 +56,7 @@ describe('VIDEO Interaction E2E Tests', () => {
       .and('not.be.empty');
 
     // Play the video
-    cy.get('[data-cy="video-play-button"]').click();
+    assertPlayVideo();
 
     assertPlayVideoFaster();
 
@@ -61,7 +65,7 @@ describe('VIDEO Interaction E2E Tests', () => {
       expect($el).to.have.class('ended');
     });
 
-    // Check if poster is visible again
+    // Check if poster is visible again because when the video ends, then it will be loaded again and the poster will be visible
     cy.get('[data-cy="video-player"]').should($video => {
       const videoElement = $video[0] as HTMLVideoElement;
       expect(videoElement.currentTime).to.equal(0);
@@ -113,6 +117,19 @@ describe('VIDEO Interaction E2E Tests', () => {
     });
   });
 
-  // Import and run shared tests for buttons interaction
-  //testContinueButtonFeatures(subject, interactionType);
+  it('5. Should show the continue button after the video is complete', () => {
+    // Continue button should not exist initially
+    cy.get('[data-cy="continue-button"]').should('not.exist');
+
+    // Play the video
+    assertPlayVideo();
+
+    // Continue button should not exist after clicking the video button
+    cy.get('[data-cy="continue-button"]').should('not.exist');
+
+    assertPlayVideoFaster();
+
+    // Continue button should appear
+    cy.get('[data-cy="continue-button"]').should('exist').and('be.visible');
+  });
 });
