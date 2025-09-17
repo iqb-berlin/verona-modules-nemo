@@ -13,7 +13,7 @@ describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
     cy.setupTestData(subject, defaultTestFile, interactionType);
   });
 
-  it('1. Should display the image when imageSource is provided', () => {
+  it('1. Should display the image element', () => {
     cy.get('[data-cy="image-element"]')
       .should('exist')
       .and('be.visible')
