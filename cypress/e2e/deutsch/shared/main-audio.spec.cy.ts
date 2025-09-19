@@ -21,13 +21,16 @@ export function testMainAudioFeatures(subject: string, interactionType: string, 
         cy.get('[data-cy="click-layer"]').should('exist').and('be.visible');
 
         // Click anywhere on the screen to enable interactions
-        cy.get('[data-cy="click-layer"]').click();
+        cy.assertRemoveClickLayer();
 
         // After clicking, the layer should disappear
         cy.get('[data-cy="click-layer"]').should('not.exist');
         // Now interactions should be possible (unless disableInteractionUntilComplete is also true)
         if (!testData.mainAudio?.disableInteractionUntilComplete) {
-          if (interactionType === 'write') {
+          // if interactionType:IMAGE_ONLY, then it is enough that the image exists and visible
+          if (interactionType === 'image_only') {
+            cy.get('[data-cy="image-only-container"]').should('exist').and('be.visible');
+          } else if (interactionType === 'write') {
             cy.get('[data-cy=character-button-a]').click();
             cy.get('[data-cy=text-span]').should('contain', 'a');
           } else {
@@ -44,7 +47,7 @@ export function testMainAudioFeatures(subject: string, interactionType: string, 
         cy.get('[data-cy="interaction-disabled-overlay"]').should('exist');
 
         // Click anywhere on the screen to enable interactions
-        cy.get('[data-cy="click-layer"]').click();
+        cy.assertRemoveClickLayer();
 
         // Click the audio button to start playing
         cy.get('[data-cy="speaker-icon"]').click();
@@ -55,7 +58,9 @@ export function testMainAudioFeatures(subject: string, interactionType: string, 
         // After audio completion, the overlay should disappear
         cy.get('[data-cy="interaction-disabled-overlay"]').should('not.exist');
 
-        if (interactionType === 'write') {
+        if (interactionType === 'image_only') {
+          cy.get('[data-cy="image-only-container"]').should('exist').and('be.visible');
+        } else if (interactionType === 'write') {
           // Keyboard should be clickable
           cy.get('[data-cy=character-button-a]').should('not.be.disabled');
         } else {
@@ -70,7 +75,7 @@ export function testMainAudioFeatures(subject: string, interactionType: string, 
       const maxPLayTime = testData.mainAudio?.maxPlay ?? 1;
 
       // Remove click layer
-      cy.get('[data-cy="click-layer"]').click();
+      cy.assertRemoveClickLayer();
 
       // Initially audio button container should be enabled
       cy.get('[data-cy="audio-button-container"]').should('exist');
@@ -78,7 +83,7 @@ export function testMainAudioFeatures(subject: string, interactionType: string, 
         // Click the audio button maxPLayTime times
         for (let i = 0; i < maxPLayTime; i++) {
           cy.get('[data-cy="speaker-icon"]').click();
-          cy.wait(3000); // pause between clicks
+          cy.wait(7000); // pause between clicks
         }
         // After maxPlayTime exceeded, the container should be disabled
         cy.get('[data-cy="audio-button-container-disabled"]').should('exist');

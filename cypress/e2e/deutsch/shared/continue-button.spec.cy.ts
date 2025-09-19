@@ -20,34 +20,29 @@ export function testContinueButtonFeatures(subject: string, interactionType: str
       }
     };
 
-    const assertContinueButtonVisible = () => {
-      cy.get('[data-cy="continue-button"]').should('exist').and('be.visible');
-    };
-
-    const assertContinueButtonNotVisible = () => {
-      cy.get('[data-cy="continue-button"]').should('not.exist');
-    };
-
     const continueButtonConfigs = [
       { continueButtonShow: 'ON_ANY_RESPONSE', file: `${interactionType}_continueButtonShow_onAnyResponse_test.json` },
       { continueButtonShow: 'NO', file: `${interactionType}_continueButtonShow_no_test.json` },
+      // eslint-disable-next-line max-len
       { continueButtonShow: 'ON_RESPONSES_COMPLETE', file: `${interactionType}_continueButtonShow_onResponsesComplete_test.json` },
       { continueButtonShow: 'ALWAYS', file: `${interactionType}_continueButtonShow_always_test.json` },
+      // eslint-disable-next-line max-len
       { continueButtonShow: 'ON_MAIN_AUDIO_COMPLETE', file: `${interactionType}_continueButtonShow_onMainAudioComplete_test.json` }
     ];
 
     continueButtonConfigs.forEach(({ continueButtonShow, file }) => {
       if (continueButtonShow === 'ON_ANY_RESPONSE') {
+        // eslint-disable-next-line max-len
         it('1 .Should show continue button after any response is clicked when continueButtonShow === ON_ANY_RESPONSE ', () => {
           testSetup(continueButtonShow, file);
 
           // ontinue button should not exist initially
-          assertContinueButtonNotVisible();
+          cy.assertContinueButtonNotExists();
 
           applyStandardScenarios();
 
           // Continue button should appear
-          assertContinueButtonVisible();
+          cy.assertContinueButtonExistsAndVisible();
         });
       }
       if (continueButtonShow === 'NO') {
@@ -55,24 +50,25 @@ export function testContinueButtonFeatures(subject: string, interactionType: str
           testSetup(continueButtonShow, file);
 
           // Continue button should not exist initially
-          assertContinueButtonNotVisible();
+          cy.assertContinueButtonNotExists();
 
           applyStandardScenarios();
 
           // Continue button should not exist after clicking any button
-          assertContinueButtonNotVisible();
+          cy.assertContinueButtonNotExists();
         });
       }
       if (continueButtonShow === 'ON_RESPONSES_COMPLETE') {
+        // eslint-disable-next-line max-len
         it('3 .Should show continue button after all responses are clicked when continueButtonShow === ON_RESPONSES_COMPLETE', () => {
           testSetup(continueButtonShow, file);
           // Continue button should not exist initially
-          assertContinueButtonNotVisible();
+          cy.assertContinueButtonNotExists();
 
           applyStandardScenarios();
 
           // Continue button should still not exist
-          assertContinueButtonNotVisible();
+          cy.assertContinueButtonNotExists();
 
           // Click correct response (variableInfo.codes.parameter value)
           if (interactionType === 'write') {
@@ -109,22 +105,23 @@ export function testContinueButtonFeatures(subject: string, interactionType: str
           }
 
           // Continue button should appear
-          assertContinueButtonVisible();
+          cy.assertContinueButtonExistsAndVisible();
         });
       }
       if (continueButtonShow === 'ALWAYS') {
         it('4 .Should show continue button immediately when continueButtonShow === ALWAYS', () => {
           testSetup(continueButtonShow, file);
           // Default value: ALWAYS Continue button should be visible immediately
-          assertContinueButtonVisible();
+          cy.assertContinueButtonExistsAndVisible();
         });
       }
       // Do not test ON_MAIN_AUDIO_COMPLETE for find_on_image as there is no audio for this interaction type
       if (continueButtonShow === 'ON_MAIN_AUDIO_COMPLETE' && interactionType !== 'find_on_image') {
+        // eslint-disable-next-line max-len
         it('5 .Should show continue button after main audio is complete when continueButtonShow === ON_MAIN_AUDIO_COMPLETE', () => {
           testSetup(continueButtonShow, file);
           // Continue button should not exist initially
-          assertContinueButtonNotVisible();
+          cy.assertContinueButtonNotExists();
 
           if (interactionType === 'write') {
             // Click any letter
@@ -135,7 +132,7 @@ export function testContinueButtonFeatures(subject: string, interactionType: str
           }
 
           // Continue button should not exist after clicking any button
-          assertContinueButtonNotVisible();
+          cy.assertContinueButtonNotExists();
 
           // Click audio button
           cy.get('[data-cy="speaker-icon"]').click();
@@ -155,7 +152,7 @@ export function testContinueButtonFeatures(subject: string, interactionType: str
           cy.wait(3000);
 
           // Continue button should appear
-          assertContinueButtonVisible();
+          cy.assertContinueButtonExistsAndVisible();
         });
       }
     });

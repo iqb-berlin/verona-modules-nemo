@@ -41,6 +41,16 @@ declare global {
        * @param origin - Message origin
        */
       sendMessageFromParent(data: VopStartCommand, origin?: string): Chainable<void>;
+
+      /**
+       * Assert that the continue button exists and visible
+       * */
+      assertContinueButtonExistsAndVisible(): Chainable<void>;
+
+      /**
+       * Assert that the continue button does NOT exists
+       * */
+      assertContinueButtonNotExists(): Chainable<void>;
     }
   }
 }

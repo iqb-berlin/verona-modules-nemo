@@ -121,19 +121,19 @@ describe('VIDEO Interaction E2E Tests', () => {
   });
 
   it('5. Should show the continue button after the video is complete', () => {
-    // Continue button should not exist initially
+    // Continue button should NOT exist initially
     cy.get('[data-cy="continue-button"]').should('not.exist');
 
     // Start the video
     assertStartVideo();
 
-    // Continue button should not exist after clicking the video button
-    cy.get('[data-cy="continue-button"]').should('not.exist');
+    // Continue button should NOT exist after clicking the video button
+    cy.assertContinueButtonNotExists();
 
     assertPlayVideoFaster();
 
     // Continue button should appear
-    cy.get('[data-cy="continue-button"]').should('exist').and('be.visible');
+    cy.assertContinueButtonExistsAndVisible();
   });
 
   // Import and run shared tests for the VIDEO interaction type

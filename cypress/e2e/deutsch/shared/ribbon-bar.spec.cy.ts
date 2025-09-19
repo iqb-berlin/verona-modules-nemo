@@ -42,7 +42,7 @@ export function testRibbonBars(subject: string, interactionType: string) {
       });
     });
 
-    it('2a. Should show ribbon bar as WHITE if background is not white', () => {
+    it('2a. Should show ribbon bar as WHITE if background is NOT white', () => {
       setupRibbonBarTest(loadDefaultTestFile).then(testData => {
         const bgColor = testData.backgroundColor?.toUpperCase() || '';
         const isBgColorWhite = ['#FFF', '#FFFFFF', '#EEE', '#EEEEEE', 'WHITE'].includes(bgColor);

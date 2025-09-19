@@ -60,6 +60,7 @@ Cypress.Commands.add('assertRemoveClickLayer', () => {
   cy.get('[data-cy="click-layer"]').click();
 });
 
+// eslint-disable-next-line max-len
 Cypress.Commands.add('setupTestDataWithPostMessageMock', (subject: string, configFile: string, interactionType: string) => {
   // 1. FIRST load fixture data
   const fullPath = `${subject}/interaction-${interactionType}/${configFile}`;
@@ -129,4 +130,11 @@ Cypress.Commands.add('sendMessageFromParent', (data, origin = '*') => {
     win.postMessage(data, origin);
     cy.log('postMessage sent');
   });
+});
+
+Cypress.Commands.add('assertContinueButtonExistsAndVisible', () => {
+  cy.get('[data-cy="continue-button"]').should('exist').and('be.visible');
+});
+Cypress.Commands.add('assertContinueButtonNotExists', () => {
+  cy.get('[data-cy="continue-button"]').should('not.exist');
 });
