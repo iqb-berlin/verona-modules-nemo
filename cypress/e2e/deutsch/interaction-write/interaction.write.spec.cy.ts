@@ -1,6 +1,7 @@
 import { InteractionWriteParams, UnitDefinition } from '../../../../projects/player/src/app/models/unit-definition';
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
+import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
 
 describe('WRITE Interaction E2E Tests', () => {
   const subject = 'deutsch';
@@ -10,10 +11,6 @@ describe('WRITE Interaction E2E Tests', () => {
   beforeEach(() => {
     cy.setupTestData(subject, defaultTestFile, interactionType);
   });
-
-  const assertRemoveClickLayer = () => {
-    cy.get('[data-cy="click-layer"]').click();
-  };
 
   it('1. Should have stimulus wrapper with an image inside', () => {
     cy.get('[data-cy=stimulus-wrapper]')
@@ -35,7 +32,7 @@ describe('WRITE Interaction E2E Tests', () => {
     const text = ['k', 'o', 'p', 'f'];
 
     // Remove click layer
-    assertRemoveClickLayer();
+    cy.assertRemoveClickLayer();
 
     text.forEach(char => {
       cy.get(`[data-cy=character-button-${char}]`).click();
@@ -58,7 +55,7 @@ describe('WRITE Interaction E2E Tests', () => {
       });
 
       // Remove click layer
-      assertRemoveClickLayer();
+      cy.assertRemoveClickLayer();
 
       letters.forEach(letter => {
         cy.get(`[data-cy=character-button-${letter}]`).click();
@@ -127,7 +124,8 @@ describe('WRITE Interaction E2E Tests', () => {
     });
   });
 
-  // Import and run shared tests for write interaction
+  // Import and run shared tests for the WRITE interaction type
   testContinueButtonFeatures(subject, interactionType);
   testMainAudioFeatures(subject, interactionType, defaultTestFile);
+  testRibbonBars(subject, interactionType);
 });

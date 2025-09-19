@@ -56,6 +56,10 @@ Cypress.Commands.add('setupTestData', (subject: string, configFile: string, inte
   cy.loadUnit(fullPath);
 });
 
+Cypress.Commands.add('assertRemoveClickLayer', () => {
+  cy.get('[data-cy="click-layer"]').click();
+});
+
 Cypress.Commands.add('setupTestDataWithPostMessageMock', (subject: string, configFile: string, interactionType: string) => {
   // 1. FIRST load fixture data
   const fullPath = `${subject}/interaction-${interactionType}/${configFile}`;

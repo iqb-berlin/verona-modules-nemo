@@ -2,6 +2,9 @@ import {
   InteractionVideoParams,
   UnitDefinition
 } from '../../../../projects/player/src/app/models/unit-definition';
+import { testRibbonBars} from "../shared/ribbon-bar.spec.cy";
+import { testContinueButtonFeatures } from "../shared/continue-button.spec.cy";
+import { testMainAudioFeatures } from "../shared/main-audio.spec.cy";
 
 describe('VIDEO Interaction E2E Tests', () => {
   const subject = 'deutsch';
@@ -12,13 +15,13 @@ describe('VIDEO Interaction E2E Tests', () => {
     cy.setupTestData(subject, defaultTestFile, interactionType);
   });
 
-  const assertPlayVideo = () => {
+  const assertStartVideo = () => {
     cy.get('[data-cy="video-play-button"]').click();
   };
 
   const assertCheckIfVideoElementVisible = () => {
     // Click on the play button to remove it on top of the video element
-    assertPlayVideo();
+    assertStartVideo();
 
     // Check if a video element is visible
     cy.get('[data-cy="video-player"]').should('exist').and('be.visible');
@@ -41,8 +44,8 @@ describe('VIDEO Interaction E2E Tests', () => {
   });
 
   it('2. Should start playing when clicked on the play button', () => {
-    // Play the video
-    assertPlayVideo();
+    // Start the video
+    assertStartVideo();
 
     // There should be a playing class on the video wrapper
     cy.get('[data-cy="video-wrapper"]').should($el => {
@@ -55,8 +58,8 @@ describe('VIDEO Interaction E2E Tests', () => {
       .should('have.attr', 'poster')
       .and('not.be.empty');
 
-    // Play the video
-    assertPlayVideo();
+    // Start the video
+    assertStartVideo();
 
     assertPlayVideoFaster();
 
@@ -121,8 +124,8 @@ describe('VIDEO Interaction E2E Tests', () => {
     // Continue button should not exist initially
     cy.get('[data-cy="continue-button"]').should('not.exist');
 
-    // Play the video
-    assertPlayVideo();
+    // Start the video
+    assertStartVideo();
 
     // Continue button should not exist after clicking the video button
     cy.get('[data-cy="continue-button"]').should('not.exist');
@@ -132,4 +135,7 @@ describe('VIDEO Interaction E2E Tests', () => {
     // Continue button should appear
     cy.get('[data-cy="continue-button"]').should('exist').and('be.visible');
   });
+
+  // Import and run shared tests for the VIDEO interaction type
+  testRibbonBars(subject, interactionType);
 });
