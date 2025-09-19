@@ -40,17 +40,6 @@ export class AppComponent implements OnInit {
       });
     this.isStandalone = window === window.parent;
     this.veronaPostService.sendReadyNotification(this.metadataService.playerMetadata);
-
-    // Add test hooks if in e2e mode
-    // eslint-disable-next-line no-underscore-dangle
-    if ((window as any).__E2E__ === true) {
-      (window as any).testStars = {
-        // Send state-changed notification
-        sendStateChanged: (unitState: any) => {
-          this.veronaPostService.sendVopStateChangedNotification({ unitState });
-        }
-      };
-    }
   }
 
   // eslint-disable-next-line class-methods-use-this

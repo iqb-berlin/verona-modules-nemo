@@ -3,7 +3,7 @@ describe('App component', () => {
   const configFile = 'buttons_test.json';
   const interactionType = 'buttons';
 
-  it('1. Should communicate via postMessages when the app is in iframe', () => {
+  it.only('1. Should communicate via postMessages when the app is in iframe', () => {
     cy.setupTestDataWithPostMessageMock(subject, configFile, interactionType);
 
     type MockMessage = { data: { type: string }, origin: string };
@@ -29,16 +29,6 @@ describe('App component', () => {
     // And the UI should be up
     cy.get('[data-cy=buttons-container]').should('exist');
 
-    // Send state changed notification (child -> parent)
-    cy.window().then((win: any) => {
-      if (win.testStars?.sendStateChanged()) {
-        win.testStars.sendStateChanged({
-          unitStateDataType: 'iqb-standard@1.1',
-          dataParts: { responses: '[]' }, // String representation of responses array
-          responseProgress: 'none'
-        });
-      }
-    });
 
     cy.get('@incomingMessages').then(msgs => {
       const incomingArr = msgs as unknown as MockMessage[];

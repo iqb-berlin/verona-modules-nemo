@@ -6,7 +6,7 @@ import { UnitService } from '../../services/unit.service';
 @Component({
   selector: 'stars-ribbon-bar',
   template: `
-    <div [class]="ribbonClass()">
+    <div [class]="ribbonClass()" data-cy="ribbon-bar">
     </div>
   `,
   styleUrls: ['./ribbon-bar.component.scss']

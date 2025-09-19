@@ -159,27 +159,5 @@ export function testContinueButtonFeatures(subject: string, interactionType: str
         });
       }
     });
-
-    // BELOW TEST WILL BE USED ONLY FOR interactionType: VIDEO
-    // it('Should handle ON_VIDEO_COMPLETE value', () => {
-    //   if (continueButtonShow === 'ON_VIDEO_COMPLETE') {
-    //     // Continue button should not exist initially
-    //     cy.get('[data-cy="continue-button"]').should('not.exist');
-    //
-    //     // Click video button
-    //     cy.get('[data-cy="video-play-button"]').click();
-    //
-    //     // Continue button should not exist after clicking the video button
-    //     cy.get('[data-cy="continue-button"]').should('not.exist');
-    //
-    //     // Wait for the video to complete
-    //     cy.wait(50000);
-    //
-    //     // Continue button should appear
-    //     cy.get('[data-cy="continue-button"]').should('exist').and('be.visible');
-    //
-    //     cy.log(`Continue button appears only after video is complete for rule: ${continueButtonShow}`);
-    //   }
-    // });
   });
 }

@@ -1,6 +1,7 @@
 import { InteractionDropParams, UnitDefinition } from '../../../../projects/player/src/app/models/unit-definition';
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
+import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
 
 describe('DROP Interaction E2E Tests', () => {
   const subject = 'deutsch';
@@ -10,10 +11,6 @@ describe('DROP Interaction E2E Tests', () => {
   beforeEach(() => {
     cy.setupTestData(subject, defaultTestFile, interactionType);
   });
-
-  const assertRemoveClickLayer = () => {
-    cy.get('[data-cy="click-layer"]').click();
-  };
 
   it('1. Should have correct number of options', () => {
     let testData: UnitDefinition;
@@ -31,7 +28,7 @@ describe('DROP Interaction E2E Tests', () => {
 
   it('2. Should apply correct transform values when option is clicked', () => {
     // Remove click layer
-    assertRemoveClickLayer();
+    cy.assertRemoveClickLayer();
 
     // Button to click
     const buttonIndex = 0;
@@ -56,7 +53,7 @@ describe('DROP Interaction E2E Tests', () => {
 
   it('3. Should move the option back to initial position when clicked again', () => {
     // Remove click layer
-    assertRemoveClickLayer();
+    cy.assertRemoveClickLayer();
 
     // Button to click
     const buttonIndex = 0;
@@ -79,7 +76,8 @@ describe('DROP Interaction E2E Tests', () => {
       });
   });
 
-  // Import and run shared tests for drop interaction
+  // Import and run shared tests for the DROP interaction type
   testContinueButtonFeatures(subject, interactionType);
   testMainAudioFeatures(subject, interactionType, defaultTestFile);
+  testRibbonBars(subject, interactionType);
 });
