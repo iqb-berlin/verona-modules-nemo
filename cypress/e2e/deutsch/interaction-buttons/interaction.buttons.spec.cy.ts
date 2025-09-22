@@ -1,7 +1,13 @@
-import { InteractionButtonParams, UnitDefinition } from '../../../../projects/player/src/app/models/unit-definition';
+import {
+  InteractionButtonParams,
+  InteractionOptions,
+  UnitDefinition
+} from '../../../../projects/player/src/app/models/unit-definition';
+import { VariableInfo } from '../../../../projects/player/src/app/models/responses';
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
+import { getIndexByOneBasedInput } from '../../../support/utils';
 
 describe('BUTTONS Interaction E2E Tests', () => {
   const subject = 'deutsch';
@@ -12,6 +18,10 @@ describe('BUTTONS Interaction E2E Tests', () => {
     cy.get('[data-cy="button-0"]').should('exist');
   };
 
+  const assertFirstButtonClick = () => {
+    cy.get('[data-cy="button-0"]').click();
+  };
+
   it('1a. Should handle single button selection when multiSelect is false\n', () => {
     // Set up test data
     cy.setupTestData(subject, defaultTestFile, interactionType);
@@ -20,7 +30,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
     cy.assertRemoveClickLayer();
 
     // Click first button
-    cy.get('[data-cy="button-0"]').click();
+    assertFirstButtonClick();
     cy.get('[data-cy="button-0"] input').should('have.attr', 'data-selected', 'true');
 
     // Click second button - should deselect first
@@ -37,7 +47,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
     assertButtonExists();
 
     // Test multi-selection
-    cy.get('[data-cy="button-0"]').click();
+    assertFirstButtonClick();
     cy.get('[data-cy="button-1"]').click();
 
     cy.get('[data-cy="button-0"] input').should('have.attr', 'data-selected', 'true');
@@ -248,6 +258,52 @@ describe('BUTTONS Interaction E2E Tests', () => {
       cy.setupTestData(subject, file, interactionType);
 
       cy.get(`[data-cy=button-with-${key}]`).should('exist');
+    });
+  });
+
+  it.only('7. Should play the right feedback if the answer is true', () => {
+    let testData: UnitDefinition;
+    // Set up test data
+    cy.setupTestData(subject, 'buttons_feedback_test', interactionType);
+    cy.get('@testData').then(data => {
+      testData = data as unknown as UnitDefinition;
+
+      const variableInfo = testData.variableInfo as VariableInfo[];
+      const correctAnswerIndex = variableInfo[0]?.codes[0]?.parameter || '';
+
+      const audioFeedback = testData.audioFeedback;
+      const correctFeedback = audioFeedback?.feedback.find(obj => obj.parameter === '1');
+      const correctFeedbackSrc = correctFeedback?.audioSource;
+      const wrongFeedback = audioFeedback?.feedback.find(feedback => feedback.parameter === '0');
+      const wrongFeedbackSrc = wrongFeedback?.audioSource;
+
+      // Remove click layer
+      cy.assertRemoveClickLayer();
+
+      // Click the first button
+      assertFirstButtonClick();
+
+      // Click on continue button
+      cy.assertContinueButtonClick();
+
+      // check if the audio source is equal to the wrong answer
+      cy.get('[data-cy="continue-button-audio"]').should('have.attr', 'src', wrongFeedbackSrc);
+
+      // Wait until the audio is played until the end
+      cy.wait(5500);
+
+      // Then click on the correct button
+      const buttonParams = testData.interactionParameters as InteractionButtonParams;
+      const interactionOptions = buttonParams.options as InteractionOptions;
+      const buttonIndex = getIndexByOneBasedInput(interactionOptions.buttons ?? [], correctAnswerIndex);
+
+      cy.get(`[data-cy="button-${buttonIndex}"]`).click();
+
+      // Click on continue button again
+      cy.assertContinueButtonClick();
+
+      // Now the audio source has to be the correct answer
+      cy.get('[data-cy="continue-button-audio"]').should('have.attr', 'src', correctFeedbackSrc);
     });
   });
 

@@ -51,6 +51,11 @@ declare global {
        * Assert that the continue button does NOT exists
        * */
       assertContinueButtonNotExists(): Chainable<void>;
+
+      /**
+       * Assert that the continue button click event is triggered
+       * */
+      assertContinueButtonClick(): Chainable<void>;
     }
   }
 }

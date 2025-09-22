@@ -135,6 +135,11 @@ Cypress.Commands.add('sendMessageFromParent', (data, origin = '*') => {
 Cypress.Commands.add('assertContinueButtonExistsAndVisible', () => {
   cy.get('[data-cy="continue-button"]').should('exist').and('be.visible');
 });
+
 Cypress.Commands.add('assertContinueButtonNotExists', () => {
   cy.get('[data-cy="continue-button"]').should('not.exist');
+});
+
+Cypress.Commands.add('assertContinueButtonClick', () => {
+  cy.get('[data-cy="continue-button"]').click();
 });

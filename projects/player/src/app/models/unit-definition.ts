@@ -1,7 +1,8 @@
 import { VariableInfo } from './responses';
 import { AudioFeedback } from './feedback';
 
-export type ContinueButtonEnum = 'ALWAYS' | 'NO' | 'ON_ANY_RESPONSE' | 'ON_RESPONSES_COMPLETE' | 'ON_MAIN_AUDIO_COMPLETE' | 'ON_VIDEO_COMPLETE';
+// eslint-disable-next-line max-len
+export type ContinueButtonEnum = 'ALWAYS' | 'NO' | 'ON_ANY_RESPONSE' | 'ON_RESPONSES_COMPLETE' | 'ON_MAIN_AUDIO_COMPLETE' | 'ON_VIDEO_COMPLETE' | 'ON_AUDIO_AND_RESPONSE';
 export type InteractionEnum = 'BUTTONS' | 'DROP' | 'WRITE' | 'FIND_ON_IMAGE' | 'VIDEO' | 'IMAGE_ONLY' | 'NONE';
 export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED' | 'CLAP_HANDS';
 export type ButtonTypeEnum = 'MEDIUM_SQUARE' | 'BIG_SQUARE' | 'SMALL_SQUARE' | 'TEXT' | 'CIRCLE';
