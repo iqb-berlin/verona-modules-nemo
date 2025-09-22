@@ -22,9 +22,9 @@ declare global {
       setupTestData(subject:string, configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>;
 
       /**
-       * Assert that the click layer is removed from the DOM
+       * Click on the click layer
        * */
-      assertRemoveClickLayer(): Chainable<void>;
+      removeClickLayer(): Chainable<void>;
 
       /**
        * Setup test data for postMessages testing
@@ -53,9 +53,19 @@ declare global {
       assertContinueButtonNotExists(): Chainable<void>;
 
       /**
-       * Assert that the continue button click event is triggered
+       * Click on the continue button
        * */
-      assertContinueButtonClick(): Chainable<void>;
+      clickContinueButton(): Chainable<void>;
+
+      /**
+       * Clicks the button at index 1
+       * */
+      clickButtonAtIndexOne(): Chainable<void>;
+
+      /**
+       * Assert that the audio is played until the end
+       * */
+      waitUntilAudioIsFinishedPlaying(): Chainable<void>;
     }
   }
 }

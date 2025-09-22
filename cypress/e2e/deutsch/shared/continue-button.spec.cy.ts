@@ -36,7 +36,7 @@ export function testContinueButtonFeatures(subject: string, interactionType: str
         it('1 .Should show continue button after any response is clicked when continueButtonShow === ON_ANY_RESPONSE ', () => {
           testSetup(continueButtonShow, file);
 
-          // ontinue button should not exist initially
+          // Continue button should not exist initially
           cy.assertContinueButtonNotExists();
 
           applyStandardScenarios();
@@ -146,10 +146,10 @@ export function testContinueButtonFeatures(subject: string, interactionType: str
           }
 
           // Continue button still should not exist
-          cy.get('[data-cy="continue-button"]').should('not.exist');
+          cy.assertContinueButtonNotExists();
 
           // Wait for audio to complete
-          cy.wait(3000);
+          cy.waitUntilAudioIsFinishedPlaying();
 
           // Continue button should appear
           cy.assertContinueButtonExistsAndVisible();

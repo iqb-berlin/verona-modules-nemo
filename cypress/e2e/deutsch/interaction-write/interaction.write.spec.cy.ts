@@ -32,7 +32,7 @@ describe('WRITE Interaction E2E Tests', () => {
     const text = ['k', 'o', 'p', 'f'];
 
     // Remove click layer
-    cy.assertRemoveClickLayer();
+    cy.removeClickLayer();
 
     text.forEach(char => {
       cy.get(`[data-cy=character-button-${char}]`).click();
@@ -55,7 +55,7 @@ describe('WRITE Interaction E2E Tests', () => {
       });
 
       // Remove click layer
-      cy.assertRemoveClickLayer();
+      cy.removeClickLayer();
 
       letters.forEach(letter => {
         cy.get(`[data-cy=character-button-${letter}]`).click();

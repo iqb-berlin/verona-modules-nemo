@@ -16,15 +16,15 @@ export function testRibbonBars(subject: string, interactionType: string) {
       expect(testData.ribbonBars).to.equal(true);
     };
 
-    const assertRemoveClickLayerIfApplicable = (type: string) => {
+    const removeClickLayerIfApplicable = (type: string) => {
       // Remove the click layer if it's not a FIND_ON_IMAGE or VIDEO interaction type
       if (!['find_on_image', 'video'].includes(type)) {
-        cy.assertRemoveClickLayer();
+        cy.removeClickLayer();
       }
     };
 
     const setupRibbonBarTest = (fileLoader: () => Cypress.Chainable<UnitDefinition>) => fileLoader().then(testData => {
-      assertRemoveClickLayerIfApplicable(interactionType);
+      removeClickLayerIfApplicable(interactionType);
       checkRibbonBars(testData);
       return cy.wrap(testData);
     });
@@ -33,7 +33,7 @@ export function testRibbonBars(subject: string, interactionType: string) {
       // Load the file
       loadDefaultTestFile().then(testData => {
         // Remove click layer
-        assertRemoveClickLayerIfApplicable(interactionType);
+        removeClickLayerIfApplicable(interactionType);
 
         // Check if ribbonBars true and the component exists
         checkRibbonBars(testData);

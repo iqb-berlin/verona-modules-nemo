@@ -24,7 +24,7 @@ describe('IMAGE_ONLY Interaction E2E Tests', () => {
     cy.assertContinueButtonNotExists();
 
     // Remove click layer
-    cy.assertRemoveClickLayer();
+    cy.removeClickLayer();
 
     // Start the audio
     cy.get('[data-cy="speaker-icon"]').click();

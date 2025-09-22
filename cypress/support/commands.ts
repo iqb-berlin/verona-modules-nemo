@@ -56,7 +56,7 @@ Cypress.Commands.add('setupTestData', (subject: string, configFile: string, inte
   cy.loadUnit(fullPath);
 });
 
-Cypress.Commands.add('assertRemoveClickLayer', () => {
+Cypress.Commands.add('removeClickLayer', () => {
   cy.get('[data-cy="click-layer"]').click();
 });
 
@@ -140,6 +140,18 @@ Cypress.Commands.add('assertContinueButtonNotExists', () => {
   cy.get('[data-cy="continue-button"]').should('not.exist');
 });
 
-Cypress.Commands.add('assertContinueButtonClick', () => {
+Cypress.Commands.add('clickContinueButton', () => {
   cy.get('[data-cy="continue-button"]').click();
+});
+
+Cypress.Commands.add('clickButtonAtIndexOne', () => {
+  cy.get('[data-cy="button-1"]').click();
+});
+
+Cypress.Commands.add('waitUntilAudioIsFinishedPlaying', () => {
+  cy.get('[data-cy="audio-button-animation"]', { timeout: 60000 }) // wait up to 60s
+    .should($el => {
+      // check that the class 'playing' is not present
+      expect($el).not.to.have.class('playing');
+    });
 });

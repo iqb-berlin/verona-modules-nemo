@@ -11,7 +11,7 @@
       </svg>
     </div>
   </div>
-  <div class="audio-button-animation" [class.playing]="isPlaying()">
+  <div class="audio-button-animation" [class.playing]="isPlaying()" data-cy="audio-button-animation">
     <ng-lottie [options]="lottieOptions"
                (animationCreated)="animationCreated($event)">
     </ng-lottie>
