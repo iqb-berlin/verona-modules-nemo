@@ -2,9 +2,7 @@ import {
   InteractionVideoParams,
   UnitDefinition
 } from '../../../../projects/player/src/app/models/unit-definition';
-import { testRibbonBars} from "../shared/ribbon-bar.spec.cy";
-import { testContinueButtonFeatures } from "../shared/continue-button.spec.cy";
-import { testMainAudioFeatures } from "../shared/main-audio.spec.cy";
+import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
 
 describe('VIDEO Interaction E2E Tests', () => {
   const subject = 'deutsch';
@@ -63,12 +61,13 @@ describe('VIDEO Interaction E2E Tests', () => {
 
     assertPlayVideoFaster();
 
-    // Check if ended class exists on the video wrapper
+    // Check if the ended class exists on the video wrapper
     cy.get('[data-cy="video-wrapper"]').should($el => {
       expect($el).to.have.class('ended');
     });
 
-    // Check if poster is visible again because when the video ends, then it will be loaded again and the poster will be visible
+    // Check if the poster is visible again because when the video ends,
+    // then it will be loaded again and the poster will be visible
     cy.get('[data-cy="video-player"]').should($video => {
       const videoElement = $video[0] as HTMLVideoElement;
       expect(videoElement.currentTime).to.equal(0);
