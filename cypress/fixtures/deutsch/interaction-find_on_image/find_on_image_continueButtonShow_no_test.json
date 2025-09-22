@@ -1,7 +1,8 @@
 {
   "id": "stars-unit-definition",
-  "version": "0.17",
+  "version": "0.18",
   "backgroundColor": "#FFFFF",
+  "ribbonBars": false,
   "continueButtonShow": "NO",
   "interactionType": "FIND_ON_IMAGE",
   "interactionParameters": {

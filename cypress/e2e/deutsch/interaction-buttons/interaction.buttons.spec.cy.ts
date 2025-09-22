@@ -1,15 +1,12 @@
 import { InteractionButtonParams, UnitDefinition } from '../../../../projects/player/src/app/models/unit-definition';
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
+import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
 
 describe('BUTTONS Interaction E2E Tests', () => {
   const subject = 'deutsch';
   const interactionType = 'buttons';
   const defaultTestFile = 'buttons_test';
-
-  const assertRemoveClickLayer = () => {
-    cy.get('[data-cy="click-layer"]').click();
-  };
 
   const assertButtonExists = () => {
     cy.get('[data-cy="button-0"]').should('exist');
@@ -20,7 +17,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
     cy.setupTestData(subject, defaultTestFile, interactionType);
 
     // Remove click layer
-    assertRemoveClickLayer();
+    cy.assertRemoveClickLayer();
 
     // Click first button
     cy.get('[data-cy="button-0"]').click();
@@ -146,7 +143,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
 
       if (imageSource && imageSource.trim() !== '') {
         // Remove click layer
-        assertRemoveClickLayer();
+        cy.assertRemoveClickLayer();
         // Check if there is an image
         cy.get('[data-cy="stimulus-image"]').should('exist').and('be.visible');
 
@@ -254,7 +251,8 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  // Import and run shared tests for buttons interaction
+  // Import and run shared tests for the BUTTONS interaction type
   testContinueButtonFeatures(subject, interactionType);
   testMainAudioFeatures(subject, interactionType, defaultTestFile);
+  testRibbonBars(subject, interactionType);
 });

@@ -56,6 +56,10 @@ Cypress.Commands.add('setupTestData', (subject: string, configFile: string, inte
   cy.loadUnit(fullPath);
 });
 
+Cypress.Commands.add('assertRemoveClickLayer', () => {
+  cy.get('[data-cy="click-layer"]').click();
+});
+
 Cypress.Commands.add('setupTestDataWithPostMessageMock', (subject: string, configFile: string, interactionType: string) => {
   // 1. FIRST load fixture data
   const fullPath = `${subject}/interaction-${interactionType}/${configFile}`;
@@ -98,13 +102,11 @@ Cypress.Commands.add('setupTestDataWithPostMessageMock', (subject: string, confi
 
         // Listen for actual MessageEvents - only store vopStartCommand
         win.addEventListener('message', (event: MessageEvent) => {
-          if (event.data?.type === 'vopStartCommand') {
-            console.log('Parent → Child message event:', event.data);
-            incomingMessages.push({
-              data: event.data,
-              origin: event.origin
-            });
-          }
+          console.log('Parent → Child message event:', event.data);
+          incomingMessages.push({
+            data: event.data,
+            origin: event.origin
+          });
         }, true);
 
         // Store on window
