@@ -2,6 +2,7 @@ import { InteractionWriteParams, UnitDefinition } from '../../../../projects/pla
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
+import { testAudioFeedback } from '../shared/audio-feedback.spec.cy';
 
 describe('WRITE Interaction E2E Tests', () => {
   const subject = 'deutsch';
@@ -29,15 +30,11 @@ describe('WRITE Interaction E2E Tests', () => {
   });
 
   it('4. Should display the text written by keyboard', () => {
-    const text = ['k', 'o', 'p', 'f'];
-
     // Remove click layer
-    cy.assertRemoveClickLayer();
+    cy.removeClickLayer();
 
-    text.forEach(char => {
-      cy.get(`[data-cy=character-button-${char}]`).click();
-    });
-    cy.get('[data-cy=text-span]').should('contain', 'Kopf');
+    const text = 'kopf';
+    cy.writeTextOnKeyboard(text);
   });
 
   it('5. Should allow the text maxInputLength length', () => {
@@ -55,7 +52,7 @@ describe('WRITE Interaction E2E Tests', () => {
       });
 
       // Remove click layer
-      cy.assertRemoveClickLayer();
+      cy.removeClickLayer();
 
       letters.forEach(letter => {
         cy.get(`[data-cy=character-button-${letter}]`).click();
@@ -128,4 +125,5 @@ describe('WRITE Interaction E2E Tests', () => {
   testContinueButtonFeatures(subject, interactionType);
   testMainAudioFeatures(subject, interactionType, defaultTestFile);
   testRibbonBars(subject, interactionType);
+  testAudioFeedback(subject, interactionType);
 });

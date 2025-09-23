@@ -1,7 +1,11 @@
-import { InteractionButtonParams, UnitDefinition } from '../../../../projects/player/src/app/models/unit-definition';
+import {
+  InteractionButtonParams,
+  UnitDefinition
+} from '../../../../projects/player/src/app/models/unit-definition';
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
+import { testAudioFeedback } from '../shared/audio-feedback.spec.cy';
 
 describe('BUTTONS Interaction E2E Tests', () => {
   const subject = 'deutsch';
@@ -17,16 +21,16 @@ describe('BUTTONS Interaction E2E Tests', () => {
     cy.setupTestData(subject, defaultTestFile, interactionType);
 
     // Remove click layer
-    cy.assertRemoveClickLayer();
+    cy.removeClickLayer();
 
-    // Click first button
-    cy.get('[data-cy="button-0"]').click();
-    cy.get('[data-cy="button-0"] input').should('have.attr', 'data-selected', 'true');
-
-    // Click second button - should deselect first
-    cy.get('[data-cy="button-1"]').click();
-    cy.get('[data-cy="button-0"] input').should('have.attr', 'data-selected', 'false');
+    // Click button at index 1
+    cy.clickButtonAtIndexOne();
     cy.get('[data-cy="button-1"] input').should('have.attr', 'data-selected', 'true');
+
+    // Click button at index 2 - should deselect first
+    cy.get('[data-cy="button-2"]').click();
+    cy.get('[data-cy="button-1"] input').should('have.attr', 'data-selected', 'false');
+    cy.get('[data-cy="button-2"] input').should('have.attr', 'data-selected', 'true');
   });
 
   it('1b. Should handle multi-selection when enabled', () => {
@@ -37,11 +41,11 @@ describe('BUTTONS Interaction E2E Tests', () => {
     assertButtonExists();
 
     // Test multi-selection
-    cy.get('[data-cy="button-0"]').click();
-    cy.get('[data-cy="button-1"]').click();
+    cy.clickButtonAtIndexOne();
+    cy.get('[data-cy="button-2"]').click();
 
-    cy.get('[data-cy="button-0"] input').should('have.attr', 'data-selected', 'true');
     cy.get('[data-cy="button-1"] input').should('have.attr', 'data-selected', 'true');
+    cy.get('[data-cy="button-2"] input').should('have.attr', 'data-selected', 'true');
   });
 
   it('2. Should respect button layout (numberOfRows)', () => {
@@ -143,7 +147,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
 
       if (imageSource && imageSource.trim() !== '') {
         // Remove click layer
-        cy.assertRemoveClickLayer();
+        cy.removeClickLayer();
         // Check if there is an image
         cy.get('[data-cy="stimulus-image"]').should('exist').and('be.visible');
 
@@ -255,4 +259,5 @@ describe('BUTTONS Interaction E2E Tests', () => {
   testContinueButtonFeatures(subject, interactionType);
   testMainAudioFeatures(subject, interactionType, defaultTestFile);
   testRibbonBars(subject, interactionType);
+  testAudioFeedback(subject, interactionType);
 });

@@ -10,6 +10,6 @@
   <audio #buttonAudio
          [src]="audioSource() | safeResourceUrl"
          (play)="onPlay()"
-         (pause)="onPause()">
+         (pause)="onPause()" data-cy="continue-button-audio">
   </audio>
 </div>

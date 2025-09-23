@@ -4,6 +4,7 @@ import {
 } from '../../../../projects/player/src/app/models/unit-definition';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
+import { testAudioFeedback } from '../shared/audio-feedback.spec.cy';
 
 describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
   const subject = 'deutsch';
@@ -100,4 +101,5 @@ describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
   // Import and run shared tests for FIND_ON_IMAGE interaction type
   testContinueButtonFeatures(subject, interactionType);
   testRibbonBars(subject, interactionType);
+  testAudioFeedback(subject, interactionType);
 });
