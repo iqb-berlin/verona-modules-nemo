@@ -35,6 +35,9 @@ export class InteractionDropComponent extends InteractionComponentDirective {
         this.localParameters.variableId = parameters.variableId || 'DROP';
         this.localParameters.imageSource = parameters.imageSource || '';
         this.localParameters.text = parameters.text || '';
+        this.localParameters.imagePosition = parameters.imagePosition || 'BOTTOM'; // Default to BOTTOM
+        this.localParameters.imageLandingXY = parameters.imageLandingXY || '50,50';
+
         this.responses.emit([{
           id: this.localParameters.variableId,
           status: 'DISPLAYED',
@@ -65,16 +68,45 @@ export class InteractionDropComponent extends InteractionComponentDirective {
     const buttonWidth = buttonContainerWidth - gapWidth;
     const totalWidth = totalButtons * buttonContainerWidth; // Total width of the button container
     const containerCenter = totalWidth / 2; // Center of button container
-    const buttonCenter = buttonWidth / 2; // // Distance from container edge to a button center
+    const buttonCenter = buttonWidth / 2; // Distance from container edge to a button center
 
-    // Current button's position
     // eslint-disable-next-line max-len
     const currentButtonCenter = (index * buttonContainerWidth) + buttonCenter + borderOffset; // X position of THIS button's center
 
     // Move button to a container center
     const offsetX = containerCenter - currentButtonCenter;
 
-    return `translate(${offsetX}px, 230px)`;
+    // If imageLandingXY is provided, use it
+    if (this.localParameters.imageLandingXY) {
+      // Check if imageLandingXY contains both X and Y coordinates
+      if (this.localParameters.imageLandingXY.includes(',')) {
+        // Split the coordinates
+        const coords = this.localParameters.imageLandingXY.split(',');
+        const x = coords[0]?.trim() ?? '';
+        const y = coords[1]?.trim() ?? '';
+
+        // If X is 0, use the calculated offsetX instead
+        if (x === '0' && y) {
+          console.log('X IS 0, USING OFFSET X', offsetX);
+          return `translate(${offsetX}px, ${y}px)`;
+        }
+        // Otherwise use the provided X,Y values
+        console.log('THERE IS X AND Y COORDINATE', x, y);
+        return `translate(${x}px, ${y}px})`;
+      }
+      // It contains only a Y coordinate, keep using our calculated X
+      return `translate(${offsetX}px, ${this.localParameters.imageLandingXY}px)`;
+    }
+
+    // Fallback for when imageLandingXY is not provided
+    // Determine Y position based on imagePosition
+    let transformY = '280px'; // Default for BOTTOM position - moves down
+
+    if (this.localParameters.imagePosition === 'TOP') {
+      transformY = '-280px'; // Button goes UP when image is at top
+    }
+
+    return `translate(${offsetX}px, ${transformY})`;
   }
 
   onButtonClick(index: number): void {
@@ -98,6 +130,8 @@ export class InteractionDropComponent extends InteractionComponentDirective {
       variableId: 'DROP',
       options: [],
       imageSource: '',
+      imagePosition: 'BOTTOM',
+      imageLandingXY: '50,50',
       text: ''
     };
   }

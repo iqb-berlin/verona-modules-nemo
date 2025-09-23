@@ -1,32 +1,37 @@
-<div class="drop-select-container" data-cy="drop-container">
-  <div class="interaction-wrapper">
-    <div class="buttons-container" role="group">
-      @for (option of localParameters.options; track $index) {
-        <div
-            class="animate-wrapper"
-            [style.transform]="animateStyle($index)"
-            [class.no-transition]="disabledTransition()"
-            data-cy="drop-animate-wrapper"
-        >
-          <stars-standard-button
-                  [id]="$index.toString()"
-                  [value]="$index"
-                  [text]="option.text"
-                  [inputType]="'radio'"
-                  [image]="option.imageSource"
-                  [selected]="this.selectedValue() === $index"
-                  [type]="'SMALL_SQUARE'"
-                  [attr.data-cy]="'button-' + $index"
-                  (buttonClick)="onButtonClick($index)">
-          </stars-standard-button>
-        </div>
-      }
-    </div>
-  </div>
+<div class="drop-select-container"
+     [class]="'image-position-' + localParameters.imagePosition?.toLowerCase()"
+     data-cy="drop-container">
 
+  <!-- Image section -->
   <div class="stimulus-wrapper">
     @if (localParameters.imageSource) {
       <img [src]="localParameters.imageSource" [alt]="">
     }
+  </div>
+
+  <!-- Buttons section -->
+  <div class="interaction-wrapper">
+    <div class="buttons-container" role="group">
+      @for (option of localParameters.options; track $index) {
+        <div
+          class="animate-wrapper"
+          [style.transform]="animateStyle($index)"
+          [class.no-transition]="disabledTransition()"
+          data-cy="drop-animate-wrapper"
+        >
+          <stars-standard-button
+            [id]="$index.toString()"
+            [value]="$index"
+            [text]="option.text"
+            [inputType]="'radio'"
+            [image]="option.imageSource"
+            [selected]="this.selectedValue() === $index"
+            [type]="'SMALL_SQUARE'"
+            [attr.data-cy]="'button-' + $index"
+            (buttonClick)="onButtonClick($index)">
+          </stars-standard-button>
+        </div>
+      }
+    </div>
   </div>
 </div>
