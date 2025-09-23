@@ -33,7 +33,7 @@ describe('IMAGE_ONLY Interaction E2E Tests', () => {
     cy.assertContinueButtonNotExists();
 
     // Wait for the audio to finish
-    cy.wait(3000);
+    cy.waitUntilAudioIsFinishedPlaying();
 
     // Continue button should appear
     cy.assertContinueButtonExistsAndVisible();

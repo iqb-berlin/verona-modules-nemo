@@ -27,7 +27,9 @@ export function testAudioFeedback(subject: string, interactionType: string) {
         cy.writeTextOnKeyboard(correctAnswerParam);
       }
 
-      // Handle BUTTONS and DROP interactionType
+      /**
+       * Handle BUTTONS and DROP interactionType
+       */
       if (interactionType === 'buttons' || interactionType === 'drop') {
         const buttonOptions = getButtonOptions(
           testData.interactionParameters as InteractionButtonParams | InteractionDropParams
@@ -87,8 +89,6 @@ export function testAudioFeedback(subject: string, interactionType: string) {
 
         // Perform the interaction with correct answer
         performInteraction(testData, correctAnswerParam);
-
-        // cy.get(`[data-cy="button-${buttonIndex}"]`).click();
 
         // Click on the continue button again
         cy.clickContinueButton();
