@@ -48,7 +48,6 @@ export function testRibbonBars(subject: string, interactionType: string) {
         const isBgColorWhite = ['#FFF', '#FFFFFF', '#EEE', '#EEEEEE', 'WHITE'].includes(bgColor);
 
         if (!isBgColorWhite) {
-          // cy.get('[data-cy="ribbon-bar"]').should('have.css', 'background', 'rgb(255, 255, 255)'); // white
           cy.get('[data-cy="ribbon-bar"]')
             .should('have.css', 'background-image')
             .then(bg => {
