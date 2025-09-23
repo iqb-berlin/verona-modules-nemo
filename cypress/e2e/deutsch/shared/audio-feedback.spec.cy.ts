@@ -1,11 +1,9 @@
 import {
   InteractionButtonParams,
   InteractionDropParams,
-  SelectionOption,
   UnitDefinition
 } from '../../../../projects/player/src/app/models/unit-definition';
-import { VariableInfo } from '../../../../projects/player/src/app/models/responses';
-import { getIndexByOneBasedInput } from '../../../support/utils';
+import { getButtonOptions, getCorrectAnswerParam, getIndexByOneBasedInput } from '../../../support/utils';
 
 export function testAudioFeedback(subject: string, interactionType: string) {
   describe(`Audio Feedback - ${interactionType}`, () => {
@@ -15,30 +13,42 @@ export function testAudioFeedback(subject: string, interactionType: string) {
     };
 
     /**
-     * Returns InteractionOptions or SelectionOption[] for BUTTONS interactionType.
+     * Function to handle the interaction with the correct answer.
      */
-    const getButtonOptions =
-      (interactionParameters: InteractionButtonParams | InteractionDropParams): SelectionOption[] => {
-        const opts = interactionParameters.options;
+    const performInteraction = (
+      testData: UnitDefinition,
+      correctAnswerParam: string
+    ) => {
+      // Handle WRITE interactionType
+      if (interactionType === 'write') {
+        // Delete text that was written previously
+        cy.clearTextInput(testData);
+        // Write the correct answer on the keyboard
+        cy.writeTextOnKeyboard(correctAnswerParam);
+      }
 
-        // If options is already an array (drop interaction)
-        if (Array.isArray(opts)) {
-          return opts;
-        }
+      // Handle BUTTONS and DROP interactionType
+      if (interactionType === 'buttons' || interactionType === 'drop') {
+        const buttonOptions = getButtonOptions(
+          testData.interactionParameters as InteractionButtonParams | InteractionDropParams
+        );
+        const buttonIndex = getIndexByOneBasedInput(buttonOptions, correctAnswerParam);
 
-        // If options is an object with buttons property (button interaction)
-        if (opts && 'buttons' in opts && Array.isArray(opts.buttons)) {
-          return opts.buttons;
-        }
+        cy.get(`[data-cy="button-${buttonIndex}"]`).click();
+      }
 
-        return [];
-      };
+      // Handle FIND_ON_IMAGE interactionType
+      if (interactionType === 'find_on_image') {
+        // For find on image, the correctAnswerParam is in the format "x1,y1-x2,y2"
+        cy.clickInPositionRange(correctAnswerParam);
+      }
+    };
 
     it('1. Should play the right feedback according to the selected answer', () => {
       // Load the file
       loadDefaultTestFile().then(testData => {
-        const variableInfo = testData.variableInfo as VariableInfo[];
-        const correctAnswerIndex = variableInfo[0]?.codes[0]?.parameter || '';
+        // Get the correct answer parameter
+        const correctAnswerParam = getCorrectAnswerParam(testData);
 
         const audioFeedback = testData.audioFeedback;
         const correctFeedback = audioFeedback?.feedback.find(obj => obj.parameter === '1');
@@ -46,38 +56,48 @@ export function testAudioFeedback(subject: string, interactionType: string) {
         const wrongFeedback = audioFeedback?.feedback.find(feedback => feedback.parameter === '0');
         const wrongFeedbackSrc = wrongFeedback?.audioSource;
 
-        // Remove click layer
-        cy.removeClickLayer();
+        if (['buttons', 'drop', 'write'].includes(interactionType)) {
+          // Only try to remove the click layer for interaction types that have one
+          cy.removeClickLayer();
 
-        // Wait until the audio is played until the end
-        cy.waitUntilAudioIsFinishedPlaying();
+          // Wait until the audio is played until the end for interaction types that have one
+          cy.waitUntilAudioIsFinishedPlaying();
+        }
 
-        // Click the button index 1
-        cy.clickButtonAtIndexOne();
+        // First interaction - should be the wrong answer
+        if (interactionType === 'buttons' || interactionType === 'drop') {
+          // Click the button index 1
+          cy.clickButtonAtIndexOne();
+        } else if (interactionType === 'write') {
+          const text = 'kopf';
+          cy.writeTextOnKeyboard(text);
+        } else if (interactionType === 'find_on_image') {
+          // Click on a wrong position - outside the correct position range
+          cy.get('[data-cy="image-element"]').click(10, 10);
+        }
 
         // Click on the continue button
         cy.clickContinueButton();
 
-        // Wait until the audio is played until the end
-        cy.waitUntilAudioIsFinishedPlaying();
+        // Wait until the feedback is played until the end
+        cy.waitUntilFeedbackIsFinishedPlaying();
 
         // check if the audio source is equal to the wrong answer
         cy.get('[data-cy="continue-button-audio"]').should('have.attr', 'src', wrongFeedbackSrc);
-        cy.log('WRONG answer audio source is found');
 
-        // Then click on the correct button
-        // eslint-disable-next-line max-len
-        const buttonOptions = getButtonOptions(testData.interactionParameters as InteractionButtonParams | InteractionDropParams);
-        const buttonIndex = getIndexByOneBasedInput(buttonOptions, correctAnswerIndex);
+        // Perform the interaction with correct answer
+        performInteraction(testData, correctAnswerParam);
 
-        cy.get(`[data-cy="button-${buttonIndex}"]`).click();
+        // cy.get(`[data-cy="button-${buttonIndex}"]`).click();
 
         // Click on the continue button again
         cy.clickContinueButton();
 
+        // Wait until the feedback is played until the end
+        cy.waitUntilFeedbackIsFinishedPlaying();
+
         // Now the audio source has to be the correct answer
         cy.get('[data-cy="continue-button-audio"]').should('have.attr', 'src', correctFeedbackSrc);
-        cy.log('CORRECT answer audio source is found');
       });
     });
   });

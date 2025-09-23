@@ -1,12 +1,19 @@
+import { getButtonOptions, getCorrectAnswerParam, getIndexByOneBasedInput } from '../../../support/utils';
+import {
+  InteractionButtonParams,
+  InteractionDropParams,
+  UnitDefinition
+} from '../../../../projects/player/src/app/models/unit-definition';
+
 export function testContinueButtonFeatures(subject: string, interactionType: string) {
   describe(`Continue Button Features - ${interactionType}`, () => {
-
     const testSetup = (continueButtonShow: string, file: string) => {
       cy.log(`Testing continueButtonShow: ${continueButtonShow}`);
       cy.setupTestData(subject, file, interactionType);
     };
 
     const applyStandardScenarios = () => {
+      cy.log('first apply standard scenarios that are wrong:');
       if (interactionType === 'write') {
         // Click any letter
         cy.get('[data-cy=character-button-a]').click();
@@ -16,7 +23,8 @@ export function testContinueButtonFeatures(subject: string, interactionType: str
           .click(100, 150);
       } else {
         // InteractionType: BUTTONS, DROP
-        cy.get('[data-cy="button-0"]').click();
+        // Click the button index 1
+        cy.clickButtonAtIndexOne();
       }
     };
 
@@ -61,51 +69,46 @@ export function testContinueButtonFeatures(subject: string, interactionType: str
       if (continueButtonShow === 'ON_RESPONSES_COMPLETE') {
         // eslint-disable-next-line max-len
         it('3 .Should show continue button after all responses are clicked when continueButtonShow === ON_RESPONSES_COMPLETE', () => {
+          // Setup test data
           testSetup(continueButtonShow, file);
+
           // Continue button should not exist initially
           cy.assertContinueButtonNotExists();
 
+          // Click wrong answers
           applyStandardScenarios();
 
           // Continue button should still not exist
           cy.assertContinueButtonNotExists();
 
-          // Click correct response (variableInfo.codes.parameter value)
-          if (interactionType === 'write') {
-            const text = ['k', 'o', 'p', 'f'];
+          // Get the test data and extract correct answer parameter
+          cy.get('@testData').then(data => {
+            const dataToCheck = data as unknown as UnitDefinition;
 
-            // Delete text that was written previously
-            cy.get('[data-cy=backspace-button]').click();
-            text.forEach(char => {
-              cy.get(`[data-cy=character-button-${char}]`).click();
-            });
-          } else if (interactionType === 'find_on_image') {
-            // Click in position range with given parameter value
-            cy.get('[data-cy="image-element"]')
-              .then($img => {
-                const img = $img[0] as HTMLImageElement;
+            const correctAnswerParam = getCorrectAnswerParam(dataToCheck);
 
-                // Get actual rendered size + position
-                const rect = img.getBoundingClientRect();
+            // Click correct answer based on interaction type
+            if (interactionType === 'write') {
+              // Delete text that was written previously
+              cy.clearTextInput(dataToCheck);
+              // Write the correct answer on the keyboard
+              cy.writeTextOnKeyboard(correctAnswerParam);
+            } else if (interactionType === 'find_on_image') {
+              // For find_on_image, the correctAnswerParam is in the format "x1,y1-x2,y2"
+              cy.clickInPositionRange(correctAnswerParam);
+            } else {
+              // For other interaction types (buttons, drop), find the button containing the correct answer
+              const buttonOptions = getButtonOptions(
+                dataToCheck.interactionParameters as InteractionButtonParams | InteractionDropParams
+              );
+              const buttonIndex = getIndexByOneBasedInput(buttonOptions, correctAnswerParam);
 
-                const targetXPercent = 66;
-                const targetYPercent = 10;
+              cy.get(`[data-cy="button-${buttonIndex}"]`).click();
+            }
 
-                // Convert percentage to actual pixel coordinates inside the image box
-                const clickX = rect.left + (rect.width * targetXPercent) / 100;
-                const clickY = rect.top + (rect.height * targetYPercent) / 100;
-
-                // Click using client coordinates
-                cy.wrap($img)
-                  .click(clickX - rect.left, clickY - rect.top);
-              });
-          } else {
-            // Click correct button
-            cy.get('[data-cy="button-2"]').click();
-          }
-
-          // Continue button should appear
-          cy.assertContinueButtonExistsAndVisible();
+            // Continue button should appear
+            cy.assertContinueButtonExistsAndVisible();
+          });
         });
       }
       if (continueButtonShow === 'ALWAYS') {
