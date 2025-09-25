@@ -36,7 +36,7 @@ export class InteractionDropComponent extends InteractionComponentDirective {
         this.localParameters.imageSource = parameters.imageSource || '';
         this.localParameters.text = parameters.text || '';
         this.localParameters.imagePosition = parameters.imagePosition || 'BOTTOM'; // Default to BOTTOM
-        this.localParameters.imageLandingXY = parameters.imageLandingXY || '50,50';
+        this.localParameters.imageLandingXY = parameters.imageLandingXY || '';
 
         this.responses.emit([{
           id: this.localParameters.variableId,
@@ -61,8 +61,9 @@ export class InteractionDropComponent extends InteractionComponentDirective {
 
   animateStyle(index: number): string {
     if (this.selectedValue() !== index) return '';
+
     const totalButtons = this.localParameters.options.length;
-    const buttonContainerWidth = 170; // Because we are using SMALL_SQUARE as the type of standard button
+    const buttonContainerWidth = 170; // SMALL_SQUARE button container width
     const gapWidth = 24;
     const borderOffset = 8;
     const buttonWidth = buttonContainerWidth - gapWidth;
@@ -70,43 +71,39 @@ export class InteractionDropComponent extends InteractionComponentDirective {
     const containerCenter = totalWidth / 2; // Center of button container
     const buttonCenter = buttonWidth / 2; // Distance from container edge to a button center
 
-    // eslint-disable-next-line max-len
-    const currentButtonCenter = (index * buttonContainerWidth) + buttonCenter + borderOffset; // X position of THIS button's center
+    // X position of THIS button's center
+    const currentButtonCenter = (index * buttonContainerWidth) + buttonCenter + borderOffset;
 
-    // Move button to a container center
-    const offsetX = containerCenter - currentButtonCenter;
+    // Base X offset to center inside the buttons container
+    const baseOffsetX = containerCenter - currentButtonCenter;
 
-    // If imageLandingXY is provided, use it
-    if (this.localParameters.imageLandingXY) {
-      // Check if imageLandingXY contains both X and Y coordinates
-      if (this.localParameters.imageLandingXY.includes(',')) {
-        // Split the coordinates
-        const coords = this.localParameters.imageLandingXY.split(',');
-        const x = coords[0]?.trim() ?? '';
-        const y = coords[1]?.trim() ?? '';
+    // If imageLandingXY is provided
+    if (this.localParameters.imageLandingXY !== '') {
+      // ... existing code ...
+      const coords = this.localParameters.imageLandingXY.split(',');
+      const x = coords[0]?.trim() ?? '0';
+      const y = coords[1]?.trim() ?? '0';
 
-        // If X is 0, use the calculated offsetX instead
-        if (x === '0' && y) {
-          console.log('X IS 0, USING OFFSET X', offsetX);
-          return `translate(${offsetX}px, ${y}px)`;
-        }
-        // Otherwise use the provided X,Y values
-        console.log('THERE IS X AND Y COORDINATE', x, y);
-        return `translate(${x}px, ${y}px})`;
-      }
-      // It contains only a Y coordinate, keep using our calculated X
-      return `translate(${offsetX}px, ${this.localParameters.imageLandingXY}px)`;
+      // The x,y given are an absolute/static position on the image.
+      // We need to compensate for the button's initial horizontal position
+      // so every button lands at the same x on the image.
+      const landingX = Number.isFinite(Number(x)) ? Number(x) : 0;
+      const landingY = Number.isFinite(Number(y)) ? Number(y) : 0;
+
+      // currentButtonCenter is the button center's x within the buttons row.
+      // We want to translate so that the final center-x equals landingX.
+      const deltaX = landingX - currentButtonCenter;
+
+      // For Y we just use the provided absolute landingY (relative to the same origin as X).
+      const xPx = `${deltaX}px`;
+      const yPx = `${landingY}px`;
+
+      return `translate(${xPx}, ${yPx})`;
     }
 
-    // Fallback for when imageLandingXY is not provided
-    // Determine Y position based on imagePosition
-    let transformY = '280px'; // Default for BOTTOM position - moves down
-
-    if (this.localParameters.imagePosition === 'TOP') {
-      transformY = '-280px'; // Button goes UP when image is at top
-    }
-
-    return `translate(${offsetX}px, ${transformY})`;
+    // Fallback when imageLandingXY is empty: move up/down based on imagePosition
+    const transformY = this.localParameters.imagePosition === 'TOP' ? '-280px' : '280px';
+    return `translate(${baseOffsetX}px, ${transformY})`;
   }
 
   onButtonClick(index: number): void {
@@ -131,7 +128,7 @@ export class InteractionDropComponent extends InteractionComponentDirective {
       options: [],
       imageSource: '',
       imagePosition: 'BOTTOM',
-      imageLandingXY: '50,50',
+      imageLandingXY: '',
       text: ''
     };
   }
