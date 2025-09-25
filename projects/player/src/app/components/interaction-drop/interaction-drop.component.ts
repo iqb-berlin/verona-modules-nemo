@@ -6,6 +6,10 @@ import { StarsResponse } from '../../services/responses.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { InteractionDropParams } from '../../models/unit-definition';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
+import {
+  calculateButtonCenter,
+  getDropLandingTranslate
+} from '../../shared/utils/interaction-drop.util';
 
 @Component({
   selector: 'stars-interaction-drop',
@@ -63,41 +67,15 @@ export class InteractionDropComponent extends InteractionComponentDirective {
     if (this.selectedValue() !== index) return '';
 
     const totalButtons = this.localParameters.options.length;
-    const buttonContainerWidth = 170; // SMALL_SQUARE button container width
-    const gapWidth = 24;
-    const borderOffset = 8;
-    const buttonWidth = buttonContainerWidth - gapWidth;
-    const totalWidth = totalButtons * buttonContainerWidth; // Total width of the button container
-    const containerCenter = totalWidth / 2; // Center of button container
-    const buttonCenter = buttonWidth / 2; // Distance from container edge to a button center
 
-    // X position of THIS button's center
-    const currentButtonCenter = (index * buttonContainerWidth) + buttonCenter + borderOffset;
+    const { currentButtonCenter, containerCenter } = calculateButtonCenter(totalButtons, index);
 
-    // Base X offset to center inside the buttons container
+    // Base X offset to center inside the .buttons-container
     const baseOffsetX = containerCenter - currentButtonCenter;
 
     // If imageLandingXY is provided
     if (this.localParameters.imageLandingXY !== '') {
-      // ... existing code ...
-      const coords = this.localParameters.imageLandingXY.split(',');
-      const x = coords[0]?.trim() ?? '0';
-      const y = coords[1]?.trim() ?? '0';
-
-      // The x,y given are an absolute/static position on the image.
-      // We need to compensate for the button's initial horizontal position
-      // so every button lands at the same x on the image.
-      const landingX = Number.isFinite(Number(x)) ? Number(x) : 0;
-      const landingY = Number.isFinite(Number(y)) ? Number(y) : 0;
-
-      // currentButtonCenter is the button center's x within the buttons row.
-      // We want to translate so that the final center-x equals landingX.
-      const deltaX = landingX - currentButtonCenter;
-
-      // For Y we just use the provided absolute landingY (relative to the same origin as X).
-      const xPx = `${deltaX}px`;
-      const yPx = `${landingY}px`;
-
+      const { xPx, yPx } = getDropLandingTranslate(this.localParameters.imageLandingXY, currentButtonCenter);
       return `translate(${xPx}, ${yPx})`;
     }
 
