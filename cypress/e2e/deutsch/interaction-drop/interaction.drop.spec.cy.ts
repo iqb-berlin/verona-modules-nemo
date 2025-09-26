@@ -15,6 +15,8 @@ describe('DROP Interaction E2E Tests', () => {
   const subject = 'deutsch';
   const interactionType = 'drop';
   const defaultTestFile = 'drop_4_option_test';
+  const yValueToBottom = 280; // Ref from the value on interaction-drop.component.ts calculateAnimationPosition function
+  const yValueToTop = -280; // Ref from the value on interaction-drop.component.ts calculateAnimationPosition function
 
   /**
   * Function to extract transform translate values
@@ -29,6 +31,21 @@ describe('DROP Interaction E2E Tests', () => {
       xValue: xValue.trim(),
       yValue: yValue.trim()
     };
+  };
+
+  /**
+   * Gets the center coordinates of a button element
+   * @param {JQuery<HTMLElement>} $button - The jQuery button element
+   * @returns {{centerX: number, centerY: number}} - The center coordinates
+   */
+  const getButtonCenter = ($button: JQuery<HTMLElement>):
+  { centerX: number; centerY: number } => {
+    const element = $button.get(0);
+    const initialRect = element.getBoundingClientRect();
+    const centerX = initialRect.left + initialRect.width / 2;
+    const centerY = initialRect.top + initialRect.height / 2;
+
+    return { centerX, centerY };
   };
 
   const assertStartAnimation = (buttonIndex: number): void => {
@@ -79,7 +96,7 @@ describe('DROP Interaction E2E Tests', () => {
             const styleValue = $style.toString();
             const { yValue } = getTransformTranslateValues(styleValue);
             // Image position is BOTTOM, check Y value (downward movement)
-            expect(yValue.trim()).to.equal('280px');
+            expect(yValue.trim()).to.equal(`${yValueToBottom}px`);
           });
       }
     });
@@ -109,7 +126,7 @@ describe('DROP Interaction E2E Tests', () => {
             const styleValue = $style.toString();
             const { yValue } = getTransformTranslateValues(styleValue);
             // Image position is TOP, check Y value (upward movement)
-            expect(yValue.trim()).to.equal('-280px');
+            expect(yValue.trim()).to.equal(`${yValueToTop}px`);
           });
       }
     });
@@ -188,6 +205,88 @@ describe('DROP Interaction E2E Tests', () => {
         if (style.includes('transform')) {
           expect(style).to.not.include('translate');
         }
+      });
+  });
+
+  it('5. Should handle drag events correctly', () => {
+    // Set up test data
+    cy.setupTestData(subject, defaultTestFile, interactionType);
+
+    // Remove click layer
+    cy.removeClickLayer();
+
+    const buttonIndex = 0;
+
+    cy.get(`[data-cy="button-${buttonIndex}"]`)
+      .should('exist')
+      .then($button => {
+        expect($button).to.have.length.greaterThan(0);
+        const { centerX, centerY } = getButtonCenter($button);
+
+        // Perform drag operation
+        cy.get(`[data-cy="button-${buttonIndex}"]`)
+          .trigger('pointerdown', {
+            clientX: centerX,
+            clientY: centerY,
+            pointerId: 1
+          })
+          .trigger('pointermove', {
+            clientX: centerX + yValueToBottom,
+            clientY: centerY + yValueToBottom,
+            pointerId: 1
+          })
+          .trigger('pointerup', { pointerId: 1 });
+
+        // Verify that the button has moved to a settled position
+        cy.get('[data-cy="drop-animate-wrapper"]')
+          .eq(buttonIndex)
+          .should('have.attr', 'style')
+          .should('include', 'transform: translate(')
+          .then($style => {
+            const styleValue = $style!.toString();
+            const { yValue } = getTransformTranslateValues(styleValue);
+
+            // For default test data, verify it moved to the expected Y position
+            expect(yValue.trim()).to.equal(`${yValueToBottom}px`); // BOTTOM position
+          });
+      });
+  });
+
+  it('6. Should handle drag cancellation', () => {
+    // Set up test data
+    cy.setupTestData(subject, defaultTestFile, interactionType);
+
+    // Remove click layer
+    cy.removeClickLayer();
+
+    const buttonIndex = 0;
+
+    cy.get(`[data-cy="button-${buttonIndex}"]`)
+      .should('exist')
+      .then($button => {
+        expect($button).to.have.length.greaterThan(0);
+        const { centerX, centerY } = getButtonCenter($button);
+
+        // Start the drag operation
+        cy.get(`[data-cy="button-${buttonIndex}"]`)
+          .trigger('pointerdown', {
+            clientX: centerX,
+            clientY: centerY,
+            pointerId: 1
+          })
+          .trigger('pointermove', {
+            clientX: centerX + 50,
+            clientY: centerY + 50,
+            pointerId: 1
+          })
+        // Cancel the drag
+          .trigger('pointercancel', { pointerId: 1 });
+
+        // Button should settle at the expected position even after cancellation
+        cy.get('[data-cy="drop-animate-wrapper"]')
+          .eq(buttonIndex)
+          .should('have.attr', 'style')
+          .should('include', 'transform: translate(');
       });
   });
 
