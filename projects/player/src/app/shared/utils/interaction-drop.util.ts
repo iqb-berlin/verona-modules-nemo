@@ -51,3 +51,18 @@ export const calculateButtonCenter = (totalButtons: number, buttonIndex: number)
     containerCenter
   };
 };
+
+/**
+ * Extracts x,y coordinates from pointer, mouse, or touch events
+ * @param event - The pointer, mouse, or touch event
+ * @returns The x,y coordinates or null if extraction fails
+ */
+export const extractCoordinates = (event: PointerEvent | MouseEvent | TouchEvent): { x: number; y: number } | null => {
+  if ('clientX' in event && 'clientY' in event) {
+    return { x: event.clientX, y: event.clientY };
+  }
+  if ('touches' in event && event.touches?.length > 0) {
+    return { x: event.touches[0]!.clientX, y: event.touches[0]!.clientY };
+  }
+  return null;
+};
