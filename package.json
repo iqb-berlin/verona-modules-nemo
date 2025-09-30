@@ -84,14 +84,11 @@
     "overrides": [
       {
         "files": [
-          "e2e-tests/**/*.ts"
+          "e2e-tests/**/*.ts", "*.spec.ts", "*.spec.cy.ts", "*.test.ts", "cypress/**/*.ts"
         ],
         "rules": {
           "@typescript-eslint/no-unused-expressions": [
-            "error",
-            {
-              "allowTaggedTemplates": true
-            }
+            "off"
           ],
           "newline-per-chained-call": [
             "off"
