@@ -1,29 +1,52 @@
 /**
  * Calculates the CSS translate transform for an element to align with a specified drop landing position.
- * @param xyCoords - The comma-separated x,y coordinates for the drop landing position.
- * @param currentButtonCenter - The x-coordinate of the button's center within its row.
- * @returns The CSS translate transform string.
+ * @param xyCoords - The comma-separated x,y coordinates (as percentages 0-100) for the drop landing position
+ * @param currentButtonCenter - The x-coordinate of the button's center within its row
+ * @param imageWidth - Width of the image in pixels
+ * @param imageHeight - Height of the image in pixels
+ * @param imageLeft - Left offset of the image relative to the drop container
+ * @param imageTop - Top offset of the image relative to the drop container
+ * @param buttonY - Current Y position of the button relative to the drop container
+ * @returns The CSS translate transform values
  */
-export const getDropLandingTranslate = (xyCoords: string, currentButtonCenter: number) => {
+export const getDropLandingTranslate = (
+  xyCoords: string,
+  currentButtonCenter: number,
+  imageWidth: number,
+  imageHeight: number,
+  imageLeft: number,
+  imageTop: number,
+  buttonY: number
+) => {
   const coords = xyCoords.split(',');
-  const x = coords[0]?.trim() ?? '0';
-  const y = coords[1]?.trim() ?? '0';
+  const x = coords[0]?.trim() ?? '50';
+  const y = coords[1]?.trim() ?? '50';
 
-  // The x,y given are an absolute/static position on the image.
-  // Parse x into a safe number, default to 0 if not valid
-  const landingX = Number.isFinite(Number(x)) ? Number(x) : 0;
-  const landingY = Number.isFinite(Number(y)) ? Number(y) : 0;
+  // Parse percentages (0-100) where image's top-left is always (0,0)
+  const percentX = Math.max(0, Math.min(100, parseFloat(x)));
+  const percentY = Math.max(0, Math.min(100, parseFloat(y)));
 
-  // currentButtonCenter is the button center's x within the buttons row.
-  // Calculate how far this button must move horizontally to reach the same image x
-  const deltaX = landingX - currentButtonCenter;
+  // Calculate target position within the image bounds
+  // 0,0 = top-left corner, 50,50 = center, 100,100 = bottom-right corner
+  const targetXWithinImage = (percentX / 100) * imageWidth;
+  const targetYWithinImage = (percentY / 100) * imageHeight;
 
-  // For Y we just use the provided absolute landingY (relative to the same origin as X).
-  const xPx = `${deltaX}px`;
-  const yPx = `${landingY}px`;
+  // Convert to absolute position by adding image's position
+  const absoluteTargetX = imageLeft + targetXWithinImage;
+  const absoluteTargetY = imageTop + targetYWithinImage;
 
-  // return `translate(${xPx}, ${yPx})`;
-  return { xPx, yPx };
+  // Calculate movement needed from button's current position
+  // Add 12px offset to compensate for button layout:
+  // - Buttons are 170px containers but labels inside have 24px margins (right/bottom)
+  // - This creates a visual center offset of ~12px (half of 24px) from the calculated center
+  // - The offset ensures buttons visually align with the intended drop position
+  const deltaX = absoluteTargetX - currentButtonCenter + 12;
+  const deltaY = absoluteTargetY - buttonY + 12;
+
+  return {
+    xPx: `${deltaX}px`,
+    yPx: `${deltaY}px`
+  };
 };
 
 /**

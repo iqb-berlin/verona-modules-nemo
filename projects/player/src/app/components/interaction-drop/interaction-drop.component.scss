@@ -19,7 +19,6 @@
   }
 
   .stimulus-wrapper {
-    padding-right: variables.$small-gap-margin;
     img {
       @include variables.responsive-image;
       padding: unset;

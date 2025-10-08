@@ -29,7 +29,7 @@ import {
   imports: [StandardButtonComponent],
   styleUrls: ['./interaction-drop.component.scss']
 })
-export class InteractionDropComponent extends InteractionComponentDirective implements OnDestroy, AfterViewInit {
+export class InteractionDropComponent extends InteractionComponentDirective implements OnDestroy {
   /** Local parameters for the drop interaction */
   localParameters!: InteractionDropParams;
 
@@ -84,6 +84,9 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   /** Reference to the container element for attaching event listeners */
   @ViewChild('dropContainer', { static: true }) dropContainerRef!: ElementRef<HTMLElement>;
 
+  /** Reference to the image element for coordinate calculations */
+  @ViewChild('imageElement', { static: false }) imageRef!: ElementRef<HTMLImageElement>;
+
   constructor(private renderer: Renderer2) {
     super();
     effect(() => {
@@ -110,21 +113,21 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
     });
   }
 
-  ngAfterViewInit(): void {
-    const root = this.dropContainerRef.nativeElement;
-    if (window.PointerEvent) {
-      this.removeListenerFn.push(
-        // Pointer events dominate on modern browsers
-        this.renderer.listen(root, 'pointerdown', this.onPointerDown)
-      );
-    } else {
-      this.removeListenerFn.push(
-        // Fallback for browsers without pointer event support
-        this.renderer.listen(root, 'mousedown', this.onMouseDown),
-        this.renderer.listen(root, 'touchstart', this.onTouchStart)
-      );
-    }
-  }
+  // ngAfterViewInit(): void {
+  //   const root = this.dropContainerRef.nativeElement;
+  //   if (window.PointerEvent) {
+  //     this.removeListenerFn.push(
+  //       // Pointer events dominate on modern browsers
+  //       // this.renderer.listen(root, 'pointerdown', this.onPointerDown)
+  //     );
+  //   } else {
+  //     this.removeListenerFn.push(
+  //       // Fallback for browsers without pointer event support
+  //       this.renderer.listen(root, 'mousedown', this.onMouseDown),
+  //       this.renderer.listen(root, 'touchstart', this.onTouchStart)
+  //     );
+  //   }
+  // }
 
   ngOnDestroy(): void {
     this.removeListenerFn.forEach(fn => fn());
@@ -176,116 +179,118 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   /**
    * Handles pointer down events
    */
-  private onPointerDown = (event: PointerEvent): void => {
-    const coords = extractCoordinates(event);
-
-    if (coords) {
-      const { wrapper, index } = this.getWrapperAndIndex(event.target);
-      if (!wrapper || index === null) return;
-
-      this.initiateDragDetection(index, coords.x, coords.y, event.pointerId);
-      this.addPointerEventListeners();
-    }
-  };
+  // private onPointerDown = (event: PointerEvent): void => {
+  //   console.log('ON POINTER DOWN...');
+  //   const coords = extractCoordinates(event);
+  //
+  //   if (coords) {
+  //     const { wrapper, index } = this.getWrapperAndIndex(event.target);
+  //     if (!wrapper || index === null) return;
+  //
+  //     this.initiateDragDetection(index, coords.x, coords.y, event.pointerId);
+  //     this.addPointerEventListeners();
+  //   }
+  // };
 
   /**
    * Handles pointer move events during drag operation
    */
-  private onPointerMove = (event: PointerEvent): void => {
-    if (!this.dragArmed) return;
-
-    this.handleDragMovement(event.clientX, event.clientY, event);
-  };
+  // private onPointerMove = (event: PointerEvent): void => {
+  //   if (!this.dragArmed) return;
+  //   console.log('ON POINTER move...');
+  //   this.handleDragMovement(event.clientX, event.clientY, event);
+  // };
 
   /**
    * Handles pointer up events to finalize drag operations
    * or clean up after pointer interactions
    */
-  private onPointerUp = (): void => {
-    const wasDragging = this.isDragging();
-    this.finalizeDragOperation(wasDragging);
-  };
+  // private onPointerUp = (): void => {
+  //   const wasDragging = this.isDragging();
+  //   console.log('ON POINTER UP...');
+  //   this.finalizeDragOperation(wasDragging);
+  // };
 
   /**
    * Handles mouse down events to initiate drag detection
    * Fallback for browsers without pointer event support
    */
-  private onMouseDown = (event: MouseEvent): void => {
-    const { wrapper, index } = this.getWrapperAndIndex(event.target);
-    if (!wrapper || index === null) return;
-
-    this.initiateDragDetection(index, event.clientX, event.clientY);
-    this.addMouseEventListeners();
-    event.preventDefault();
-  };
+  // private onMouseDown = (event: MouseEvent): void => {
+  //   const { wrapper, index } = this.getWrapperAndIndex(event.target);
+  //   if (!wrapper || index === null) return;
+  //
+  //   this.initiateDragDetection(index, event.clientX, event.clientY);
+  //   this.addMouseEventListeners();
+  //   event.preventDefault();
+  // };
 
   /**
    * Handles mouse move events during drag operation
    * Only processes movement if drag detection is armed
    */
-  private onMouseMove = (event: MouseEvent): void => {
-    if (!this.dragArmed) return;
-
-    this.handleDragMovement(event.clientX, event.clientY, event);
-  };
+  // private onMouseMove = (event: MouseEvent): void => {
+  //   if (!this.dragArmed) return;
+  //
+  //   this.handleDragMovement(event.clientX, event.clientY, event);
+  // };
 
   /**
    * Handles mouse up events to complete or cancel drag operation
    * Cleans up mouse event listeners and finalizes interaction
    */
-  private onMouseUp = (): void => {
-    const wasDragging = this.isDragging();
-    this.finalizeDragOperation(wasDragging);
-  };
+  // private onMouseUp = (): void => {
+  //   const wasDragging = this.isDragging();
+  //   this.finalizeDragOperation(wasDragging);
+  // };
 
   /**
    * Handles touch start events to initiate drag detection
    * Uses first touch point for single-finger interactions
    */
-  private onTouchStart = (event: TouchEvent): void => {
-    const touch = event.touches[0];
-    if (!touch) return;
-
-    const { wrapper, index } = this.getWrapperAndIndex(event.target);
-    if (!wrapper || index === null) return;
-
-    this.initiateDragDetection(index, touch.clientX, touch.clientY);
-    this.addTouchEventListeners();
-    event.preventDefault();
-  };
+  // private onTouchStart = (event: TouchEvent): void => {
+  //   const touch = event.touches[0];
+  //   if (!touch) return;
+  //
+  //   const { wrapper, index } = this.getWrapperAndIndex(event.target);
+  //   if (!wrapper || index === null) return;
+  //
+  //   this.initiateDragDetection(index, touch.clientX, touch.clientY);
+  //   this.addTouchEventListeners();
+  //   event.preventDefault();
+  // };
 
   /**
    * Handles touch move events with drag threshold detection
    * Starts drag operation when movement exceeds threshold, then tracks position
    */
-  private onTouchMove = (event: TouchEvent): void => {
-    if (!this.dragArmed || this.activeIndex === null) return;
-
-    const touch = event.touches[0];
-    if (!touch) return;
-
-    const deltaX = touch.clientX - this.downX;
-    const deltaY = touch.clientY - this.downY;
-
-    if (this.shouldStartDrag(deltaX, deltaY)) {
-      this.startDragOperation(touch.clientX, touch.clientY);
-      event.preventDefault();
-    }
-
-    if (this.isDragging()) {
-      this.updateDragPosition(touch.clientX, touch.clientY);
-    }
-  };
+  // private onTouchMove = (event: TouchEvent): void => {
+  //   if (!this.dragArmed || this.activeIndex === null) return;
+  //
+  //   const touch = event.touches[0];
+  //   if (!touch) return;
+  //
+  //   const deltaX = touch.clientX - this.downX;
+  //   const deltaY = touch.clientY - this.downY;
+  //
+  //   if (this.shouldStartDrag(deltaX, deltaY)) {
+  //     this.startDragOperation(touch.clientX, touch.clientY);
+  //     event.preventDefault();
+  //   }
+  //
+  //   if (this.isDragging()) {
+  //     this.updateDragPosition(touch.clientX, touch.clientY);
+  //   }
+  // };
 
 
   /**
    * Handles touch end events to complete or cancel drag operation
    * Cleans up touch event listeners and finalizes interaction
    */
-  private onTouchEnd = (): void => {
-    const wasDragging = this.isDragging();
-    this.finalizeDragOperation(wasDragging);
-  };
+  // private onTouchEnd = (): void => {
+  //   const wasDragging = this.isDragging();
+  //   this.finalizeDragOperation(wasDragging);
+  // };
 
   /**
    * Helper to get wrapper element and its index from event target
@@ -379,7 +384,23 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
 
     if (this.localParameters.imageLandingXY !== '') {
       // Use specific landing coordinates if provided
-      const { xPx, yPx } = getDropLandingTranslate(this.localParameters.imageLandingXY, currentButtonCenter);
+      const imgElement = this.imageRef.nativeElement;
+      // Get the button's current Y position
+      const buttonElements = this.dropContainerRef.nativeElement.querySelectorAll('[data-cy="drop-animate-wrapper"]');
+      const buttonElement = buttonElements[selectedIndex] as HTMLElement;
+      const buttonY = buttonElement.offsetTop + buttonElement.offsetHeight / 2;
+
+      console.log(`Selected button Y: ${buttonY}, IMage,${imgElement} , Image top: ${imgElement.offsetTop}, Image height: ${imgElement.height}`)
+
+      const { xPx, yPx } = getDropLandingTranslate(
+        this.localParameters.imageLandingXY,
+        currentButtonCenter,
+        imgElement.width,
+        imgElement.height,
+        imgElement.offsetLeft,
+        imgElement.offsetTop,
+        buttonY
+      );
       this.settledTransform.set(`translate(${xPx}, ${yPx})`);
     } else {
       // Fallback to simple up/down movement based on image position
@@ -391,28 +412,28 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
     this.isDragSettled.set(true);
   }
 
-  private addPointerEventListeners(): void {
-    this.removeListenerFn.push(
-      this.renderer.listen('window', 'pointermove', this.onPointerMove),
-      this.renderer.listen('window', 'pointerup', this.onPointerUp),
-      this.renderer.listen('window', 'pointercancel', this.onPointerUp)
-    );
-  }
+  // private addPointerEventListeners(): void {
+  //   this.removeListenerFn.push(
+  //     this.renderer.listen('window', 'pointermove', this.onPointerMove),
+  //     this.renderer.listen('window', 'pointerup', this.onPointerUp),
+  //     this.renderer.listen('window', 'pointercancel', this.onPointerUp)
+  //   );
+  // }
 
-  private addMouseEventListeners(): void {
-    this.removeListenerFn.push(
-      this.renderer.listen('window', 'mousemove', this.onMouseMove),
-      this.renderer.listen('window', 'mouseup', this.onMouseUp)
-    );
-  }
-
-  private addTouchEventListeners(): void {
-    this.removeListenerFn.push(
-      this.renderer.listen('window', 'touchmove', this.onTouchMove),
-      this.renderer.listen('window', 'touchend', this.onTouchEnd),
-      this.renderer.listen('window', 'touchcancel', this.onTouchEnd)
-    );
-  }
+  // private addMouseEventListeners(): void {
+  //   this.removeListenerFn.push(
+  //     this.renderer.listen('window', 'mousemove', this.onMouseMove),
+  //     this.renderer.listen('window', 'mouseup', this.onMouseUp)
+  //   );
+  // }
+  //
+  // private addTouchEventListeners(): void {
+  //   this.removeListenerFn.push(
+  //     this.renderer.listen('window', 'touchmove', this.onTouchMove),
+  //     this.renderer.listen('window', 'touchend', this.onTouchEnd),
+  //     this.renderer.listen('window', 'touchcancel', this.onTouchEnd)
+  //   );
+  // }
 
   /**
    * Calculates the CSS transform style for animating button position
@@ -450,6 +471,7 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
       return;
     }
 
+    console.log('DROP ONCLICK....');
     this.toggleButtonSelection(index);
     this.clearDragState();
     this.emitSelectionResponse();
@@ -463,11 +485,34 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
     const { currentButtonCenter, containerCenter } = calculateButtonCenter(totalButtons, index);
 
     if (this.localParameters.imageLandingXY !== '') {
-      const { xPx, yPx } = getDropLandingTranslate(this.localParameters.imageLandingXY, currentButtonCenter);
+      const imgElement = this.imageRef.nativeElement;
+      const buttonElements = this.dropContainerRef.nativeElement.querySelectorAll('[data-cy="drop-animate-wrapper"]');
+      const buttonElement = buttonElements[index] as HTMLElement;
+
+      // Get actual button center position relative to the container
+      const buttonRect = buttonElement.getBoundingClientRect();
+      const containerRect = this.dropContainerRef.nativeElement.getBoundingClientRect();
+      const buttonCenterX = buttonRect.left - containerRect.left + buttonRect.width / 2;
+      const buttonCenterY = buttonRect.top - containerRect.top + buttonRect.height / 2;
+
+      // Get image position relative to the container
+      const imgRect = imgElement.getBoundingClientRect();
+      const imageLeft = imgRect.left - containerRect.left;
+      const imageTop = imgRect.top - containerRect.top;
+
+      const { xPx, yPx } = getDropLandingTranslate(
+        this.localParameters.imageLandingXY,
+        buttonCenterX, // Pass actual button center position
+        imgRect.width,
+        imgRect.height,
+        imageLeft,
+        imageTop,
+        buttonCenterY // Pass actual button center Y position
+      );
       return `translate(${xPx}, ${yPx})`;
     }
 
-    // Fallback positioning
+    // Fallback to simple up/down movement based on image position when no landing coordinates are provided
     const baseOffsetX = containerCenter - currentButtonCenter;
     const transformY = this.localParameters.imagePosition === 'TOP' ? '-280px' : '280px';
     return `translate(${baseOffsetX}px, ${transformY})`;
