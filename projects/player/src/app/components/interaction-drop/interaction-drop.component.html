@@ -18,6 +18,10 @@
           class="animate-wrapper"
           [style.transform]="animateStyle($index)"
           [class.no-transition]="disabledTransition()"
+          cdkDrag
+          (cdkDragStarted)="onDragStarted($event, $index)"
+          (cdkDragEnded)="onDragEnded($event, $index)"
+          (cdkDragMoved)="onDragMoved($event, $index)"
           data-cy="drop-animate-wrapper"
         >
           <stars-standard-button

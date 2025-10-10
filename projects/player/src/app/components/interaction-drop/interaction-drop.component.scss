@@ -41,7 +41,7 @@
 
 .animate-wrapper {
   margin: 0;
-  transition: all 1s ease-in-out;
+  transition: transform 1s ease-in-out;
 
   &.no-transition {
     transition: none;
