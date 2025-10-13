@@ -15,7 +15,7 @@ import { InteractionComponentDirective } from '../../directives/interaction-comp
 import { InteractionDropParams } from '../../models/unit-definition';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
 import {
-  calculateButtonCenter,
+  calculateButtonCenter, getDropLandingArgs,
   getDropLandingTranslate
 } from '../../shared/utils/interaction-drop.util';
 
@@ -151,28 +151,24 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
 
     const transforms: Record<number, string> = {};
     const totalButtons = this.localParameters.options.length;
-    const buttonElements = this.dropContainerRef.nativeElement.querySelectorAll('[data-cy="drop-animate-wrapper"]');
-
+    const containerElement = this.dropContainerRef.nativeElement;
     for (let index = 0; index < totalButtons; index++) {
       const { currentButtonCenter, containerCenter } = calculateButtonCenter(totalButtons, index);
 
       if (this.localParameters.imageLandingXY !== '') {
         const imgElement = this.imageRef.nativeElement;
-        const buttonElement = buttonElements[index] as HTMLElement;
 
-        const buttonCenterX = buttonElement.offsetLeft + buttonElement.offsetWidth / 2;
-        const buttonCenterY = buttonElement.offsetTop + buttonElement.offsetHeight / 2;
+        const buttonElement = this.dropContainerRef.nativeElement.querySelector(`[data-cy="drop-animate-wrapper-${index}"]`) as HTMLElement;
 
-        const imgRect = imgElement.getBoundingClientRect();
-        const containerRect = this.dropContainerRef.nativeElement.getBoundingClientRect();
-        const imageLeft = imgRect.left - containerRect.left;
-        const imageTop = imgRect.top - containerRect.top;
+        const {
+          buttonCenterX, imgWidth, imgHeight, imageTop, imageLeft, buttonCenterY
+        } = getDropLandingArgs(imgElement, buttonElement, containerElement);
 
         const { xPx, yPx } = getDropLandingTranslate(
           this.localParameters.imageLandingXY,
           buttonCenterX,
-          imgRect.width,
-          imgRect.height,
+          imgWidth,
+          imgHeight,
           imageLeft,
           imageTop,
           buttonCenterY

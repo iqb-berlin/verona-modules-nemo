@@ -6,7 +6,7 @@
   <!-- Image section -->
   <div class="stimulus-wrapper">
     @if (localParameters.imageSource) {
-      <img #imageElement [src]="localParameters.imageSource" [alt]="">
+      <img #imageElement [src]="localParameters.imageSource" [alt]="" data-cy="drop-image">
     }
   </div>
 
@@ -22,7 +22,7 @@
           (cdkDragStarted)="onDragStarted($event, $index)"
           (cdkDragEnded)="onDragEnded($event, $index)"
           (cdkDragMoved)="onDragMoved($event, $index)"
-          data-cy="drop-animate-wrapper"
+          [attr.data-cy]="'drop-animate-wrapper-' + $index"
         >
           <stars-standard-button
             [id]="$index.toString()"

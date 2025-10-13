@@ -69,3 +69,37 @@ export const calculateButtonCenter = (totalButtons: number, buttonIndex: number)
     containerCenter
   };
 };
+
+/**
+ * Calculates positional arguments for aligning a button with a target location on an image inside a container.
+ * @param imgElement - The image element used for drop landing calculations
+ * @param buttonElement - The button element to be positioned
+ * @param containerElement - The container element holding the image and button
+ * @returns {buttonCenterX: number; imgWidth: number; imgHeight: number; imageLeft: number; imageTop: number; buttonCenterY: number;}
+ *   An object containing the button's center coordinates, image dimensions, and image offset relative to the container
+ */
+export function getDropLandingArgs(
+  imgElement: HTMLImageElement,
+  buttonElement: HTMLElement,
+  containerElement: HTMLElement
+) {
+  if (!buttonElement) {
+    throw new Error('buttonElement is undefined or not found in the DOM');
+  }
+  const buttonCenterX = buttonElement.offsetLeft + buttonElement.offsetWidth / 2;
+  const buttonCenterY = buttonElement.offsetTop + buttonElement.offsetHeight / 2;
+
+  const imgRect = imgElement.getBoundingClientRect();
+  const containerRect = containerElement.getBoundingClientRect();
+  const imageLeft = imgRect.left - containerRect.left;
+  const imageTop = imgRect.top - containerRect.top;
+
+  return {
+    buttonCenterX,
+    imgWidth: imgRect.width,
+    imgHeight: imgRect.height,
+    imageLeft,
+    imageTop,
+    buttonCenterY
+  };
+}
