@@ -19,17 +19,12 @@
   }
 
   .stimulus-wrapper {
+    padding: 0 variables.$small-gap-margin 0 variables.$small-gap-margin;
     img {
       @include variables.responsive-image;
       padding: unset;
     }
   }
-}
-
-.interaction-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
 }
 
 .buttons-container {

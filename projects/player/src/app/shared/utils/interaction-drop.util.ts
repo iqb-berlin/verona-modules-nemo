@@ -1,13 +1,14 @@
 /**
- * Calculates the CSS translate transform for an element to align with a specified drop landing position.
- * @param xyCoords - The comma-separated x,y coordinates (as percentages 0-100) for the drop landing position
- * @param currentButtonCenterX - The x-coordinate of the button's center within its row
+ * Calculates the pixel translation needed to move an element (e.g., a button) so its center aligns with a target position on an image,
+ * based on percentage coordinates. Considers the image's size and position, the button's current center, and a fixed gap between buttons.
+ * @param xyCoords - Comma-separated x,y coordinates (percentages 0-100) for the target position on the image
+ * @param currentButtonCenterX - Current x-coordinate of the button's center within the container
  * @param imageWidth - Width of the image in pixels
  * @param imageHeight - Height of the image in pixels
- * @param imageLeft - Left offset of the image relative to the drop container
- * @param imageTop - Top offset of the image relative to the drop container
- * @param currentButtonCenterY - The y-coordinate of the button's center relative to the drop container
- * @returns The CSS translate transform values
+ * @param imageLeft - Left offset of the image relative to the container
+ * @param imageTop - Top offset of the image relative to the container
+ * @param currentButtonCenterY - Current y-coordinate of the button's center within the container
+ * @returns An object with x and y translation values in pixels, formatted for CSS transforms
  */
 export const getDropLandingTranslate = (
   xyCoords: string,
@@ -38,9 +39,12 @@ export const getDropLandingTranslate = (
   const deltaX = absoluteTargetX - currentButtonCenterX + gapSize / 2;
   const deltaY = absoluteTargetY - currentButtonCenterY + gapSize / 2;
 
+  const transformedDeltaX = formatPxValue(deltaX.toString());
+  const transformedDeltaY = formatPxValue(deltaY.toString());
+
   return {
-    xPx: `${deltaX}px`,
-    yPx: `${deltaY}px`
+    xPx: transformedDeltaX,
+    yPx: transformedDeltaY
   };
 };
 
@@ -78,11 +82,17 @@ export const calculateButtonCenter = (totalButtons: number, buttonIndex: number)
  * @returns {buttonCenterX: number; imgWidth: number; imgHeight: number; imageLeft: number; imageTop: number; buttonCenterY: number;}
  *   An object containing the button's center coordinates, image dimensions, and image offset relative to the container
  */
-export function getDropLandingArgs(
+export const getDropLandingArgs = (
   imgElement: HTMLImageElement,
   buttonElement: HTMLElement,
   containerElement: HTMLElement
-) {
+) : { buttonCenterX: number;
+  imgWidth: number;
+  imgHeight: number;
+  imageLeft: number;
+  imageTop: number;
+  buttonCenterY: number;
+} => {
   if (!buttonElement) {
     throw new Error('buttonElement is undefined or not found in the DOM');
   }
@@ -102,4 +112,19 @@ export function getDropLandingArgs(
     imageTop,
     buttonCenterY
   };
-}
+};
+
+/** Formats a string as a pixel value, rounding to three decimal places if necessary.
+ * Removes non-numeric characters except digits, decimal points, and minus signs.
+ * If the value has more than three decimal places, rounds to three; otherwise,
+ * keeps original precision. * Returns the formatted value with px appended,
+ * or the original string if not a valid number.
+ * @param value - The string to format as a pixel value
+ * @returns A string representing the value in pixels (e.g., 123.456px)
+ * */
+export const formatPxValue = (value: string): string => {
+  const num = Number(value.replace(/[^-0-9.]/g, ''));
+  if (Number.isNaN(num)) return value; // fallback if not a number
+  const decimals = (num.toString().split('.')[1] || '').length;
+  return decimals > 3 ? `${num.toFixed(3)}px` : `${num}px`;
+};

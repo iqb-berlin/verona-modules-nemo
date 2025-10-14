@@ -7,6 +7,7 @@ import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
 import { testAudioFeedback } from '../shared/audio-feedback.spec.cy';
 import {
+  formatPxValue,
   getDropLandingArgs,
   getDropLandingTranslate
 } from '../../../../projects/player/src/app/shared/utils/interaction-drop.util';
@@ -15,9 +16,9 @@ describe('DROP Interaction E2E Tests', () => {
   const subject = 'deutsch';
   const interactionType = 'drop';
   const defaultTestFile = 'drop_4_option_test';
-  const testFileWithImageLandingXY = `${interactionType}_imagePosition_top_rectangle_with_imageLandingXY_100-100_test`;
-  const yValueToBottom = 280; // Ref from the value on interaction-drop.component.ts calculateAnimationPosition function
-  const yValueToTop = -280; // Ref from the value on interaction-drop.component.ts calculateAnimationPosition function
+  const testFileWithImageLandingXY = `${interactionType}_imagePosition_bottom_with_imageLandingXY_0-0_test`;
+  const yValueToBottom = 280; // Ref from the value on interaction-drop.component.ts calculateButtonTransformValues function
+  const yValueToTop = -280; // Ref from the value on interaction-drop.component.ts calculateButtonTransformValues function
   const dropImage = '[data-cy="drop-image"]';
   const buttonIndex = 1;
 
@@ -29,10 +30,11 @@ describe('DROP Interaction E2E Tests', () => {
   const getTransformTranslateValues = (styleValue: string): { xValue: string; yValue: string; } => {
     const transformMatch = styleValue.match(/transform:\s*translate\(([^,]+),\s*([^)]+)\)/);
     const [, xValue = '', yValue = ''] = transformMatch || [];
-
+    const transformedXValue = formatPxValue(xValue);
+    const transformedYValue = formatPxValue(yValue);
     return {
-      xValue: xValue.trim(),
-      yValue: yValue.trim()
+      xValue: transformedXValue,
+      yValue: transformedYValue
     };
   };
 
@@ -40,7 +42,7 @@ describe('DROP Interaction E2E Tests', () => {
    * Sets up test data with imageLandingXY and retrieves DOM elements needed for drop interaction tests.
    * Calculates landing coordinates and transform values for the drop animation.
    *
-   * @returns {Cypress.Chainable<object>} - Chainable resolving to calculated test values and DOM elements.
+   * @returns {Cypress.Chainable<any>} - Chainable resolving to calculated test values and DOM elements.
    */
   const getTestSetupWithImageLandingXY = (
   ): Cypress.Chainable<any> => {
@@ -51,57 +53,53 @@ describe('DROP Interaction E2E Tests', () => {
       const dropParams = testData.interactionParameters as InteractionDropParams;
       const imageLandingXY = dropParams.imageLandingXY;
 
-      return cy.get(dropImage).then($img => {
-        return cy.get(`[data-cy="button-${buttonIndex}"]`).then($button => {
-          return cy.get('[data-cy="drop-container"]').then($container => {
-            const imgElement = $img.get(0) as HTMLImageElement;
-            const buttonElement = $button.get(0) as HTMLElement;
-            const containerElement = $container.get(0) as HTMLElement;
+      return cy.get(dropImage).then($img => cy.get(`[data-cy="button-${buttonIndex}"]`).then($button => cy.get('[data-cy="drop-container"]').then($container => {
+        const imgElement = $img.get(0) as HTMLImageElement;
+        const buttonElement = $button.get(0) as HTMLElement;
+        const containerElement = $container.get(0) as HTMLElement;
 
-            const {
-              buttonCenterX, imgWidth, imgHeight, imageTop, imageLeft, buttonCenterY
-            } = getDropLandingArgs(imgElement, buttonElement, containerElement);
+        const {
+          buttonCenterX, imgWidth, imgHeight, imageTop, imageLeft, buttonCenterY
+        } = getDropLandingArgs(imgElement, buttonElement, containerElement);
 
-            let xPx = '';
-            let yPx = '';
-            if (imageLandingXY !== '') {
-              const translate = getDropLandingTranslate(
-                imageLandingXY,
-                buttonCenterX,
-                imgWidth,
-                imgHeight,
-                imageLeft,
-                imageTop,
-                buttonCenterY
-              );
-              xPx = translate.xPx;
-              yPx = translate.yPx;
-            }
+        let xPx = '';
+        let yPx = '';
+        if (imageLandingXY !== '') {
+          const translate = getDropLandingTranslate(
+            imageLandingXY,
+            buttonCenterX,
+            imgWidth,
+            imgHeight,
+            imageLeft,
+            imageTop,
+            buttonCenterY
+          );
+          xPx = translate.xPx;
+          yPx = translate.yPx;
+        }
 
-            return {
-              testData,
-              dropParams,
-              imageLandingXY,
-              imgElement,
-              buttonElement,
-              containerElement,
-              buttonCenterX,
-              imgWidth,
-              imgHeight,
-              imageTop,
-              imageLeft,
-              buttonCenterY,
-              xPx,
-              yPx
-            };
-          });
-        });
-      });
+        return {
+          testData,
+          dropParams,
+          imageLandingXY,
+          imgElement,
+          buttonElement,
+          containerElement,
+          buttonCenterX,
+          imgWidth,
+          imgHeight,
+          imageTop,
+          imageLeft,
+          buttonCenterY,
+          xPx,
+          yPx
+        };
+      })));
     });
   };
 
   /**
-   * Asserts that the drop-animate-wrapper element has the expected transform translate values.
+   * Asserts that the drop-animate-wrapper-{buttonIndex} element has the expected transform translate values.
    *
    * @param {string} xPx - The expected X translation value.
    * @param {string} yPx - The expected Y translation value.
@@ -113,16 +111,8 @@ describe('DROP Interaction E2E Tests', () => {
       .then($style => {
         const styleValue = $style!.toString();
         const { xValue, yValue } = getTransformTranslateValues(styleValue);
-        expect(
-          Number(xValue.replace('px', '')).toFixed(4)
-        ).to.equal(
-          Number(xPx.replace('px', '')).toFixed(4)
-        );
-        expect(
-          Number(yValue.replace('px', '')).toFixed(4)
-        ).to.equal(
-          Number(yPx.replace('px', '')).toFixed(4)
-        );
+        expect(xValue).to.equal(xPx);
+        expect(yValue).to.equal(yPx);
       });
   };
 
