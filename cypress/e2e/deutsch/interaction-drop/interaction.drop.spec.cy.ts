@@ -16,7 +16,7 @@ describe('DROP Interaction E2E Tests', () => {
   const subject = 'deutsch';
   const interactionType = 'drop';
   const defaultTestFile = 'drop_4_option_test';
-  const testFileWithImageLandingXY = `${interactionType}_imagePosition_bottom_with_imageLandingXY_0-0_test`;
+  const testFileWithImageLandingXY = `${interactionType}_imagePosition_top_rectangle_with_imageLandingXY_100-100_test`;
   const yValueToBottom = 280; // Ref from the value on interaction-drop.component.ts calculateButtonTransformValues function
   const yValueToTop = -280; // Ref from the value on interaction-drop.component.ts calculateButtonTransformValues function
   const dropImage = '[data-cy="drop-image"]';

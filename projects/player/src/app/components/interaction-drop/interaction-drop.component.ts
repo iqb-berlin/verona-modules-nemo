@@ -54,6 +54,9 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   /** Pre-calculated transform values mapped by button index */
   private preCalculatedTransforms = signal<Record<number, string>>({});
 
+  /** Current settled button's index */
+  private settledButtonIndex = signal<number | null>(null);
+
   /** Reference to the container element for attaching event listeners */
   @ViewChild('dropContainer', { static: true }) dropContainerRef!: ElementRef<HTMLElement>;
 
@@ -101,21 +104,31 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   }
 
   onDragMoved(event: CdkDragMove, index: number): void {
-    if (this.selectedValue() === index) {
-      this.dragX.set(event.distance.x);
-      this.dragY.set(event.distance.y);
-    }
+    if (this.selectedValue() !== index) return;
+
+    // Track the drag distance from starting position
+    this.dragX.set(event.distance.x);
+    this.dragY.set(event.distance.y);
   }
 
   onDragEnded(event: CdkDragEnd, index: number): void {
-    this.selectedValue.set(index);
-    this.disabledTransition.set(false);
     this.isDragging.set(false);
-
-    const transforms = this.preCalculatedTransforms();
-    const transformValue = transforms[index];
-    if (transformValue) {
-      this.settledTransform.set(transformValue);
+    this.disabledTransition.set(false);
+    this.dragX.set(0);
+    this.dragY.set(0);
+    // If already settled, that means the user now wants to move the button back to its original position
+    if (this.settledButtonIndex() === index) {
+      this.settledTransform.set(null);
+      this.settledButtonIndex.set(null);
+      this.selectedValue.set(-1);
+    } else {
+      // The selected button will be settled at the pre-calculated position
+      const transforms = this.preCalculatedTransforms();
+      const transformValue = transforms[index];
+      if (transformValue) {
+        this.settledTransform.set(transformValue);
+        this.settledButtonIndex.set(index);
+      }
     }
     this.emitSelectionResponse();
   }
@@ -124,13 +137,14 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
    * Resets all component state to initial values
    */
   private resetSelection(): void {
-    // Clear all state
+    // Clear all states
     this.selectedValue.set(-1);
     this.isDragging.set(false);
     this.dragX.set(0);
     this.dragY.set(0);
     this.settledTransform.set(null);
     this.preCalculatedTransforms.set({});
+    this.settledButtonIndex.set(null);
 
     // Disable transitions to prevent animation during reset
     this.disabledTransition.set(true);
@@ -142,7 +156,22 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   }
 
   /**
-   * Pre-calculates transform values for all buttons when component is initialized
+   * Helper to parse translate(x, y) string from a CSS transform value
+   * @param transform - The CSS transform string to parse (e.g., "translate(10px, 20px)")
+   * @returns An object containing the x and y coordinates in pixels
+   */
+  // eslint-disable-next-line class-methods-use-this
+  private parseTranslate(transform: string | undefined | null): { x: number, y: number } {
+    if (!transform) return { x: 0, y: 0 };
+    const match = /translate\(([-\d.]+)px?,\s*([-\d.]+)px?\)/.exec(transform);
+    if (match) {
+      return { x: parseFloat(match[1] ?? '0'), y: parseFloat(match[2] ?? '0') };
+    }
+    return { x: 0, y: 0 };
+  }
+
+  /**
+   * Pre-calculates transform values for all buttons when the component is initialized
    */
   private calculateButtonTransformValues(): Record<number, string> {
     if (!this.imageRef?.nativeElement || !this.dropContainerRef?.nativeElement) {
@@ -197,9 +226,21 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
       return '';
     }
 
-    // During active drag, follow pointer position
-    if (this.isDragging() && this.selectedValue() === index) {
-      return `translate(${this.dragX()}px, ${this.dragY()}px)`;
+    // During active drag, follow the pointer position
+    if (this.isDragging()) {
+      // Determine base position
+      let baseX = 0;
+      let baseY = 0;
+
+      if (this.settledButtonIndex() === index && this.settledTransform()) {
+        // If this button was already settled, start from settled position
+        const { x, y } = this.parseTranslate(this.settledTransform());
+        baseX = x;
+        baseY = y;
+      }
+      // Otherwise base is (0, 0) - the element's natural position
+
+      return `translate(${baseX + this.dragX()}px, ${baseY + this.dragY()}px)`;
     }
 
     // Use settled position from drag if available
@@ -227,6 +268,7 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
     const transformValue = transforms[index];
     if (transformValue) {
       this.settledTransform.set(transformValue);
+      this.settledButtonIndex.set(index);
     }
 
     this.emitSelectionResponse();
