@@ -40,6 +40,10 @@ $audio-waves-animation-height: 100px;
   box-shadow: 5px 5px 0 4px rgba(0, 0, 0, 0.2);
 }
 
+@mixin smiley-box-shadow {
+  box-shadow: 3px -4px 0 14px rgba(0, 0, 0, 0.2);
+}
+
 @mixin big-button-size {
   width: 225px;
   height: 225px;

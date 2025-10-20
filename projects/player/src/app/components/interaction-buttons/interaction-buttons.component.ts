@@ -1,8 +1,9 @@
 import {
-  Component, signal, effect
+  Component, signal, effect, inject
 } from '@angular/core';
 
-import { StarsResponse } from '../../services/responses.service';
+import { StarsResponse, ResponsesService } from '../../services/responses.service';
+import { VeronaPostService } from '../../services/verona-post.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import {
   InteractionButtonParams,
@@ -29,6 +30,9 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   allOptions: Array<SelectionOption> = [];
   // imagePosition for stimulus image if available
   imagePosition: string = 'TOP';
+
+  responsesService = inject(ResponsesService);
+  veronaPostService = inject(VeronaPostService);
 
   constructor() {
     super();
@@ -92,7 +96,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         _ => ({
           text: repeatButton.option?.text || '',
           imageSource: repeatButton.option?.imageSource || '',
-          icon: repeatButton.option?.icon || 'CLOSE_RED'
+          icon: repeatButton.option?.icon || 'NONE'
         })
       );
     } else {
@@ -250,6 +254,20 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     };
 
     this.responses.emit([response]);
+
+    // Check if triggerNavigationOnSelect is enabled
+    if (this.localParameters.triggerNavigationOnSelect) {
+      console.log('trigger navigation on select....');
+      // Give the response service time to process the response
+      setTimeout(() => {
+        // Check if responses are complete
+        const responseProgress = this.responsesService.responseProgress();
+        if (responseProgress === 'complete') {
+          // Trigger navigation
+          this.veronaPostService.sendVopUnitNavigationRequestedNotification('next');
+        }
+      }, 100);
+    }
   }
 
   // eslint-disable-next-line class-methods-use-this

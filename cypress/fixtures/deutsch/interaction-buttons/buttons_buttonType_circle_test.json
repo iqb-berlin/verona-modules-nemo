@@ -22,7 +22,7 @@
     "options": {
       "repeatButton": {
         "option": {
-          "icon": "CLOSE_RED"
+          "icon": ""
         },
         "numberOfOptions": 7
       }
