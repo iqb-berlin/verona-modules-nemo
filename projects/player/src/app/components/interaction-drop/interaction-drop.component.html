@@ -15,12 +15,14 @@
     @for (option of localParameters.options; track $index) {
       <div
         class="animate-wrapper"
-        [style.transform]="animateStyle($index)"
-        [class.no-transition]="disabledTransition()"
+        [style.transform]="buttonTransforms()[$index] || ''"
+        [class.no-transition]="shouldDisableTransition($index)"
         cdkDrag
+        [cdkDragStartDelay]="0"
         (cdkDragStarted)="onDragStarted($event, $index)"
         (cdkDragEnded)="onDragEnded($event, $index)"
         (cdkDragMoved)="onDragMoved($event, $index)"
+        (contextmenu)="$event.preventDefault()"
         [attr.data-cy]="'drop-animate-wrapper-' + $index"
       >
         <stars-standard-button

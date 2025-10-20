@@ -36,9 +36,6 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   /** Currently selected button index (-1 means no selection) */
   selectedValue = signal<number>(-1);
 
-  /** Controls whether CSS transitions are disabled (for instant position changes) */
-  disabledTransition = signal<boolean>(false);
-
   /** Whether a drag operation is currently in progress */
   private isDragging = signal<boolean>(false);
 
@@ -57,6 +54,12 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   /** Current settled button's index */
   private settledButtonIndex = signal<number | null>(null);
 
+  /** Current transform values for each button */
+  buttonTransforms = signal<Record<number, string>>({});
+
+  /** Set of button indices that should have transitions disabled */
+  private transitionDisabledButtons = signal<Set<number>>(new Set());
+
   /** Reference to the container element for attaching event listeners */
   @ViewChild('dropContainer', { static: true }) dropContainerRef!: ElementRef<HTMLElement>;
 
@@ -65,7 +68,10 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
 
   constructor(private renderer: Renderer2) {
     super();
+
     effect(() => {
+      this.resetSelection();
+
       const parameters = this.parameters() as InteractionDropParams;
 
       this.localParameters = InteractionDropComponent.createDefaultParameters();
@@ -78,8 +84,6 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
         this.localParameters.imagePosition = parameters.imagePosition || 'BOTTOM'; // Default to BOTTOM
         this.localParameters.imageLandingXY = parameters.imageLandingXY || '';
 
-        this.resetSelection();
-
         this.responses.emit([{
           id: this.localParameters.variableId,
           status: 'DISPLAYED',
@@ -89,6 +93,7 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
       }
       setTimeout(() => {
         this.calculateButtonTransformValues();
+        this.resetAllButtonTransforms();
       }, 0);
     });
   }
@@ -100,37 +105,85 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   onDragStarted(event: CdkDragStart, index: number): void {
     this.selectedValue.set(index);
     this.isDragging.set(true);
-    this.disabledTransition.set(true);
+    const currentSettled = this.settledButtonIndex();
+
+    // If there's a different settled button, return it to origin
+    if (currentSettled !== null && currentSettled !== index) {
+      this.updateButtonTransform(currentSettled, '');
+      this.settledButtonIndex.set(null);
+      this.settledTransform.set(null);
+    }
+
+    // Disable transitions for the dragging button
+    this.addTransitionDisabled(index);
   }
 
   onDragMoved(event: CdkDragMove, index: number): void {
     if (this.selectedValue() !== index) return;
 
-    // Track the drag distance from starting position
     this.dragX.set(event.distance.x);
     this.dragY.set(event.distance.y);
+
+    // Calculate drag transform
+    let baseX = 0;
+    let baseY = 0;
+
+    // If this button was previously settled, start from settled position
+    if (this.settledButtonIndex() === index && this.settledTransform()) {
+      const { x, y } = this.parseTranslate(this.settledTransform());
+      baseX = x;
+      baseY = y;
+    }
+
+    const dragTransform = `translate(${baseX + event.distance.x}px, ${baseY + event.distance.y}px)`;
+    this.updateButtonTransform(index, dragTransform);
   }
 
   onDragEnded(event: CdkDragEnd, index: number): void {
+    if (this.selectedValue() !== index) return;
+
+    // Restore pointer events
+    event.source.element.nativeElement.style.pointerEvents = 'auto';
+
     this.isDragging.set(false);
-    this.disabledTransition.set(false);
     this.dragX.set(0);
     this.dragY.set(0);
-    // If already settled, that means the user now wants to move the button back to its original position
+
+    // Re-enable transitions for smooth settling
+    this.removeTransitionDisabled(index);
+
+    // If already settled, return to origin
     if (this.settledButtonIndex() === index) {
-      this.settledTransform.set(null);
+      this.updateButtonTransform(index, '');
       this.settledButtonIndex.set(null);
+      this.settledTransform.set(null);
       this.selectedValue.set(-1);
     } else {
-      // The selected button will be settled at the pre-calculated position
+      // Move to target position
       const transforms = this.preCalculatedTransforms();
       const transformValue = transforms[index];
       if (transformValue) {
+        this.updateButtonTransform(index, transformValue);
         this.settledTransform.set(transformValue);
         this.settledButtonIndex.set(index);
       }
     }
+
     this.emitSelectionResponse();
+  }
+
+  /**
+   * Resets all button transforms to origin position
+   */
+  private resetAllButtonTransforms(): void {
+    const buttonCount = this.localParameters.options.length;
+    const transforms: Record<number, string> = {};
+
+    for (let i = 0; i < buttonCount; i++) {
+      transforms[i] = '';
+    }
+
+    this.buttonTransforms.set(transforms);
   }
 
   /**
@@ -145,14 +198,8 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
     this.settledTransform.set(null);
     this.preCalculatedTransforms.set({});
     this.settledButtonIndex.set(null);
-
-    // Disable transitions to prevent animation during reset
-    this.disabledTransition.set(true);
-
-    // Re-enable transitions after a brief delay to allow DOM to update
-    setTimeout(() => {
-      this.disabledTransition.set(false);
-    }, 50);
+    this.buttonTransforms.set({});
+    this.transitionDisabledButtons.set(new Set());
   }
 
   /**
@@ -216,62 +263,74 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   }
 
   /**
-   * Calculates the CSS transform style for animating button position
-   * @param index - The button index to calculate style for
-   * @returns CSS transform string
-   */
-  animateStyle(index: number): string {
-    // Only animate the selected button or during drag
-    if (this.selectedValue() !== index) {
-      return '';
-    }
-
-    // During active drag, follow the pointer position
-    if (this.isDragging()) {
-      // Determine base position
-      let baseX = 0;
-      let baseY = 0;
-
-      if (this.settledButtonIndex() === index && this.settledTransform()) {
-        // If this button was already settled, start from settled position
-        const { x, y } = this.parseTranslate(this.settledTransform());
-        baseX = x;
-        baseY = y;
-      }
-      // Otherwise base is (0, 0) - the element's natural position
-
-      return `translate(${baseX + this.dragX()}px, ${baseY + this.dragY()}px)`;
-    }
-
-    // Use settled position from drag if available
-    const settledTransform = this.settledTransform();
-    if (settledTransform) {
-      return settledTransform;
-    }
-
-    // Use pre-calculated transforms without triggering recalculation
-    const transforms = this.preCalculatedTransforms();
-    return transforms[index] || '';
-  }
-
-  /**
    * Handles button click events (when not dragging)
    * @param index - Index of the clicked button
    */
   onButtonClick(index: number): void {
     if (this.isDragging()) return;
 
-    this.disabledTransition.set(false);
-    this.toggleButtonSelection(index);
+    const currentSettled = this.settledButtonIndex();
 
-    const transforms = this.preCalculatedTransforms();
-    const transformValue = transforms[index];
-    if (transformValue) {
-      this.settledTransform.set(transformValue);
-      this.settledButtonIndex.set(index);
+    // If clicking the currently settled button, return it to origin
+    if (currentSettled === index) {
+      this.updateButtonTransform(index, '');
+      this.settledButtonIndex.set(null);
+      this.settledTransform.set(null);
+      this.selectedValue.set(-1);
+    } else {
+      // If there's a different settled button, return it to origin
+      if (currentSettled !== null) {
+        this.updateButtonTransform(currentSettled, '');
+      }
+
+      this.toggleButtonSelection(index);
+
+      // Move new button to target
+      const transforms = this.preCalculatedTransforms();
+      const transformValue = transforms[index];
+      if (transformValue) {
+        this.updateButtonTransform(index, transformValue);
+        this.settledTransform.set(transformValue);
+        this.settledButtonIndex.set(index);
+      }
     }
 
     this.emitSelectionResponse();
+  }
+
+  /**
+   * Updates the transform for a specific button
+   */
+  private updateButtonTransform(index: number, transform: string): void {
+    this.buttonTransforms.update(transforms => ({
+      ...transforms,
+      [index]: transform
+    }));
+  }
+
+  /**
+   * Determines if transitions should be disabled for a specific button
+   */
+  shouldDisableTransition(index: number): boolean {
+    return this.transitionDisabledButtons().has(index);
+  }
+
+  /**
+   * Adds a button to the transition-disabled set
+   */
+  private addTransitionDisabled(index: number): void {
+    this.transitionDisabledButtons.update(set => new Set([...set, index]));
+  }
+
+  /**
+   * Removes a button from the transition-disabled set
+   */
+  private removeTransitionDisabled(index: number): void {
+    this.transitionDisabledButtons.update(set => {
+      const newSet = new Set(set);
+      newSet.delete(index);
+      return newSet;
+    });
   }
 
   /**
