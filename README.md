@@ -2,7 +2,7 @@
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/iqb-berlin/verona-modules-nemo?style=flat-square)
 
 # IQB Stars Player
-version: 0.6.12-beta
+version: 0.6.14-beta
 
 ## Development
 
@@ -20,6 +20,12 @@ npm validate-data
 ```
 
 If you add new unit definition examples, you should run this command to check if you have a valid json format.
+
+```
+npm test
+```
+
+You can run the end-to-end tests via this command.
 
 ### Build Stars Player Html File
 The Verona Interface Specification requires all programming to be built in one single html file. All styles and images need to be packed in one file.

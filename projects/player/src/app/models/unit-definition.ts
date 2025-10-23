@@ -6,7 +6,7 @@ export type ContinueButtonEnum = 'ALWAYS' | 'NO' | 'ON_ANY_RESPONSE' | 'ON_RESPO
 export type InteractionEnum = 'BUTTONS' | 'DROP' | 'WRITE' | 'FIND_ON_IMAGE' | 'VIDEO' | 'IMAGE_ONLY' | 'NONE';
 export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED' | 'CLAP_HANDS' | 'SMILEY_1' | 'SMILEY_2' | 'SMILEY_3' | 'SMILEY_4' | 'SMILEY_5' | 'NONE';
 export type ButtonTypeEnum = 'MEDIUM_SQUARE' | 'BIG_SQUARE' | 'SMALL_SQUARE' | 'TEXT' | 'CIRCLE';
-export type ImagePositionEnum = 'TOP' | 'LEFT';
+export type ImagePositionEnum = 'TOP' | 'LEFT' | 'BOTTOM';
 export type TargetSizeEnum = 'MEDIUM' | 'LARGE' | 'SMALL';
 
 export interface UnitDefinition {
@@ -55,6 +55,8 @@ export interface InteractionDropParams {
   variableId: string;
   options: SelectionOption[];
   imageSource: string;
+  imagePosition: ImagePositionEnum;
+  imageLandingXY: string;
   text: string;
 }
 

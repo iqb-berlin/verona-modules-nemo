@@ -1,6 +1,6 @@
 {
   "name": "verona-modules-stars",
-  "version": "0.6.12",
+  "version": "0.6.14",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -9,7 +9,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "validate-data": "validate-json projects/player/test/unitdata/drop stars-unit-definition 0.18",
+    "validate-data": "validate-json cypress/fixtures/deutsch/interaction-drop stars-unit-definition 0.19",
     "build": "ng build --configuration production --output-hashing=none",
     "postbuild": "node projects/tools/distpacker.js dist/stars-player/browser index_packed.html",
     "e2e": "npx cypress run",

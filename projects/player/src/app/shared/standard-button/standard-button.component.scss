@@ -9,9 +9,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    /* gap size here */
-    bottom: variables.$small-gap-margin;
-    right: variables.$small-gap-margin;
+    right: 0;
+    bottom: 0;
 
     background-color: colors.$white;
     border: 8px solid colors.$white;
@@ -34,12 +33,13 @@
     border-radius: variables.$border-radius;
     border-color: colors.$highlight;
     transition: all 0.2s ease;
+    box-shadow: none;
   }
 
   &.circle-type {
     width: 100px;
     height: 100px;
-    margin: 0 variables.$big-gap-margin 0 0;
+    margin: 0 variables.$small-gap-margin 0 0;
     cursor: pointer;
     border-radius: 50%;
     -webkit-tap-highlight-color: transparent;

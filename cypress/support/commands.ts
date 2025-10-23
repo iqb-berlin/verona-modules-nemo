@@ -74,8 +74,6 @@ Cypress.Commands.add('setupTestDataWithPostMessageMock', (subject: string, confi
     // 2. THEN visit with mock setup
     cy.visit('http://localhost:4200', {
       onBeforeLoad(win) {
-        // eslint-disable-next-line no-underscore-dangle
-        (win as any).__E2E__ = true;
         // Capture messages from child to parent (outgoing)
         const outgoingMessages: Array<{
           data: any;
