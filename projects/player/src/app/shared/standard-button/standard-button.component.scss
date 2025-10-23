@@ -92,8 +92,6 @@
   }
 
   &.has-smiley-icon {
-    margin-right: 52px;
-
     @include variables.smiley-box-shadow;
 
     input:checked + label {
