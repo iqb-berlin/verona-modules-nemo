@@ -39,12 +39,17 @@
   .buttons-wrapper {
     @include variables.flex-center;
     flex-direction: column;
-    padding-left: variables.$small-gap-margin;
+    gap: variables.$small-gap-margin;
 
     .row {
       @include variables.flex-center;
       flex-direction: row;
       width: 100%;
+      column-gap: variables.$small-gap-margin; /* default spacing between buttons */
+
+      &.two-buttons-gap {
+        column-gap: variables.$gap-between-two-buttons; /* 106px special case */
+      }
     }
   }
 

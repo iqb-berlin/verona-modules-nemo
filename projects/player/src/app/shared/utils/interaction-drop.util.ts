@@ -41,8 +41,9 @@ export const getDropLandingTranslate = (
   const deltaX = absoluteTargetX - currentButtonCenterX + gapSize / 2;
   const deltaY = absoluteTargetY - currentButtonCenterY + gapSize / 2;
 
-  const transformedDeltaX = formatPxValue(deltaX.toString());
-  const transformedDeltaY = formatPxValue(deltaY.toString());
+  // Apply requested offsets: x should be +10px more, y should be -10px less
+  const transformedDeltaX = formatPxValue((deltaX - 10).toString());
+  const transformedDeltaY = formatPxValue((deltaY - 10).toString());
 
   return {
     xPx: transformedDeltaX,
