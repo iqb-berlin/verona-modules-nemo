@@ -1,6 +1,6 @@
 {
   "id": "stars-unit-definition",
-  "version": "0.16",
+  "version": "0.17",
   "backgroundColor": "#eee",
   "continueButtonShow": "ON_VIDEO_COMPLETE",
   "interactionType": "VIDEO",

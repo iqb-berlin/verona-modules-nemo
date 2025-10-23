@@ -14,7 +14,7 @@ import { InteractionFindOnImageParams } from '../../models/unit-definition';
 })
 
 export class InteractionFindOnImageComponent extends InteractionComponentDirective implements AfterViewInit {
-  localParameters: InteractionFindOnImageParams;
+  localParameters!: InteractionFindOnImageParams;
   pendingShowArea = false;
   clickTargetTop = signal('0px');
   clickTargetLeft = signal('0px');
@@ -65,11 +65,13 @@ export class InteractionFindOnImageComponent extends InteractionComponentDirecti
     const imgTop = this.imageRef.nativeElement.offsetTop;
     const imgLeft = this.imageRef.nativeElement.offsetLeft;
 
-    const x1 = Math.round((Number.parseInt(area[0], 10) * imgWidthFactor) + imgLeft);
-    const y1 = Math.round((Number.parseInt(area[1], 10) * imgHeightFactor) + imgTop);
-    const x2 = Math.round((Number.parseInt(area[2], 10) * imgWidthFactor) + imgLeft);
-    const y2 = Math.round((Number.parseInt(area[3], 10) * imgHeightFactor) + imgTop);
-    this.showAreaStyle.set(`top: ${y1}px; left: ${x1}px; width: ${x2 - x1}px; height: ${y2 - y1}px;`);
+    if (area && area.length >= 4) {
+      const x1 = Math.round((Number.parseInt(area[0]!, 10) * imgWidthFactor) + imgLeft);
+      const y1 = Math.round((Number.parseInt(area[1]!, 10) * imgHeightFactor) + imgTop);
+      const x2 = Math.round((Number.parseInt(area[2]!, 10) * imgWidthFactor) + imgLeft);
+      const y2 = Math.round((Number.parseInt(area[3]!, 10) * imgHeightFactor) + imgTop);
+      this.showAreaStyle.set(`top: ${y1}px; left: ${x1}px; width: ${x2 - x1}px; height: ${y2 - y1}px;`);
+    }
   }
 
   setClickVisualisationAbsolute(x: number, y: number, imageWidth: number) {
@@ -81,7 +83,7 @@ export class InteractionFindOnImageComponent extends InteractionComponentDirecti
     if (this.buttonDisabled()) this.buttonDisabled.set(false);
   }
 
-  onClick(event) {
+  onClick(event: any) {
     const imgWidth = this.imageRef.nativeElement.width;
     this.setClickVisualisationAbsolute(event.layerX, event.layerY, imgWidth);
     const imgHeight = this.imageRef.nativeElement.height;
