@@ -1,6 +1,8 @@
 /**
- * Calculates the pixel translation needed to move an element (e.g., a button) so its center aligns with a target position on an image,
- * based on percentage coordinates. Considers the image's size and position, the button's current center, and a fixed gap between buttons.
+ * Calculates the pixel translation needed to move an element (e.g., a button)
+ * so its center aligns with a target position on an image,
+ * based on percentage coordinates. Considers the image's size and position,
+ * the button's current center, and a fixed gap between buttons.
  * @param xyCoords - Comma-separated x,y coordinates (percentages 0-100) for the target position on the image
  * @param currentButtonCenterX - Current x-coordinate of the button's center within the container
  * @param imageWidth - Width of the image in pixels
@@ -96,11 +98,15 @@ export const getDropLandingArgs = (
   if (!buttonElement) {
     throw new Error('buttonElement is undefined or not found in the DOM');
   }
-  const buttonCenterX = buttonElement.offsetLeft + buttonElement.offsetWidth / 2;
-  const buttonCenterY = buttonElement.offsetTop + buttonElement.offsetHeight / 2;
-
-  const imgRect = imgElement.getBoundingClientRect();
+  // Use consistent measurement system: DOMRect relative to viewport for image, button, and container
   const containerRect = containerElement.getBoundingClientRect();
+  const imgRect = imgElement.getBoundingClientRect();
+  const buttonRect = buttonElement.getBoundingClientRect();
+
+  // Compute centers relative to the same container coordinate space to avoid Firefox rounding/offset issues
+  const buttonCenterX = (buttonRect.left - containerRect.left) + (buttonRect.width / 2);
+  const buttonCenterY = (buttonRect.top - containerRect.top) + (buttonRect.height / 2);
+
   const imageLeft = imgRect.left - containerRect.left;
   const imageTop = imgRect.top - containerRect.top;
 
@@ -115,16 +121,17 @@ export const getDropLandingArgs = (
 };
 
 /** Formats a string as a pixel value, rounding to three decimal places if necessary.
- * Removes non-numeric characters except digits, decimal points, and minus signs.
  * If the value has more than three decimal places, rounds to three; otherwise,
- * keeps original precision. * Returns the formatted value with px appended,
- * or the original string if not a valid number.
+ * keeps original precision.
  * @param value - The string to format as a pixel value
  * @returns A string representing the value in pixels (e.g., 123.456px)
  * */
 export const formatPxValue = (value: string): string => {
-  const num = Number(value.replace(/[^-0-9.]/g, ''));
+  const num = Number(String(value).replace(/[^-0-9.]/g, ''));
   if (Number.isNaN(num)) return value; // fallback if not a number
-  const decimals = (num.toString().split('.')[1] || '').length;
-  return decimals > 3 ? `${num.toFixed(3)}px` : `${num}px`;
+  const rounded = Math.round(num * 1000) / 1000; // stable rounding to 3 decimals
+  let s = rounded.toFixed(3);
+  // Remove trailing zeros and an optional decimal point (e.g., "-93.000" -> "-93", "12.340" -> "12.34")
+  s = s.replace(/\.?0+$/, '');
+  return `${s}px`;
 };

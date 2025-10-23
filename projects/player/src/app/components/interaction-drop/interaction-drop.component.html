@@ -6,7 +6,8 @@
   <!-- Image section -->
   <div class="stimulus-wrapper">
     @if (localParameters.imageSource) {
-      <img #imageElement [src]="localParameters.imageSource" [alt]="" data-cy="drop-image">
+      <img #imageElement
+           [src]="localParameters.imageSource" [alt]="" data-cy="drop-image">
     }
   </div>
 
@@ -15,14 +16,14 @@
     @for (option of localParameters.options; track $index) {
       <div
         class="animate-wrapper"
-        [style.transform]="buttonTransforms()[$index] || ''"
         [class.no-transition]="shouldDisableTransition($index)"
         cdkDrag
+        [cdkDragFreeDragPosition]="freeDragPositionFor($index)"
         [cdkDragStartDelay]="0"
         (cdkDragStarted)="onDragStarted($event, $index)"
+        (cdkDragReleased)="onDragReleased($index)"
         (cdkDragEnded)="onDragEnded($event, $index)"
-        (cdkDragMoved)="onDragMoved($event, $index)"
-        (contextmenu)="$event.preventDefault()"
+        [style.transform]="buttonTransforms()[$index]"
         [attr.data-cy]="'drop-animate-wrapper-' + $index"
       >
         <stars-standard-button

@@ -27,15 +27,61 @@ describe('DROP Interaction E2E Tests', () => {
    * @param {string} styleValue - The style attribute value to parse
    * @returns {{xValue: string, yValue: string}} - An object containing the extracted x and y values
   * */
-  const getTransformTranslateValues = (styleValue: string): { xValue: string; yValue: string; } => {
-    const transformMatch = styleValue.match(/transform:\s*translate\(([^,]+),\s*([^)]+)\)/);
-    const [, xValue = '', yValue = ''] = transformMatch || [];
-    const transformedXValue = formatPxValue(xValue);
-    const transformedYValue = formatPxValue(yValue);
-    return {
-      xValue: transformedXValue,
-      yValue: transformedYValue
+  type TranslateValues = { xValue: string; yValue: string };
+  const getTransformTranslateValues = (styleValue: string | null | undefined): TranslateValues => {
+    // Return empty when nothing to parse
+    if (styleValue == null) return { xValue: '', yValue: '' };
+
+    const raw = String(styleValue).replace(/\s+/g, ' ').trim();
+
+    // If a full style attribute was provided, extract the transform declaration value (right side of the colon)
+    // Example: 'transform: translate(10px, 20px); opacity: 1' -> 'translate(10px, 20px)'
+    const transformMatch = /(?:^|;\s*)transform\s*:\s*([^;]+)/i.exec(raw);
+    const transformOnly: string = transformMatch?.[1]?.trim() ?? raw;
+
+    // Prefer the last translate/translate3d occurrence if multiple are present.
+    const findLast = (re: RegExp): RegExpExecArray | null => {
+      let match: RegExpExecArray | null = null;
+      const global = new RegExp(re.source, re.flags.includes('g') ? re.flags : `${re.flags}g`);
+      let m: RegExpExecArray | null;
+      // eslint-disable-next-line no-cond-assign
+      while ((m = global.exec(transformOnly)) != null) {
+        match = m;
+      }
+      return match;
     };
+
+    // translate3d(xpx, ypx, zpx)
+    const t3 = findLast(/translate3d\(\s*([-\d.]+)px?\s*,\s*([-\d.]+)px?\s*,\s*([-\d.]+)px?\s*\)/i);
+    if (t3) {
+      return { xValue: formatPxValue(`${t3[1]}px`), yValue: formatPxValue(`${t3[2]}px`) };
+    }
+
+    // translate(xpx, ypx)
+    const t2 = findLast(/translate\(\s*([-\d.]+)px?\s*,\s*([-\d.]+)px?\s*\)/i);
+    if (t2) {
+      return { xValue: formatPxValue(`${t2[1]}px`), yValue: formatPxValue(`${t2[2]}px`) };
+    }
+
+    // matrix(a, b, c, d, tx, ty) -> tx is group 5, ty is group 6
+    const m2 =
+      findLast(/matrix\(\s*([-\d.e]+)\s*,\s*([-\d.e]+)\s*,\s*([-\d.e]+)\s*,\s*([-\d.e]+)\s*,\s*([-\d.e]+)\s*,\s*([-\d.e]+)\s*\)/i);
+    if (m2) {
+      const tx = `${parseFloat(m2[5] ?? '0')}px`;
+      const ty = `${parseFloat(m2[6] ?? '0')}px`;
+      return { xValue: formatPxValue(tx), yValue: formatPxValue(ty) };
+    }
+
+    // matrix3d(...) -> tx is element 13 (index 12), ty is element 14 (index 13)
+    const m3 = findLast(/matrix3d\(\s*([-\d.e,\s]+)\)/i);
+    if (m3) {
+      const parts = (m3[1] ?? '').split(',').map((s: string) => parseFloat((s || '').trim() || '0'));
+      const tx = Number.isFinite(parts[12]) ? `${parts[12]}px` : '';
+      const ty = Number.isFinite(parts[13]) ? `${parts[13]}px` : '';
+      return { xValue: formatPxValue(tx), yValue: formatPxValue(ty) };
+    }
+
+    return { xValue: '', yValue: '' };
   };
 
   /**
@@ -53,48 +99,51 @@ describe('DROP Interaction E2E Tests', () => {
       const dropParams = testData.interactionParameters as InteractionDropParams;
       const imageLandingXY = dropParams.imageLandingXY;
 
-      return cy.get(dropImage).then($img => cy.get(`[data-cy="button-${buttonIndex}"]`).then($button => cy.get('[data-cy="drop-container"]').then($container => {
-        const imgElement = $img.get(0) as HTMLImageElement;
-        const buttonElement = $button.get(0) as HTMLElement;
-        const containerElement = $container.get(0) as HTMLElement;
+      return cy.get(dropImage)
+        .then($img => cy.get(`[data-cy="button-${buttonIndex}"]`)
+          .then($button => cy.get('[data-cy="drop-container"]')
+            .then($container => {
+              const imgElement = $img.get(0) as HTMLImageElement;
+              const buttonElement = $button.get(0) as HTMLElement;
+              const containerElement = $container.get(0) as HTMLElement;
 
-        const {
-          buttonCenterX, imgWidth, imgHeight, imageTop, imageLeft, buttonCenterY
-        } = getDropLandingArgs(imgElement, buttonElement, containerElement);
+              const {
+                buttonCenterX, imgWidth, imgHeight, imageTop, imageLeft, buttonCenterY
+              } = getDropLandingArgs(imgElement, buttonElement, containerElement);
 
-        let xPx = '';
-        let yPx = '';
-        if (imageLandingXY !== '') {
-          const translate = getDropLandingTranslate(
-            imageLandingXY,
-            buttonCenterX,
-            imgWidth,
-            imgHeight,
-            imageLeft,
-            imageTop,
-            buttonCenterY
-          );
-          xPx = translate.xPx;
-          yPx = translate.yPx;
-        }
+              let xPx = '';
+              let yPx = '';
+              if (imageLandingXY !== '') {
+                const translate = getDropLandingTranslate(
+                  imageLandingXY,
+                  buttonCenterX,
+                  imgWidth,
+                  imgHeight,
+                  imageLeft,
+                  imageTop,
+                  buttonCenterY
+                );
+                xPx = translate.xPx;
+                yPx = translate.yPx;
+              }
 
-        return {
-          testData,
-          dropParams,
-          imageLandingXY,
-          imgElement,
-          buttonElement,
-          containerElement,
-          buttonCenterX,
-          imgWidth,
-          imgHeight,
-          imageTop,
-          imageLeft,
-          buttonCenterY,
-          xPx,
-          yPx
-        };
-      })));
+              return {
+                testData,
+                dropParams,
+                imageLandingXY,
+                imgElement,
+                buttonElement,
+                containerElement,
+                buttonCenterX,
+                imgWidth,
+                imgHeight,
+                imageTop,
+                imageLeft,
+                buttonCenterY,
+                xPx,
+                yPx
+              };
+            })));
     });
   };
 
@@ -107,7 +156,6 @@ describe('DROP Interaction E2E Tests', () => {
   const assertTransformTranslate = (xPx: string, yPx: string): void => {
     cy.get(`[data-cy="drop-animate-wrapper-${buttonIndex}"]`)
       .should('have.attr', 'style')
-      .should('include', 'transform: translate(')
       .then($style => {
         const styleValue = $style!.toString();
         const { xValue, yValue } = getTransformTranslateValues(styleValue);
@@ -232,10 +280,8 @@ describe('DROP Interaction E2E Tests', () => {
     cy.get(`[data-cy="drop-animate-wrapper-${buttonIndex}"]`)
       .should($el => {
         const style = $el.attr('style') || '';
-        // Style should either not contain transform, or transform should be empty/none
-        if (style.includes('transform')) {
-          expect(style).to.not.include('translate');
-        }
+        // Expect the element to be explicitly reset to translate3d(0px, 0px, 0px)
+        expect(style.replace(/\s+/g, ' ').trim()).to.include('transform: translate3d(0px, 0px, 0px)');
       });
   });
 
@@ -256,6 +302,8 @@ describe('DROP Interaction E2E Tests', () => {
 
           .trigger('mousemove', { position: 'center', force: true })
           .trigger('mouseup', { button: 0, bubbles: true, force: true });
+        // Wait for animation to complete
+        cy.wait(1000);
         assertTransformTranslate(xPx, yPx);
       }
     });
