@@ -57,6 +57,9 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   /** Tracks if the current drag started from a previously settled position */
   private lastDragWasFromSettled = false;
 
+  /** Suppress accidental clicks right after a drag */
+  private suppressClick = false;
+
   /** Reference to the container element for attaching event listeners */
   @ViewChild('dropContainer', { static: true }) dropContainerRef!: ElementRef<HTMLElement>;
 
@@ -201,6 +204,7 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   }
 
   onDragStarted(event: CdkDragStart, index: number): void {
+    this.suppressClick = true;
     this.draggingIndex.set(index);
     // Disable transitions for the dragging button so it keeps up with the pointer
     this.addTransitionDisabled(index);
@@ -232,6 +236,7 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   }
 
   onDragEnded(event: CdkDragEnd, index: number): void {
+    setTimeout(() => { this.suppressClick = false; }, 0);
     if (this.selectedValue() !== index) return;
     this.draggingIndex.set(null);
     const transforms = this.preCalculatedTransforms();
@@ -350,6 +355,9 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
    * @param index - Index of the clicked button
    */
   onButtonClick(index: number): void {
+    if (this.draggingIndex() !== null || this.suppressClick) {
+      return;
+    }
     const currentSettled = this.settledButtonIndex();
 
     if (currentSettled === index) {
@@ -381,9 +389,9 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
    */
   private updateButtonTransform(index: number, transform: string): void {
     // Normalize empty transform to a stable origin value so tests can assert translate3d(0, 0, 0)
-    const normalized = (transform && transform.trim().length > 0)
-      ? transform
-      : 'translate3d(0px, 0px, 0px)';
+    const normalized = (transform && transform.trim().length > 0) ?
+      transform :
+      'translate3d(0px, 0px, 0px)';
     this.buttonTransforms.update(transforms => ({
       ...transforms,
       [index]: normalized
