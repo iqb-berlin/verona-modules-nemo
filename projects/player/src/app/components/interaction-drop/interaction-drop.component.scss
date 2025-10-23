@@ -35,7 +35,7 @@
 }
 
 .animate-wrapper {
-  margin: 0;
+  margin-right: variables.$small-gap-margin;
   transition: transform 1s ease-in-out;
 
   &.no-transition {
