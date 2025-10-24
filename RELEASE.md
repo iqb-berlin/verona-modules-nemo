@@ -1,9 +1,5 @@
-# Release Note 0.6.14 #
+# Release Note 0.6.15 #
 
 ## Neu
 
-- Änderungen mit BUTTONS: Wenn sich 2 button in einer Zeile befinden, wird der rechte Margin auf 106 Pixel vergrößert.
-
-## Bugfixes
-- Bugfix für die DROP Komponente: Klicks werden jetzt nicht mehr ausgelöst, wenn ein Drag-Vorgang gerade stattfindet.
-- Bugfix für die BUTTONS Komponente: Die Größenstile der Schaltflächen wurden korrigiert. 
+- Änderungen mit BUTTONS: Erstellen von kreisförmigen single select Buttons mit Smiley-Symbolen. Es gibt keine Weiter button, sobald eine button ausgewählt wird, geht es mit einer Verzögerung von einer halben Sekunde zur nächsten Seite.
