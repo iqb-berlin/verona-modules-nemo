@@ -1,8 +1,9 @@
 import {
-  Component, signal, effect
+  Component, signal, effect, inject
 } from '@angular/core';
 
-import { StarsResponse } from '../../services/responses.service';
+import { StarsResponse, ResponsesService } from '../../services/responses.service';
+import { VeronaPostService } from '../../services/verona-post.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import {
   InteractionButtonParams,
@@ -30,6 +31,9 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   // imagePosition for stimulus image if available
   imagePosition: string = 'TOP';
 
+  responsesService = inject(ResponsesService);
+  veronaPostService = inject(VeronaPostService);
+
   constructor() {
     super();
 
@@ -44,6 +48,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         this.localParameters.imageSource = parameters.imageSource || '';
         this.localParameters.numberOfRows = parameters.numberOfRows || 1;
         this.localParameters.multiSelect = parameters.multiSelect || false;
+        this.localParameters.triggerNavigationOnSelect = parameters.triggerNavigationOnSelect || false;
         this.localParameters.buttonType = parameters.buttonType || 'MEDIUM_SQUARE';
         this.localParameters.numberOfRows = parameters.numberOfRows || 1;
         this.localParameters.text = parameters.text || '';
@@ -89,11 +94,16 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       options = Array.from(
         { length: repeatButton.numberOfOptions },
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        _ => ({
-          text: repeatButton.option?.text || '',
-          imageSource: repeatButton.option?.imageSource || '',
-          icon: repeatButton.option?.icon || 'CLOSE_RED'
-        })
+        _ => {
+          const opt: SelectionOption = {
+            text: repeatButton.option?.text || '',
+            imageSource: repeatButton.option?.imageSource || ''
+          };
+          if (repeatButton.option?.icon !== undefined) {
+            opt.icon = repeatButton.option.icon;
+          }
+          return opt;
+        }
       );
     } else {
       options = this.localParameters.options?.buttons || [];
@@ -250,6 +260,13 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     };
 
     this.responses.emit([response]);
+
+    // Check if triggerNavigationOnSelect is enabled
+    if (this.localParameters.triggerNavigationOnSelect === true) {
+      setTimeout(() => {
+        this.veronaPostService.sendVopUnitNavigationRequestedNotification('next');
+      }, 500);
+    }
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -261,6 +278,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       imagePosition: 'TOP',
       text: '',
       multiSelect: false,
+      triggerNavigationOnSelect: false,
       numberOfRows: 1,
       buttonType: 'MEDIUM_SQUARE'
     };

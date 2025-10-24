@@ -3,11 +3,15 @@ import {
 } from '@angular/core';
 
 import { ButtonTypeEnum } from '../../models/unit-definition';
+import { StandardIconComponent } from '../standard-icon/standard-icon.component';
 
 @Component({
   selector: 'stars-standard-button',
   templateUrl: './standard-button.component.html',
   styleUrls: ['./standard-button.component.scss'],
+  imports: [
+    StandardIconComponent
+  ],
   standalone: true
 })
 
@@ -21,6 +25,7 @@ export class StandardButtonComponent {
   selected = input<boolean>();
   isSmallText = input<boolean>(false);
   type = input<ButtonTypeEnum>();
+  repeatButtons = input<boolean>(false);
   buttonClick = output<void>();
 
   textMode = computed(() => {
