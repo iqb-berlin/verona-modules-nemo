@@ -1,3 +1,4 @@
+import { Response } from '@iqbspecs/response/response.interface';
 import { VariableInfo } from './responses';
 import { AudioFeedback } from './feedback';
 
@@ -49,6 +50,7 @@ export interface InteractionButtonParams {
   numberOfRows?: number;
   buttonType: ButtonTypeEnum;
   triggerNavigationOnSelect?: boolean;
+  formerState?: Response[];
 }
 
 export interface InteractionDropParams {
@@ -58,6 +60,7 @@ export interface InteractionDropParams {
   imagePosition: ImagePositionEnum;
   imageLandingXY: string;
   text: string;
+  formerState?: Response[];
 }
 
 export interface InteractionWriteParams {
@@ -68,6 +71,7 @@ export interface InteractionWriteParams {
   addUmlautKeys: boolean;
   keysToAdd: string[];
   maxInputLength: number;
+  formerState?: Response[];
 }
 
 export interface InteractionImageOnlyParams {
@@ -81,6 +85,7 @@ export interface InteractionFindOnImageParams {
   text: string;
   showArea: string;
   size: TargetSizeEnum;
+  formerState?: Response[];
 }
 
 export interface InteractionVideoParams {

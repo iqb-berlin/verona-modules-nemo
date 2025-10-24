@@ -30,6 +30,7 @@ export class ResponsesService {
   pendingAudioFeedback = signal(false);
   private pendingAudioFeedbackSource = '';
   feedbackDefinitions: FeedbackDefinition[] = [];
+  formerStateResponses = signal<Response[]>([]);
 
   setNewData(unitDefinition: UnitDefinition = null) {
     this.firstInteractionDone.set(false);
@@ -39,9 +40,11 @@ export class ResponsesService {
     this.responseProgress.set('none');
     this.variableInfo = [];
     this.allResponses = [];
+    this.lastResponsesString = '';
     this.pendingAudioFeedback.set(false);
     this.pendingAudioFeedbackSource = '';
     this.feedbackDefinitions = [];
+
     if (unitDefinition) {
       const problems: string[] = [];
       if (unitDefinition.variableInfo && unitDefinition.variableInfo.length > 0) {
@@ -126,7 +129,8 @@ export class ResponsesService {
         dataParts: {
           responses: responsesAsString
         },
-        responseProgress: this.responseProgress()
+        responseProgress: this.responseProgress(),
+        presentationProgress: this.getPresentationStatus()
       };
 
       if (this.hasParentWindow) {
@@ -261,6 +265,11 @@ export class ResponsesService {
     return isComplete ? 'complete' : 'some';
   }
 
+  private getPresentationStatus(): Progress {
+    if (this.mainAudioComplete()) return 'complete';
+    return 'some';
+  }
+
   getAudioFeedback(setAsPlayed: boolean): string {
     const returnValue = this.pendingAudioFeedbackSource;
     if (setAsPlayed) {
@@ -319,6 +328,28 @@ export class ResponsesService {
       this.pendingAudioFeedbackSource = audioToPlay;
     }
     // console.log(this.pendingAudioFeedback(), ' <<>> ', audioToPlay);
+  }
+
+  setFormerState(unitState: UnitState | null) {
+    if (unitState && unitState.dataParts) {
+      // Get the first value from dataParts, regardless of the key name
+      const dataPartsValues = Object.values(unitState.dataParts);
+
+      if (dataPartsValues.length > 0 && dataPartsValues[0]) {
+        try {
+          const parsedResponses = JSON.parse(dataPartsValues[0]) as Response[];
+          this.formerStateResponses.set(parsedResponses);
+        } catch (error) {
+          console.warn('RESPONSE SERVICE Failed to parse former state responses:', error);
+          this.formerStateResponses.set([]);
+        }
+      } else {
+        this.formerStateResponses.set([]);
+      }
+    } else {
+      // No former state - this is a fresh unit load
+      this.formerStateResponses.set([]);
+    }
   }
 }
 

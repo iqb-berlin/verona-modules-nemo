@@ -10,6 +10,8 @@ import {
 import {
   CdkDrag, CdkDragEnd, CdkDragStart
 } from '@angular/cdk/drag-drop';
+
+import { Response } from '@iqbspecs/response/response.interface';
 import { StarsResponse } from '../../services/responses.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { InteractionDropParams } from '../../models/unit-definition';
@@ -60,6 +62,9 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   /** Suppress accidental clicks right after a drag */
   private suppressClick = false;
 
+  /** Boolean to track if the former state has been restored from response. */
+  private hasRestoredFromFormerState = false;
+
   /** Reference to the container element for attaching event listeners */
   @ViewChild('dropContainer', { static: true }) dropContainerRef!: ElementRef<HTMLElement>;
 
@@ -81,11 +86,11 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   constructor() {
     super();
     effect(() => {
-      this.resetSelection();
+      // this.resetSelection();
 
       const parameters = this.parameters() as InteractionDropParams;
-
       this.localParameters = InteractionDropComponent.createDefaultParameters();
+      this.hasRestoredFromFormerState = false;
 
       if (parameters) {
         this.localParameters.options = parameters.options || [];
@@ -99,14 +104,30 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
           this.scheduleRecalcAfterLayout();
         }
 
-        this.responses.emit([
-          {
+        // Attempt to restore former state once
+        if (!this.hasRestoredFromFormerState) {
+          const formerStateResponses: StarsResponse[] = (parameters as any).formerState || [];
+
+          if (Array.isArray(formerStateResponses) && formerStateResponses.length > 0) {
+            const foundResponse = formerStateResponses.find(r => r.id === this.localParameters.variableId);
+
+            if (foundResponse && foundResponse.value != null) {
+              this.restoreFromFormerState(foundResponse);
+              this.hasRestoredFromFormerState = true;
+              return;
+            }
+          }
+
+          // No valid former state - initialize as new
+          this.resetSelection();
+          this.responses.emit([{
             id: this.localParameters.variableId,
             status: 'DISPLAYED',
             value: 0,
             relevantForResponsesProgress: false
-          }
-        ]);
+          }]);
+          this.hasRestoredFromFormerState = true;
+        }
       }
     });
   }
@@ -442,6 +463,28 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
       relevantForResponsesProgress: true
     };
     this.responses.emit([response]);
+  }
+
+  /**
+   * Restores the selection state based on user interaction.
+   * @param {Response} response - The response object containing a string `value`.
+   */
+  private restoreFromFormerState(response: Response): void {
+    // Convert the value to number and subtract 1 to get index
+    const numeric = typeof response.value === 'string' ? parseInt(response.value, 10) : Number(response.value);
+    const selectedIndex = !Number.isNaN(numeric) ? numeric - 1 : -1;
+
+    if (selectedIndex >= 0 && selectedIndex < this.localParameters.options.length) {
+      this.selectedValue.set(selectedIndex);
+      // Emit restored state as VALUE_CHANGED
+      const restoreResponse: StarsResponse = {
+        id: this.localParameters.variableId,
+        status: 'VALUE_CHANGED',
+        value: numeric,
+        relevantForResponsesProgress: true
+      };
+      this.responses.emit([restoreResponse]);
+    }
   }
 
   /**
