@@ -19,10 +19,15 @@
   }
 
   .stimulus-wrapper {
-    padding: 0 variables.$small-gap-margin 0 variables.$small-gap-margin;
+    @include variables.image-wrapper;
+    max-width: variables.$image-wrapper-width;
+    max-height: 320px;
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+
     img {
       @include variables.responsive-image;
-      padding: unset;
     }
   }
 }

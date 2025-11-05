@@ -9,6 +9,7 @@
 
   .stimulus-wrapper {
     @include variables.flex-center;
+    @include variables.image-wrapper;
     margin-bottom: variables.$big-gap-margin;
 
     img {
@@ -21,8 +22,10 @@
   }
 
   .top-position {
-    width: auto;
+    width: variables.$image-wrapper-width;
     height: 250px;
+    flex: 0 0 auto;
+    object-fit: contain;
   }
 
   .text-wrapper {
@@ -56,8 +59,11 @@
 
   &.flex-row {
     flex-direction: row;
+    align-items: center;
+    gap: variables.$big-gap-margin;
 
     .stimulus-wrapper {
+      flex: 0 0 300px;
       width: 300px;
       height: 300px;
       margin: 0;
@@ -68,7 +74,7 @@
     }
 
     .buttons-wrapper {
-      width: 50%;
+      flex: 1 1 50%; /* take remaining space */
       margin-top: variables.$small-gap-margin;
     }
   }
