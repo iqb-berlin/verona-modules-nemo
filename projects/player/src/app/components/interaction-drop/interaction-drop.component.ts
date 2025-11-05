@@ -201,6 +201,18 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
     }
 
     this.calculateButtonTransformValues();
+
+    const selectedIndex = this.selectedValue();
+    if (selectedIndex >= 0 && this.settledButtonIndex() == null) {
+      const target = this.preCalculatedTransforms()[selectedIndex];
+      if (target) {
+        this.removeTransitionDisabled(selectedIndex);
+        this.updateButtonTransform(selectedIndex, '');
+        setTimeout(() => {
+          this.animateFromDroppedToTarget(selectedIndex, target);
+        }, 0);
+      }
+    }
   }
 
   ngOnDestroy(): void {
@@ -470,20 +482,11 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
    * @param {Response} response - The response object containing a string `value`.
    */
   private restoreFromFormerState(response: Response): void {
-    // Convert the value to number and subtract 1 to get index
     const numeric = typeof response.value === 'string' ? parseInt(response.value, 10) : Number(response.value);
     const selectedIndex = !Number.isNaN(numeric) ? numeric - 1 : -1;
 
     if (selectedIndex >= 0 && selectedIndex < this.localParameters.options.length) {
       this.selectedValue.set(selectedIndex);
-      // Emit restored state as VALUE_CHANGED
-      const restoreResponse: StarsResponse = {
-        id: this.localParameters.variableId,
-        status: 'VALUE_CHANGED',
-        value: numeric,
-        relevantForResponsesProgress: true
-      };
-      this.responses.emit([restoreResponse]);
     }
   }
 

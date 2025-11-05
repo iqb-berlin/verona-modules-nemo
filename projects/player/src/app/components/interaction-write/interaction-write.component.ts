@@ -125,14 +125,6 @@ export class InteractionWriteComponent extends InteractionComponentDirective {
     this.currentText = response.value;
     this.isDisabled = this.localParameters.maxInputLength !== null &&
       this.currentText.length >= this.localParameters.maxInputLength;
-
-    const restoreResponse: StarsResponse = {
-      id: this.localParameters.variableId,
-      status: 'VALUE_CHANGED',
-      value: this.currentText,
-      relevantForResponsesProgress: true
-    };
-    this.responses.emit([restoreResponse]);
   }
 
   // eslint-disable-next-line class-methods-use-this

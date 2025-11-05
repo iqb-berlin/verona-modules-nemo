@@ -247,13 +247,6 @@ export class InteractionFindOnImageComponent extends InteractionComponentDirecti
     const yAbs = Math.max(this.imgTop, Math.min(this.imgTop + this.imgHeight, this.imgTop + yWithinImage));
 
     this.setClickVisualisationAbsolute(xAbs, yAbs, this.imgWidth);
-
-    this.responses.emit([{
-      id: this.localParameters.variableId,
-      status: 'VALUE_CHANGED',
-      value: response.value,
-      relevantForResponsesProgress: true
-    }]);
   }
 
   // eslint-disable-next-line class-methods-use-this

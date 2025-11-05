@@ -311,8 +311,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       const selectedIndex = parseInt(response.value, 10) - 1;
       this.setSelectionAtIndex(selectedIndex);
     }
-    // Emit the restored state
-    this.emitResponse('VALUE_CHANGED', true);
   }
 
   /**
