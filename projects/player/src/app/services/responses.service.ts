@@ -39,10 +39,10 @@ export class ResponsesService {
   * */
   // eslint-disable-next-line class-methods-use-this
   private asNumberOrZero(value: unknown): number {
-    if (typeof value === 'number') return v;
-    if (typeof value === 'boolean') return v ? 1 : 0;
+    if (typeof value === 'number') return value;
+    if (typeof value === 'boolean') return value ? 1 : 0;
     if (typeof value === 'string') {
-      const n = Number.parseFloat(v);
+      const n = Number.parseFloat(value);
       return Number.isNaN(n) ? 0 : n;
     }
     if (Array.isArray(value)) return value.length > 0 ? this.asNumberOrZero(value[0]) : 0;
@@ -110,7 +110,7 @@ export class ResponsesService {
       if (problems.length > 0) this.unitDefinitionProblem.set(problems.join('; '));
     }
 
-    // Restore presentationProgress and responseProgress from former state if available
+    // Restore from former state if available
     const former = this.formerStateResponses();
     if (former && former.length > 0) {
       const mainAudioResp = former.find(r => r.id === 'mainAudio');
@@ -142,11 +142,9 @@ export class ResponsesService {
           responseInStore.code = codedResponse.code;
           responseInStore.score = codedResponse.score;
         } else {
-          // persist raw numeric progress for mainAudio
           codedResponse.value = incomingN;
           this.allResponses.push(codedResponse);
         }
-        // Update completion flag
         if (incomingN >= 1 || this.mainAudioComplete()) {
           this.mainAudioComplete.set(true);
         }
