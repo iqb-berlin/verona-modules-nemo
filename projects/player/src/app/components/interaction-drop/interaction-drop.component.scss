@@ -19,7 +19,7 @@
   }
 
   .stimulus-wrapper {
-    @include variables.image-wrapper;
+    box-sizing: border-box;
     max-width: variables.$image-wrapper-width;
     max-height: 320px;
     display: flex;

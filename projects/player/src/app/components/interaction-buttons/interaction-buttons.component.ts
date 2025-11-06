@@ -1,8 +1,8 @@
 import {
-  Component, signal, effect, inject
+  Component, signal, effect, inject, ViewChild, ElementRef
 } from '@angular/core';
 
-import { StarsResponse, ResponsesService } from '../../services/responses.service';
+import { StarsResponse } from '../../services/responses.service';
 import { VeronaPostService } from '../../services/verona-post.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import {
@@ -30,9 +30,15 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   allOptions: Array<SelectionOption> = [];
   // imagePosition for stimulus image if available
   imagePosition: string = 'TOP';
+  // flag to decide if the stimulus image should use object-fit: cover
+  needsFill = false;
+  // flag to mark square-ish images (~1:1 AR) which should never be filled
+  isSquare = false;
 
-  responsesService = inject(ResponsesService);
   veronaPostService = inject(VeronaPostService);
+
+  /** Reference to the image element for coordinate calculations */
+  @ViewChild('imageElement', { static: false }) imageRef!: ElementRef<HTMLImageElement>;
 
   constructor() {
     super();
@@ -224,6 +230,31 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     }
 
     return distribution;
+  }
+
+  /**
+   * Called when the stimulus image has loaded to determine if it needs
+   * to use object-fit: cover to fill the banner area
+   * @returns {void}
+   * */
+  onImageLoad(): void {
+    const img = this.imageRef?.nativeElement as HTMLImageElement | undefined;
+    if (!img || !img.naturalWidth || !img.naturalHeight) {
+      this.isSquare = false;
+      this.needsFill = false;
+      return;
+    }
+    const aspectRatio = img.naturalWidth / img.naturalHeight;
+    const bannerW = 950;
+    const bannerH = 250;
+    const thresholdAR = bannerW / bannerH; // 3.8
+
+    // Treat images close to 1:1 as square (don’t use cover for these)
+    const squareTolerance = 0.05; // 5% tolerance from 1:1
+    this.isSquare = Math.abs(aspectRatio - 1) <= squareTolerance;
+
+    // Only fill if image cannot span the banner width AND it is not square
+    this.needsFill = aspectRatio < thresholdAR && !this.isSquare;
   }
 
   onButtonClick(index: number): void {
