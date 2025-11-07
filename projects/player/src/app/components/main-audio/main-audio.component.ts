@@ -43,7 +43,8 @@ export class MainAudioComponent {
         }
         this.localAudio.audioSource = this.localAudio.audioSource ?
           this.localAudio.audioSource : null;
-        if (this.localAudio.firstClickLayer) this.showLayer = true;
+        // Show the first-click layer only if configured AND the main audio has not been completed
+        this.showLayer = !!this.localAudio.firstClickLayer && !this.responsesService.mainAudioComplete();
         this.playCount.set(0);
         this.maxPlay = this.localAudio.maxPlay;
         this.isPlaying = false;
