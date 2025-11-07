@@ -1,5 +1,6 @@
-# Release Note 0.6.15 #
+# Release Note 0.6.16 #
 
 ## Neu
 
-- Änderungen mit BUTTONS: Erstellen von kreisförmigen single select Buttons mit Smiley-Symbolen. Es gibt keine Weiter button, sobald eine button ausgewählt wird, geht es mit einer Verzögerung von einer halben Sekunde zur nächsten Seite.
+- Wenn die vorherige Aufgabe geladen wird und bereits eine bestimmte Antwort vorhanden ist, wird die Antwort geladen und die buttons werden als ausgewählt angezeigt. 
+- Der Player sendet presentationProgress: some, wenn die unit zum ersten Mal geladen wird, und wenn mainAudio angehört wird, sendet er complete.
