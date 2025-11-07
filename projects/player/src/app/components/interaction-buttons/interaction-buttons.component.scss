@@ -16,10 +16,6 @@
     }
   }
 
-  .left-position {
-    justify-content: end;
-  }
-
   .top-position {
     width: auto;
     height: 250px;
@@ -53,6 +49,11 @@
 
       &.two-extra-large-buttons-gap {
         column-gap: variables.$gap-between-two-extra-large-buttons-in-a-row; /* 50px special case for 1 Row 2 buttons that has buttonType: EXTRA_LARGE */
+      }
+
+      &.long-rectangle-buttons {
+        flex-direction: column;
+        row-gap: variables.$gap-between-two-extra-large-buttons-in-a-row;
       }
     }
   }
