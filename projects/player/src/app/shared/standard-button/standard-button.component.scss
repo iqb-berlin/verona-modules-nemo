@@ -168,6 +168,10 @@
     outline: none;
   }
 
+  &.extra_large-type {
+    @include variables.extra-large-button-size;
+  }
+
   &.big_square-type {
     @include variables.big-button-size;
   }
