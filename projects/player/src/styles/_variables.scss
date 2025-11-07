@@ -12,7 +12,6 @@ $small-text-font-size: 32px;
 $ribbon-bar-height: 30px;
 $audio-waves-animation-height: 100px;
 $gap-between-two-buttons: 106px;
-$image-wrapper-width: 950px;
 
 /* Mixins */
 
@@ -20,6 +19,7 @@ $image-wrapper-width: 950px;
   width: 100%;
   height: 100%;
   object-fit: contain;
+  padding: 10px;
 }
 
 @mixin text {

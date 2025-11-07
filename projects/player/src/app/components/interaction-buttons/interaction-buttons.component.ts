@@ -1,5 +1,5 @@
 import {
-  Component, signal, effect, inject, ViewChild, ElementRef
+  Component, signal, effect, inject
 } from '@angular/core';
 
 import { Response } from '@iqbspecs/response/response.interface';
@@ -34,15 +34,8 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   imagePosition: string = 'TOP';
   /** Boolean to track if the former the state has been restored from response. */
   private hasRestoredFromFormerState = false;
-  /** flag to decide if the stimulus image should use object-fit: cover */
-  needsFill = false;
-  /** flag to mark square-ish images (~1:1 AR) which should never be filled */
-  isSquare = false;
 
   veronaPostService = inject(VeronaPostService);
-
-  /** Reference to the image element for calculating the aspect ratio */
-  @ViewChild('imageElement', { static: false }) imageRef!: ElementRef<HTMLImageElement>;
 
   constructor() {
     super();
@@ -253,31 +246,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     }
 
     return distribution;
-  }
-
-  /**
-   * Called when the stimulus image has loaded to determine if it needs
-   * to use object-fit: cover to fill the banner area
-   * @returns {void}
-   * */
-  onImageLoad(): void {
-    const img = this.imageRef?.nativeElement as HTMLImageElement | undefined;
-    if (!img || !img.naturalWidth || !img.naturalHeight) {
-      this.isSquare = false;
-      this.needsFill = false;
-      return;
-    }
-    const aspectRatio = img.naturalWidth / img.naturalHeight;
-    const bannerW = 950;
-    const bannerH = 250;
-    const thresholdAR = bannerW / bannerH; // 3.8
-
-    // Treat images close to 1:1 as square (don’t use cover for these)
-    const squareTolerance = 0.05; // 5% tolerance from 1:1
-    this.isSquare = Math.abs(aspectRatio - 1) <= squareTolerance;
-
-    // Only fill if image cannot span the banner width AND it is not square
-    this.needsFill = aspectRatio < thresholdAR && !this.isSquare;
   }
 
   onButtonClick(index: number): void {

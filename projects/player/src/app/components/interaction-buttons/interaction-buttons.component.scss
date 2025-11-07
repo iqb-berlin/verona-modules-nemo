@@ -9,21 +9,10 @@
 
   .stimulus-wrapper {
     @include variables.flex-center;
-    box-sizing: border-box;
     margin-bottom: variables.$big-gap-margin;
-    height: 250px;
-    max-height: 250px;
-    width: 950px;
-    max-width: 950px;
 
     img {
       @include variables.responsive-image;
-    }
-
-    &.needs-fill:not(.is-square) img {
-      /* When image cannot fill 950x250 with contain (ar < 3.8), use cover to fill the space */
-      object-fit: cover;
-      object-position: center;
     }
   }
 
@@ -31,10 +20,11 @@
     justify-content: end;
   }
 
-  .stimulus-wrapper.is-square {
+  .top-position {
     width: auto;
-    max-width: 300px;
+    height: 250px;
   }
+
   .text-wrapper {
     width: 100%;
     height: 10%;
@@ -66,34 +56,19 @@
 
   &.flex-row {
     flex-direction: row;
-    align-items: center;
-    gap: variables.$big-gap-margin;
 
     .stimulus-wrapper {
-      flex: 0 0 auto;
-      height: 250px;
-      max-height: 250px;
-      max-width: 950px;
+      width: 300px;
+      height: 300px;
       margin: 0;
 
       img {
         @include variables.responsive-image;
       }
-
-      &.needs-fill:not(.is-square) img {
-        object-fit: cover;
-        object-position: center;
-      }
-    }
-
-    /* Ensure square images stay narrow in flex-row as well */
-    .stimulus-wrapper.is-square {
-      max-width: 300px;
-      width: auto;
     }
 
     .buttons-wrapper {
-      flex: 1 1 50%; /* take remaining space */
+      width: 50%;
       margin-top: variables.$small-gap-margin;
     }
   }

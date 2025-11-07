@@ -2,10 +2,8 @@
      [class.flex-row]="imagePosition === 'LEFT'">
   @if (localParameters.imageSource) {
     <div class="stimulus-wrapper"
-         [class]="(localParameters.imagePosition?.toLowerCase() || 'top') + '-position'"
-         [class.needs-fill]="needsFill"
-         [class.is-square]="isSquare">
-      <img #imageElement [src]="localParameters.imageSource" [alt]="" data-cy="stimulus-image" (load)="onImageLoad()">
+         [class]="localParameters.imagePosition?.toLowerCase() + '-position' || ''">
+      <img [src]="localParameters.imageSource" [alt]="" data-cy="stimulus-image">
     </div>
   }
 
