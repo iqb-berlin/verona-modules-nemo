@@ -2,8 +2,19 @@
      [class.flex-row]="imagePosition === 'LEFT'">
   @if (localParameters.imageSource) {
     <div class="stimulus-wrapper"
-         [class]="localParameters.imagePosition?.toLowerCase() + '-position' || ''">
-      <img [src]="localParameters.imageSource" [alt]="" data-cy="stimulus-image">
+         [class]="localParameters.imagePosition?.toLowerCase() + '-position' || ''"
+         [class.is-square]="isSquare"
+         [class.use-full-area]="useFullArea"
+         [class.has-custom-width]="hasCustomWidth"
+         [class.has-custom-height]="hasCustomHeight"
+         [style.max-width]="imageMaxWidthStyle"
+         [style.max-height]="imageMaxHeightStyle"
+    >
+      <img #imageElement
+           [src]="localParameters.imageSource"
+           [alt]="" data-cy="stimulus-image"
+           (load)="onImageLoad()"
+      >
     </div>
   }
 
