@@ -9,8 +9,8 @@
 
   <div class="buttons-wrapper">
     @for (row of optionRows; track $index) {
-      <div class="row" [class.two-buttons-gap]="optionRows.length === 1 && row.length === 2 && localParameters.buttonType !== 'LONG_RECTANGLE' && localParameters.buttonType === 'EXTRA_LARGE'"
-           [class.two-extra-large-buttons-gap]="localParameters.buttonType === 'EXTRA_LARGE_SQUARE' && optionRows.length === 1 && row.length === 2"
+      <div class="row" [class.two-buttons]="optionRows.length === 1 && row.length === 2 && localParameters.buttonType !== 'LONG_RECTANGLE' && localParameters.buttonType !== 'EXTRA_LARGE_SQUARE'"
+           [class.two-extra-large-buttons]="localParameters.buttonType === 'EXTRA_LARGE_SQUARE' && optionRows.length === 1 && row.length === 2"
            [class.long-rectangle-buttons]="localParameters.buttonType === 'LONG_RECTANGLE'"
            [attr.data-cy]="'button-row-' + $index">
         @for (button of row; track $index) {

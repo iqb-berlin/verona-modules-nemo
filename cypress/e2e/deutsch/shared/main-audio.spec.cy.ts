@@ -81,7 +81,7 @@ export function testMainAudioFeatures(subject: string, interactionType: string, 
       cy.get('[data-cy="audio-button-container"]').should('exist');
       if (maxPLayTime > 0) {
         // Click the audio button maxPLayTime times
-        for (let i = 0; i < maxPLayTime; i++) {
+        for (let i = 0; i <= maxPLayTime; i++) {
           cy.get('[data-cy="speaker-icon"]').click();
           // Wait for audio to finish playing
           cy.waitUntilAudioIsFinishedPlaying();
