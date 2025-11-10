@@ -1,3 +1,5 @@
+import { UnitDefinition } from '../../projects/player/src/app/models/unit-definition';
+
 describe('App component', () => {
   const subject = 'deutsch';
   const configFile = 'buttons_test.json';
@@ -15,6 +17,35 @@ describe('App component', () => {
     },
     origin: string
   };
+
+  type ResponseItem = {
+    id?: string;
+    status?: string;
+    score?: number;
+    code?: number;
+    [key: string]: unknown;
+  };
+
+  /**
+   * Parse `dataParts` and extract arrays of `ResponseItem` from JSON string values.
+   * @param dataParts - Record of keyed parts where some values may be JSON strings containing response arrays
+   * @returns Array of parsed `ResponseItem[]` (empty array if no valid response arrays found)
+   */
+  const parseDataPartsResponses = (dataParts: Record<string, unknown>): ResponseItem[][] => Object.values(dataParts)
+    .filter((dataPart): dataPart is string => typeof dataPart === 'string')
+    .map(rawPart => {
+      try {
+        const parsed = JSON.parse(rawPart) as unknown;
+        if (Array.isArray(parsed) && parsed.every(item => typeof item === 'object' && item !== null)) {
+          return parsed as ResponseItem[];
+        }
+      } catch {
+        // ignore non-JSON strings
+        console.warn(`Non-JSON string found in dataParts: ${rawPart}`);
+      }
+      return null;
+    })
+    .filter((parsed): parsed is ResponseItem[] => Array.isArray(parsed));
 
   beforeEach(() => {
     cy.setupTestDataWithPostMessageMock(subject, configFile, interactionType);
@@ -61,12 +92,12 @@ describe('App component', () => {
         throw new Error('Latest message or unitState is undefined');
       }
 
-      expect(latestMessage.data.unitState.dataParts.responses).to.be.a('string');
+      const parsedResponsesArrays = parseDataPartsResponses(latestMessage.data.unitState.dataParts);
 
-      const responses = JSON.parse(latestMessage.data.unitState.dataParts.responses);
-      const hasDisplayedStatus = responses.some((response: any) => response.status === 'DISPLAYED');
+      const hasDisplayedStatus = parsedResponsesArrays.some(responseArray => responseArray.some(response => response.status === 'DISPLAYED')
+      );
 
-      expect(hasDisplayedStatus, 'Should have DISPLAYED status').to.be.true;
+      expect(hasDisplayedStatus, 'Should have DISPLAYED status').to.equal(true);
     });
   });
 
@@ -97,46 +128,65 @@ describe('App component', () => {
         throw new Error('Latest message or unitState is undefined');
       }
 
-      expect(latestMessage.data.unitState.dataParts.responses).to.be.a('string');
+      const parsedResponsesArrays = parseDataPartsResponses(latestMessage.data.unitState.dataParts);
 
-      const responses = JSON.parse(latestMessage.data.unitState.dataParts.responses);
-      const hasValueChanged = responses.some((response: any) => response.status === 'VALUE_CHANGED');
+      const hasValueChanged = parsedResponsesArrays.some(responseArray => responseArray.some(response => response.status === 'VALUE_CHANGED')
+      );
 
-      expect(hasValueChanged, 'Should have VALUE_CHANGED status').to.be.true;
+      expect(hasValueChanged, 'Should have VALUE_CHANGED status').to.equal(true);
     });
   });
 
-  it.only('Should send vopStateChangedNotification with CODING_COMPLETE when coding scheme exists', () => {
+  it('4. Should send vopStateChangedNotification with CODING_COMPLETE, score=1 and code=1', () => {
     // The example json has variableInfo with coding schemes
     cy.get('@unitJson').then(unitJson => {
+      const unit: UnitDefinition =
+        typeof unitJson === 'string' ? JSON.parse(unitJson) as UnitDefinition : (unitJson as unknown as UnitDefinition);
+
       cy.sendMessageFromParent({
         type: 'vopStartCommand',
         sessionId: 'test-session-123',
-        unitDefinition: unitJson as unknown as string
+        unitDefinition: JSON.stringify(unit)
       }, '*');
+
+      const parameter = unit.variableInfo?.[0]?.codes?.[0]?.parameter;
+      cy.get('[data-cy=buttons-container]').should('exist');
+
+      // Remove click layer
+      cy.removeClickLayer();
+
+      const paramStr = String(parameter ?? '').trim();
+      const match = paramStr.match(/\d+$/);
+      if (!match) {
+        throw new Error(`No numeric index found in parameter: ${paramStr}`);
+      }
+      const originalNum: number = Number.parseInt(match[0], 10);
+      if (Number.isNaN(originalNum) || originalNum <= 0) {
+        throw new Error(`Invalid numeric parameter: ${match[0]}`);
+      }
+      const buttonToClick: number = originalNum - 1;
+      cy.get(`[data-cy="button-${buttonToClick}"]`).click();
     });
 
-    cy.get('[data-cy=buttons-container]').should('exist');
+    cy.get('@outgoingMessages').then(messages => {
+      const arr = messages as unknown as MockMessage[];
+      const stateMessages = arr.filter(msg => msg.data.type === 'vopStateChangedNotification');
 
-    // Remove click layer
-    cy.removeClickLayer();
+      const latestMessage = stateMessages[stateMessages.length - 1];
+      if (!latestMessage?.data?.unitState) {
+        throw new Error('Latest message or unitState is undefined');
+      }
 
-    // Click on the correct button!
+      const parsedResponsesArrays = parseDataPartsResponses(latestMessage.data.unitState.dataParts);
 
+      const hasCodingComplete = parsedResponsesArrays.some(responses => responses.some(response => response.id === 'BUTTONS' &&
+          response.status === 'CODING_COMPLETE' &&
+          response.score === 1 &&
+          response.code === 1
+      )
+      );
 
-    // cy.get('@outgoingMessages').then(messages => {
-    //   const arr = messages as unknown as MockMessage[];
-    //   const stateMessages = arr.filter(msg => msg.data.type === 'vopStateChangedNotification');
-    //
-    //   const latestMessage = stateMessages[stateMessages.length - 1];
-    //   if (!latestMessage?.data?.unitState) {
-    //     throw new Error('Latest message or unitState is undefined');
-    //   }
-    //
-    //   const responses = JSON.parse(latestMessage.data.unitState.dataParts.responses);
-    //   const hasCodingComplete = responses.some((response: any) => response.status === 'CODING_COMPLETE');
-    //
-    //   expect(hasCodingComplete, 'Should have CODING_COMPLETE status').to.be.true;
-    // });
+      expect(hasCodingComplete, 'Should have CODING_COMPLETE for BUTTONS with score=1 and code=1').to.equal(true);
+    });
   });
 });
