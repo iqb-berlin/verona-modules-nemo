@@ -14,7 +14,7 @@
   },
   "variableInfo": [
     {
-      "variableId": "interact",
+      "variableId": "FIND_ON_IMAGE",
       "codes": [
         {
           "method": "IN_POSITION_RANGE",

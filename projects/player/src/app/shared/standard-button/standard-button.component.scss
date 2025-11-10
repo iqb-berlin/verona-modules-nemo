@@ -24,6 +24,14 @@
     z-index: 10;
   }
 
+  label {
+    .long-rectangle-img {
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+    }
+  }
+
   &:focus,
   &:active {
     outline: none;
@@ -168,6 +176,10 @@
     outline: none;
   }
 
+  &.extra_large_square-type {
+    @include variables.extra-large-button-size;
+  }
+
   &.big_square-type {
     @include variables.big-button-size;
   }
@@ -178,6 +190,10 @@
 
   &.small_square-type {
     @include variables.small-button-size;
+  }
+
+  &.long_rectangle-type {
+    @include variables.long-rectangle-button-size;
   }
 
   &.text-type {

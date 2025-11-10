@@ -16,10 +16,6 @@
     }
   }
 
-  .left-position {
-    justify-content: end;
-  }
-
   .top-position {
     width: auto;
     height: 250px;
@@ -47,8 +43,17 @@
       width: 100%;
       column-gap: variables.$small-gap-margin; /* default spacing between buttons */
 
-      &.two-buttons-gap {
-        column-gap: variables.$gap-between-two-buttons; /* 106px special case */
+      &.two-buttons {
+        column-gap: variables.$gap-between-two-buttons-in-a-row; /* 106px special case for 1 Row 2 buttons */
+      }
+
+      &.two-extra-large-buttons {
+        column-gap: variables.$gap-between-two-extra-large-buttons-in-a-row; /* 50px special case for 1 Row 2 buttons that has buttonType: EXTRA_LARGE_SQUARE */
+      }
+
+      &.long-rectangle-buttons {
+        flex-direction: column;
+        row-gap: variables.$gap-between-two-extra-large-buttons-in-a-row;
       }
     }
   }

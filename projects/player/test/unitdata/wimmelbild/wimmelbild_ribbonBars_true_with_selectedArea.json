@@ -6,7 +6,7 @@
   "ribbonBars": true,
   "interactionType": "FIND_ON_IMAGE",
   "interactionParameters": {
-    "variableId": "interact",
+    "variableId": "FIND_ON_IMAGE",
     "text": "Die Schaufel ist kaputt.",
     "showArea": "63,6-77,30",
     "size": "LARGE",
@@ -14,7 +14,7 @@
   },
   "variableInfo": [
     {
-      "variableId": "interact",
+      "variableId": "FIND_ON_IMAGE",
       "codes": [
         {
           "method": "IN_POSITION_RANGE",
