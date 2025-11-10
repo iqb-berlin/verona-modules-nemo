@@ -12,7 +12,7 @@
   },
   "interactionType": "BUTTONS",
   "interactionParameters": {
-    "variableId": "interact",
+    "variableId": "BUTTONS",
     "buttonType": "MEDIUM_SQUARE",
     "multiSelect": false,
     "numberOfRows": 2,
@@ -39,7 +39,7 @@
   },
   "variableInfo": [
     {
-      "variableId": "interact",
+      "variableId": "BUTTONS",
       "responseComplete": "ON_ANY_RESPONSE",
       "codingSource": "VALUE",
       "codes": [
