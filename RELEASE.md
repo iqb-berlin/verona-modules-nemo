@@ -1,6 +1,13 @@
-# Release Note 0.6.16 #
+# Release Note 0.6.17 #
 
 ## Neu
 
-- Wenn die vorherige Aufgabe geladen wird und bereits eine bestimmte Antwort vorhanden ist, wird die Antwort geladen und die buttons werden als ausgewählt angezeigt. 
-- Der Player sendet presentationProgress: some, wenn die unit zum ersten Mal geladen wird, und wenn mainAudio angehört wird, sendet er complete.
+- Änderungen mit den BUTTONS: Es ist möglich, zwei EXTRA_LARGE Buttons nebeneinander und zwei LONG_RECTANGLE buttons übereinander hinzuzufügen.
+- End-to-End-Tests werden für BUTTONS erweitert: Überprüfen Sie buttonType EXTRA_LARGE_SQUARE und LONG_RECTANGLE
+- End-to-End-Tests werden für App-Komponenten erweitert, aktualisieren Sie die Implementierung von postMessages
+
+## stars-unit-definition
+
+- Umsetzung unit-definition@1.2: 
+  - 2 neue Eigenschaften für buttonType: EXTRA_LARGE_SQUARE, LONG_RECTANGLE
+  - Neue Eigenschaften für interactionParameters: imageMaxWidthPx, imageMaxHeightPx, imageUseFullArea
