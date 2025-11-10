@@ -11,6 +11,7 @@ $big-text-font-size: 112px;
 $small-text-font-size: 32px;
 $ribbon-bar-height: 30px;
 $audio-waves-animation-height: 100px;
+$gap-between-two-buttons: 106px;
 
 /* Mixins */
 
@@ -40,28 +41,28 @@ $audio-waves-animation-height: 100px;
   box-shadow: 5px 5px 0 4px rgba(0, 0, 0, 0.2);
 }
 
+@mixin smiley-box-shadow {
+  box-shadow: 3px -4px 0 14px rgba(0, 0, 0, 0.2);
+}
+
 @mixin big-button-size {
   width: 225px;
   height: 225px;
-  overflow: hidden;
 }
 
 @mixin medium-button-size {
   width: 200px;
   height: 200px;
-  overflow: hidden;
 }
 
 @mixin small-button-size {
   width: 170px;
   height: 170px;
-  overflow: hidden;
 }
 
 @mixin word-button-size {
   height: 120px;
   min-width: 320px;
-  overflow: hidden;
 }
 
 @mixin accept-icon-size {
@@ -96,5 +97,4 @@ $audio-waves-animation-height: 100px;
   height: calc(100% - #{$ribbon-bar-height * 2} - #{$audio-waves-animation-height});
   box-sizing: border-box;
   overflow: hidden;
-
 }

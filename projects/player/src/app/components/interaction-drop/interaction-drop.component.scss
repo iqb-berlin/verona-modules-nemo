@@ -19,18 +19,12 @@
   }
 
   .stimulus-wrapper {
-    padding-right: variables.$small-gap-margin;
+    padding: 0 variables.$small-gap-margin 0 variables.$small-gap-margin;
     img {
       @include variables.responsive-image;
       padding: unset;
     }
   }
-}
-
-.interaction-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
 }
 
 .buttons-container {
@@ -41,8 +35,8 @@
 }
 
 .animate-wrapper {
-  margin: 0;
-  transition: all 1s ease-in-out;
+  margin-right: variables.$small-gap-margin;
+  transition: transform 1s ease-in-out;
 
   &.no-transition {
     transition: none;

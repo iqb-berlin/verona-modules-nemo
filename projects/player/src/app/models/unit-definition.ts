@@ -1,10 +1,11 @@
+import { Response } from '@iqbspecs/response/response.interface';
 import { VariableInfo } from './responses';
 import { AudioFeedback } from './feedback';
 
 // eslint-disable-next-line max-len
 export type ContinueButtonEnum = 'ALWAYS' | 'NO' | 'ON_ANY_RESPONSE' | 'ON_RESPONSES_COMPLETE' | 'ON_MAIN_AUDIO_COMPLETE' | 'ON_VIDEO_COMPLETE' | 'ON_AUDIO_AND_RESPONSE';
 export type InteractionEnum = 'BUTTONS' | 'DROP' | 'WRITE' | 'FIND_ON_IMAGE' | 'VIDEO' | 'IMAGE_ONLY' | 'NONE';
-export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED' | 'CLAP_HANDS';
+export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED' | 'CLAP_HANDS' | 'SMILEY_1' | 'SMILEY_2' | 'SMILEY_3' | 'SMILEY_4' | 'SMILEY_5';
 export type ButtonTypeEnum = 'MEDIUM_SQUARE' | 'BIG_SQUARE' | 'SMALL_SQUARE' | 'TEXT' | 'CIRCLE';
 export type ImagePositionEnum = 'TOP' | 'LEFT' | 'BOTTOM';
 export type TargetSizeEnum = 'MEDIUM' | 'LARGE' | 'SMALL';
@@ -48,6 +49,8 @@ export interface InteractionButtonParams {
   multiSelect?: boolean;
   numberOfRows?: number;
   buttonType: ButtonTypeEnum;
+  triggerNavigationOnSelect?: boolean;
+  formerState?: Response[];
 }
 
 export interface InteractionDropParams {
@@ -57,6 +60,7 @@ export interface InteractionDropParams {
   imagePosition: ImagePositionEnum;
   imageLandingXY: string;
   text: string;
+  formerState?: Response[];
 }
 
 export interface InteractionWriteParams {
@@ -67,6 +71,7 @@ export interface InteractionWriteParams {
   addUmlautKeys: boolean;
   keysToAdd: string[];
   maxInputLength: number;
+  formerState?: Response[];
 }
 
 export interface InteractionImageOnlyParams {
@@ -80,6 +85,7 @@ export interface InteractionFindOnImageParams {
   text: string;
   showArea: string;
   size: TargetSizeEnum;
+  formerState?: Response[];
 }
 
 export interface InteractionVideoParams {

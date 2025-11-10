@@ -1,4 +1,6 @@
-# Release Note 0.6.12 #
+# Release Note 0.6.16 #
 
-## Bugfixes
-- Find on Image Component: response fehler gefixt
+## Neu
+
+- Wenn die vorherige Aufgabe geladen wird und bereits eine bestimmte Antwort vorhanden ist, wird die Antwort geladen und die buttons werden als ausgewählt angezeigt. 
+- Der Player sendet presentationProgress: some, wenn die unit zum ersten Mal geladen wird, und wenn mainAudio angehört wird, sendet er complete.

@@ -3,20 +3,22 @@ import {
   signal,
   effect,
   ElementRef,
-  OnDestroy,
   ViewChild,
   AfterViewInit,
-  Renderer2
+  OnDestroy
 } from '@angular/core';
+import {
+  CdkDrag, CdkDragEnd, CdkDragStart
+} from '@angular/cdk/drag-drop';
 
+import { Response } from '@iqbspecs/response/response.interface';
 import { StarsResponse } from '../../services/responses.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { InteractionDropParams } from '../../models/unit-definition';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
 import {
-  calculateButtonCenter,
-  getDropLandingTranslate,
-  extractCoordinates
+  calculateButtonCenter, getDropLandingArgs,
+  getDropLandingTranslate
 } from '../../shared/utils/interaction-drop.util';
 
 /**
@@ -26,70 +28,69 @@ import {
 @Component({
   selector: 'stars-interaction-drop',
   templateUrl: './interaction-drop.component.html',
-  imports: [StandardButtonComponent],
+  imports: [StandardButtonComponent, CdkDrag],
   styleUrls: ['./interaction-drop.component.scss']
 })
-export class InteractionDropComponent extends InteractionComponentDirective implements OnDestroy, AfterViewInit {
+export class InteractionDropComponent extends InteractionComponentDirective implements AfterViewInit, OnDestroy {
   /** Local parameters for the drop interaction */
   localParameters!: InteractionDropParams;
 
   /** Currently selected button index (-1 means no selection) */
   selectedValue = signal<number>(-1);
 
-  /** Controls whether CSS transitions are disabled (for instant position changes) */
-  disabledTransition = signal<boolean>(false);
-
-  /** Whether a drag operation is currently in progress */
-  private isDragging = signal<boolean>(false);
-
-  /** Starting X coordinate when drag began */
-  private dragStartX = 0;
-
-  /** Starting Y coordinate when drag began */
-  private dragStartY = 0;
-
-  /** Pointer ID for tracking multi-touch scenarios */
-  private lastPointerId: number | null = null;
-
-  /** Minimum pixel movement required to initiate a drag operation */
-  private readonly DRAG_THRESHOLD_PX = 6;
-
-  /** X coordinate where pointer/mouse was initially pressed */
-  private downX = 0;
-
-  /** Y coordinate where pointer/mouse was initially pressed */
-  private downY = 0;
-
-  /** Whether drag detection is armed (set on pointer down) */
-  private dragArmed = false;
-
-  /** Index of the button that was initially pressed */
-  private activeIndex: number | null = null;
-
-  /** Whether the current position is from a drag settlement (vs click animation) */
-  private isDragSettled = signal<boolean>(false);
-
-  /** Current X offset during drag operation */
-  dragX = signal<number>(0);
-
-  /** Current Y offset during drag operation */
-  dragY = signal<number>(0);
+  /** Index currently being dragged; null when none */
+  draggingIndex = signal<number | null>(null);
 
   /** Stored transform string for settled drag position */
   private settledTransform = signal<string | null>(null);
 
-  /** Array to store cleanup functions for event listeners */
-  private removeListenerFn: (() => void)[] = [];
+  /** Pre-calculated transform values mapped by button index */
+  private preCalculatedTransforms = signal<Record<number, string>>({});
+
+  /** Current settled button's index */
+  private settledButtonIndex = signal<number | null>(null);
+
+  /** Current transform values for each button */
+  buttonTransforms = signal<Record<number, string>>({});
+
+  /** Set of button indices that should have transitions disabled */
+  private transitionDisabledButtons = signal<Set<number>>(new Set());
+
+  /** Tracks if the current drag started from a previously settled position */
+  private lastDragWasFromSettled = false;
+
+  /** Suppress accidental clicks right after a drag */
+  private suppressClick = false;
+
+  /** Boolean to track if the former state has been restored from response. */
+  private hasRestoredFromFormerState = false;
 
   /** Reference to the container element for attaching event listeners */
   @ViewChild('dropContainer', { static: true }) dropContainerRef!: ElementRef<HTMLElement>;
 
-  constructor(private renderer: Renderer2) {
+  /** Reference to the image element for coordinate calculations */
+  @ViewChild('imageElement', { static: false }) imageRef!: ElementRef<HTMLImageElement>;
+
+  /** Tracks if view init completed */
+  private viewInited = false;
+
+  /** Resize observer to recalc when image/container size changes */
+  private resizeObserver: ResizeObserver | undefined;
+
+  /** Debounce timer for recalculation */
+  private recalcTimer: any;
+
+  /** Window resize listener reference for cleanup */
+  private windowResizeHandler: (() => void) | undefined;
+
+  constructor() {
     super();
     effect(() => {
-      const parameters = this.parameters() as InteractionDropParams;
+      // this.resetSelection();
 
+      const parameters = this.parameters() as InteractionDropParams;
       this.localParameters = InteractionDropComponent.createDefaultParameters();
+      this.hasRestoredFromFormerState = false;
 
       if (parameters) {
         this.localParameters.options = parameters.options || [];
@@ -98,346 +99,288 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
         this.localParameters.text = parameters.text || '';
         this.localParameters.imagePosition = parameters.imagePosition || 'BOTTOM'; // Default to BOTTOM
         this.localParameters.imageLandingXY = parameters.imageLandingXY || '';
-        this.responses.emit([{
-          id: this.localParameters.variableId,
-          status: 'DISPLAYED',
-          value: 0,
-          relevantForResponsesProgress: false
-        }]);
-      }
 
-      this.resetSelection();
+        if (this.viewInited) {
+          this.scheduleRecalcAfterLayout();
+        }
+
+        // Attempt to restore former state once
+        if (!this.hasRestoredFromFormerState) {
+          const formerStateResponses: StarsResponse[] = (parameters as any).formerState || [];
+
+          if (Array.isArray(formerStateResponses) && formerStateResponses.length > 0) {
+            const foundResponse = formerStateResponses.find(r => r.id === this.localParameters.variableId);
+
+            if (foundResponse && foundResponse.value != null) {
+              this.restoreFromFormerState(foundResponse);
+              this.hasRestoredFromFormerState = true;
+              return;
+            }
+          }
+
+          // No valid former state - initialize as new
+          this.resetSelection();
+          this.responses.emit([{
+            id: this.localParameters.variableId,
+            status: 'DISPLAYED',
+            value: 0,
+            relevantForResponsesProgress: false
+          }]);
+          this.hasRestoredFromFormerState = true;
+        }
+      }
     });
   }
 
   ngAfterViewInit(): void {
-    const root = this.dropContainerRef.nativeElement;
-    if (window.PointerEvent) {
-      this.removeListenerFn.push(
-        // Pointer events dominate on modern browsers
-        this.renderer.listen(root, 'pointerdown', this.onPointerDown)
-      );
+    this.viewInited = true;
+    const img = this.imageRef?.nativeElement;
+    const schedule = () => this.scheduleRecalcAfterLayout();
+
+    this.windowResizeHandler = () => schedule();
+    window.addEventListener('resize', this.windowResizeHandler);
+
+    if (!img) {
+      setTimeout(schedule);
+      return;
+    }
+
+    if (img.complete && img.naturalWidth !== 0) {
+      schedule();
+    } else if ((img as HTMLImageElement).decode) {
+      (img as HTMLImageElement).decode().then(() => {
+        schedule();
+      }).catch(() => {
+        const done = () => {
+          try { img.removeEventListener('load', done); } catch { /* noop */ }
+          try { img.removeEventListener('error', done); } catch { /* noop */ }
+          schedule();
+        };
+        img.addEventListener('load', done, { once: true });
+        img.addEventListener('error', done, { once: true });
+      });
     } else {
-      this.removeListenerFn.push(
-        // Fallback for browsers without pointer event support
-        this.renderer.listen(root, 'mousedown', this.onMouseDown),
-        this.renderer.listen(root, 'touchstart', this.onTouchStart)
-      );
+      const done = () => {
+        try { img.removeEventListener('load', done); } catch { /* noop */ }
+        try { img.removeEventListener('error', done); } catch { /* noop */ }
+        schedule();
+      };
+      img.addEventListener('load', done, { once: true });
+      img.addEventListener('error', done, { once: true });
+    }
+
+    if ('ResizeObserver' in window) {
+      this.resizeObserver = new ResizeObserver(() => {
+        this.scheduleRecalcAfterLayout();
+      });
+      const targets: Element[] = [];
+      if (this.dropContainerRef?.nativeElement) targets.push(this.dropContainerRef.nativeElement);
+      if (this.imageRef?.nativeElement) targets.push(this.imageRef.nativeElement);
+      targets.forEach(t => this.resizeObserver!.observe(t));
+    }
+  }
+
+  private scheduleRecalcAfterLayout(): void {
+    if (this.recalcTimer) {
+      clearTimeout(this.recalcTimer);
+      this.recalcTimer = undefined;
+    }
+    this.recalcTimer = setTimeout(() => {
+      this.calculateAndMarkReady();
+    }, 0);
+  }
+
+  private calculateAndMarkReady(): void {
+    const img = this.imageRef?.nativeElement;
+    const container = this.dropContainerRef?.nativeElement;
+    if (!img || !container) return;
+    const imgRect = img.getBoundingClientRect?.();
+    if (!imgRect || imgRect.width === 0 || imgRect.height === 0) {
+      this.scheduleRecalcAfterLayout();
+      return;
+    }
+
+    this.calculateButtonTransformValues();
+
+    const selectedIndex = this.selectedValue();
+    if (selectedIndex >= 0 && this.settledButtonIndex() == null) {
+      const target = this.preCalculatedTransforms()[selectedIndex];
+      if (target) {
+        this.removeTransitionDisabled(selectedIndex);
+        this.updateButtonTransform(selectedIndex, '');
+        setTimeout(() => {
+          this.animateFromDroppedToTarget(selectedIndex, target);
+        }, 0);
+      }
     }
   }
 
   ngOnDestroy(): void {
-    this.removeListenerFn.forEach(fn => fn());
+    if (this.resizeObserver) {
+      try { this.resizeObserver.disconnect(); } catch { /* noop */ }
+      this.resizeObserver = undefined;
+    }
+    if (this.recalcTimer) {
+      try { clearTimeout(this.recalcTimer); } catch { /* noop */ }
+      this.recalcTimer = undefined;
+    }
+    if (this.windowResizeHandler) {
+      try { window.removeEventListener('resize', this.windowResizeHandler); } catch { /* noop */ }
+      this.windowResizeHandler = undefined;
+    }
+  }
+
+  /** Returns the free-drag position for the given index, derived from buttonTransforms */
+  freeDragPositionFor(index: number): { x: number; y: number } {
+    const transform = this.buttonTransforms()[index] ?? '';
+    return this.parseTranslate(transform);
+  }
+
+  onDragStarted(event: CdkDragStart, index: number): void {
+    this.suppressClick = true;
+    this.draggingIndex.set(index);
+    // Disable transitions for the dragging button so it keeps up with the pointer
+    this.addTransitionDisabled(index);
+
+    this.selectedValue.set(index);
+    const currentSettled = this.settledButtonIndex();
+
+    // If there's a different settled button, return it to origin
+    if (currentSettled !== null && currentSettled !== index) {
+      // Ensure transitions are enabled for the button being sent back
+      this.removeTransitionDisabled(currentSettled);
+      this.updateButtonTransform(currentSettled, '');
+      // Clear settled indicators
+      this.settledButtonIndex.set(null);
+      this.settledTransform.set(null);
+    }
+
+    this.lastDragWasFromSettled = false;
+    if (currentSettled !== null && currentSettled === index && this.settledTransform()) {
+      this.lastDragWasFromSettled = true;
+    }
+
+    // Disable transitions for the dragging button so it keeps up with the pointer
+    this.addTransitionDisabled(index);
+  }
+
+  onDragReleased(index: number): void {
+    this.removeTransitionDisabled(index);
+  }
+
+  onDragEnded(event: CdkDragEnd, index: number): void {
+    setTimeout(() => { this.suppressClick = false; }, 0);
+    if (this.selectedValue() !== index) return;
+    this.draggingIndex.set(null);
+    const transforms = this.preCalculatedTransforms();
+    const shouldReturnToOrigin = (this.settledButtonIndex() === index && !!this.settledTransform()) && this.lastDragWasFromSettled;
+    const targetTransform = shouldReturnToOrigin ? '' : (transforms[index] ?? '');
+    const freePos = (event?.source as CdkDrag)?.getFreeDragPosition?.() ?? { x: 0, y: 0 };
+    const droppedTransform = `translate(${(freePos?.x ?? 0)}px, ${(freePos?.y ?? 0)}px)`;
+    this.updateButtonTransform(index, droppedTransform);
+    this.animateFromDroppedToTarget(index, targetTransform);
+    this.lastDragWasFromSettled = false;
+  }
+
+  private animateFromDroppedToTarget(index: number, targetTransform: string): void {
+    const isReturningToOrigin = targetTransform === '';
+    this.removeTransitionDisabled(index);
+    this.updateButtonTransform(index, targetTransform);
+
+    if (isReturningToOrigin) {
+      this.settledTransform.set(null);
+      this.settledButtonIndex.set(null);
+      this.selectedValue.set(-1);
+    } else {
+      this.settledTransform.set(targetTransform);
+      this.settledButtonIndex.set(index);
+    }
+    this.emitSelectionResponse();
   }
 
   /**
    * Resets all component state to initial values
    */
   private resetSelection(): void {
-    // Disable transitions for instant reset
-    this.disabledTransition.set(true);
     this.selectedValue.set(-1);
-    this.isDragging.set(false);
-    this.dragX.set(0);
-    this.dragY.set(0);
     this.settledTransform.set(null);
-    this.isDragSettled.set(false);
+    this.preCalculatedTransforms.set({});
+    this.settledButtonIndex.set(null);
 
-    // Re-enable transitions after a delay
-    setTimeout(() => this.disabledTransition.set(false), 500);
-  }
-
-  /**
-   * Gets the index of a wrapper element among its siblings
-   */
-  private static getIndexFromWrapper(element: HTMLElement | null): number | null {
-    if (!element?.parentElement) return null;
-
-    const wrappers = Array.from(element.parentElement.querySelectorAll('[data-cy="drop-animate-wrapper"]'));
-    const index = wrappers.indexOf(element);
-    return index >= 0 ? index : null;
-  }
-
-  /**
-   * Finds the drop wrapper element from an event target by traversing up the DOM tree
-   */
-  private findWrapperFromEvent(target: EventTarget | null): HTMLElement | null {
-    if (!target) return null;
-    let element: HTMLElement | null = target as HTMLElement;
-    while (element && element !== this.dropContainerRef.nativeElement) {
-      if (element.getAttribute('data-cy') === 'drop-animate-wrapper') {
-        return element;
-      }
-      element = element.parentElement;
+    const count = this.localParameters?.options?.length ?? 0;
+    const transforms: Record<number, string> = {};
+    const disabled = new Set<number>();
+    for (let i = 0; i < count; i++) {
+      transforms[i] = '';
+      disabled.add(i);
     }
-    return null;
+    this.buttonTransforms.set(transforms);
+    this.transitionDisabledButtons.set(disabled);
+
+    setTimeout(() => {
+      this.transitionDisabledButtons.set(new Set());
+    }, 0);
+
+    this.draggingIndex.set(null);
   }
 
   /**
-   * Handles pointer down events
+   * Helper to parse translate(x, y) string from a CSS transform value
+   * @param transform - The CSS transform string to parse (e.g., "translate(10px, 20px)")
+   * @returns An object containing the x and y coordinates in pixels
    */
-  private onPointerDown = (event: PointerEvent): void => {
-    const coords = extractCoordinates(event);
-
-    if (coords) {
-      const { wrapper, index } = this.getWrapperAndIndex(event.target);
-      if (!wrapper || index === null) return;
-
-      this.initiateDragDetection(index, coords.x, coords.y, event.pointerId);
-      this.addPointerEventListeners();
+  // eslint-disable-next-line class-methods-use-this
+  private parseTranslate(transform: string | undefined | null): { x: number, y: number } {
+    if (!transform) return { x: 0, y: 0 };
+    const match = /translate\(([-\d.]+)px?,\s*([-\d.]+)px?\)/.exec(transform);
+    if (match) {
+      return { x: parseFloat(match[1] ?? '0'), y: parseFloat(match[2] ?? '0') };
     }
-  };
+    return { x: 0, y: 0 };
+  }
 
   /**
-   * Handles pointer move events during drag operation
+   * Pre-calculates transform values for all buttons when the component is initialized
    */
-  private onPointerMove = (event: PointerEvent): void => {
-    if (!this.dragArmed) return;
-
-    this.handleDragMovement(event.clientX, event.clientY, event);
-  };
-
-  /**
-   * Handles pointer up events to finalize drag operations
-   * or clean up after pointer interactions
-   */
-  private onPointerUp = (): void => {
-    const wasDragging = this.isDragging();
-    this.finalizeDragOperation(wasDragging);
-  };
-
-  /**
-   * Handles mouse down events to initiate drag detection
-   * Fallback for browsers without pointer event support
-   */
-  private onMouseDown = (event: MouseEvent): void => {
-    const { wrapper, index } = this.getWrapperAndIndex(event.target);
-    if (!wrapper || index === null) return;
-
-    this.initiateDragDetection(index, event.clientX, event.clientY);
-    this.addMouseEventListeners();
-    event.preventDefault();
-  };
-
-  /**
-   * Handles mouse move events during drag operation
-   * Only processes movement if drag detection is armed
-   */
-  private onMouseMove = (event: MouseEvent): void => {
-    if (!this.dragArmed) return;
-
-    this.handleDragMovement(event.clientX, event.clientY, event);
-  };
-
-  /**
-   * Handles mouse up events to complete or cancel drag operation
-   * Cleans up mouse event listeners and finalizes interaction
-   */
-  private onMouseUp = (): void => {
-    const wasDragging = this.isDragging();
-    this.finalizeDragOperation(wasDragging);
-  };
-
-  /**
-   * Handles touch start events to initiate drag detection
-   * Uses first touch point for single-finger interactions
-   */
-  private onTouchStart = (event: TouchEvent): void => {
-    const touch = event.touches[0];
-    if (!touch) return;
-
-    const { wrapper, index } = this.getWrapperAndIndex(event.target);
-    if (!wrapper || index === null) return;
-
-    this.initiateDragDetection(index, touch.clientX, touch.clientY);
-    this.addTouchEventListeners();
-    event.preventDefault();
-  };
-
-  /**
-   * Handles touch move events with drag threshold detection
-   * Starts drag operation when movement exceeds threshold, then tracks position
-   */
-  private onTouchMove = (event: TouchEvent): void => {
-    if (!this.dragArmed || this.activeIndex === null) return;
-
-    const touch = event.touches[0];
-    if (!touch) return;
-
-    const deltaX = touch.clientX - this.downX;
-    const deltaY = touch.clientY - this.downY;
-
-    if (this.shouldStartDrag(deltaX, deltaY)) {
-      this.startDragOperation(touch.clientX, touch.clientY);
-      event.preventDefault();
+  calculateButtonTransformValues(): void {
+    if (!this.imageRef?.nativeElement || !this.dropContainerRef?.nativeElement) {
+      return;
     }
-
-    if (this.isDragging()) {
-      this.updateDragPosition(touch.clientX, touch.clientY);
-    }
-  };
-
-
-  /**
-   * Handles touch end events to complete or cancel drag operation
-   * Cleans up touch event listeners and finalizes interaction
-   */
-  private onTouchEnd = (): void => {
-    const wasDragging = this.isDragging();
-    this.finalizeDragOperation(wasDragging);
-  };
-
-  /**
-   * Helper to get wrapper element and its index from event target
-   */
-  private getWrapperAndIndex(target: EventTarget | null): { wrapper: HTMLElement | null; index: number | null } {
-    const wrapper = this.findWrapperFromEvent(target);
-    const index = InteractionDropComponent.getIndexFromWrapper(wrapper);
-    return { wrapper, index };
-  }
-
-  /**
-   * Initiates drag detection state
-   */
-  private initiateDragDetection(index: number, x: number, y: number, pointerId?: number): void {
-    this.activeIndex = index;
-    this.downX = x;
-    this.downY = y;
-    this.dragArmed = true;
-    this.lastPointerId = pointerId || null;
-  }
-
-  /**
-   * Determines if movement threshold has been exceeded to start dragging
-   */
-  private shouldStartDrag(deltaX: number, deltaY: number): boolean {
-    return !this.isDragging() && Math.hypot(deltaX, deltaY) >= this.DRAG_THRESHOLD_PX;
-  }
-
-  /**
-   * Handles common drag logic for both pointer and mouse events
-   */
-  private handleDragMovement(clientX: number, clientY: number, event: Event): void {
-    const deltaX = clientX - this.downX;
-    const deltaY = clientY - this.downY;
-
-    if (this.shouldStartDrag(deltaX, deltaY)) {
-      this.startDragOperation(clientX, clientY);
-      event.preventDefault();
-    }
-
-    if (this.isDragging()) {
-      this.updateDragPosition(clientX, clientY);
-    }
-  }
-
-  /**
-   * Starts the actual drag operation
-   */
-  private startDragOperation(clientX: number, clientY: number): void {
-    this.selectedValue.set(this.activeIndex!);
-    this.settledTransform.set(null);
-    this.disabledTransition.set(true);
-    this.isDragging.set(true);
-    this.dragStartX = this.downX;
-    this.dragStartY = this.downY;
-  }
-
-  /**
-   * Updates drag position during drag operation
-   */
-  private updateDragPosition(clientX: number, clientY: number): void {
-    this.dragX.set(clientX - this.dragStartX);
-    this.dragY.set(clientY - this.dragStartY);
-  }
-
-  /**
-   * Finalizes drag operation and cleans up state
-   */
-  private finalizeDragOperation(wasDragging: boolean): void {
-    this.dragArmed = false;
-    this.lastPointerId = null;
-
-    if (wasDragging) {
-      this.settleDragPosition();
-      this.isDragging.set(false);
-      setTimeout(() => this.disabledTransition.set(false));
-    }
-
-    this.activeIndex = null;
-  }
-
-  /**
-   * Calculates and stores the final position where the dragged button should settle
-   */
-  private settleDragPosition(): void {
-    const selectedIndex = this.selectedValue();
-    if (selectedIndex === -1) return;
-
+    const transforms: Record<number, string> = {};
     const totalButtons = this.localParameters.options.length;
-    const { currentButtonCenter, containerCenter } = calculateButtonCenter(totalButtons, selectedIndex);
+    const containerElement = this.dropContainerRef.nativeElement;
+    const imgElement = this.imageRef.nativeElement;
 
-    if (this.localParameters.imageLandingXY !== '') {
-      // Use specific landing coordinates if provided
-      const { xPx, yPx } = getDropLandingTranslate(this.localParameters.imageLandingXY, currentButtonCenter);
-      this.settledTransform.set(`translate(${xPx}, ${yPx})`);
-    } else {
-      // Fallback to simple up/down movement based on image position
-      const baseOffsetX = containerCenter - currentButtonCenter;
-      const transformY = this.localParameters.imagePosition === 'TOP' ? '-280px' : '280px';
-      this.settledTransform.set(`translate(${baseOffsetX}px, ${transformY})`);
+    for (let index = 0; index < totalButtons; index++) {
+      const { currentButtonCenter, containerCenter } = calculateButtonCenter(totalButtons, index);
+
+      if (this.localParameters.imageLandingXY !== '') {
+        const buttonElement =
+          this.dropContainerRef.nativeElement.querySelector(`[data-cy="drop-animate-wrapper-${index}"]`) as HTMLElement;
+        if (buttonElement) {
+          const {
+            buttonCenterX, imgWidth, imgHeight, imageTop, imageLeft, buttonCenterY
+          } = getDropLandingArgs(imgElement, buttonElement, containerElement);
+
+          const { xPx, yPx } = getDropLandingTranslate(
+            this.localParameters.imageLandingXY,
+            buttonCenterX,
+            imgWidth,
+            imgHeight,
+            imageLeft,
+            imageTop,
+            buttonCenterY
+          );
+          transforms[index] = `translate(${xPx}, ${yPx})`;
+        }
+      } else {
+        const baseOffsetX = containerCenter - currentButtonCenter;
+        const transformY = this.localParameters.imagePosition === 'TOP' ? '-280px' : '280px';
+        transforms[index] = `translate(${baseOffsetX}px, ${transformY})`;
+      }
     }
 
-    this.isDragSettled.set(true);
-  }
-
-  private addPointerEventListeners(): void {
-    this.removeListenerFn.push(
-      this.renderer.listen('window', 'pointermove', this.onPointerMove),
-      this.renderer.listen('window', 'pointerup', this.onPointerUp),
-      this.renderer.listen('window', 'pointercancel', this.onPointerUp)
-    );
-  }
-
-  private addMouseEventListeners(): void {
-    this.removeListenerFn.push(
-      this.renderer.listen('window', 'mousemove', this.onMouseMove),
-      this.renderer.listen('window', 'mouseup', this.onMouseUp)
-    );
-  }
-
-  private addTouchEventListeners(): void {
-    this.removeListenerFn.push(
-      this.renderer.listen('window', 'touchmove', this.onTouchMove),
-      this.renderer.listen('window', 'touchend', this.onTouchEnd),
-      this.renderer.listen('window', 'touchcancel', this.onTouchEnd)
-    );
-  }
-
-  /**
-   * Calculates the CSS transform style for animating button position
-   * @param index - The button index to calculate style for
-   * @returns CSS transform string
-   */
-  animateStyle(index: number): string {
-    // Only animate the selected button or during drag
-    if (this.selectedValue() !== index && !this.isDragging()) {
-      return '';
-    }
-
-    // During active drag, follow pointer position
-    if (this.isDragging()) {
-      return `translate(${this.dragX()}px, ${this.dragY()}px)`;
-    }
-
-    // Use settled position from drag if available
-    const settledTransform = this.settledTransform();
-    if (settledTransform && this.isDragSettled()) {
-      return settledTransform;
-    }
-
-    // Calculate position for click animation or normal selection
-    return this.calculateAnimationPosition(index);
+    this.preCalculatedTransforms.set(transforms);
   }
 
   /**
@@ -445,32 +388,72 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
    * @param index - Index of the clicked button
    */
   onButtonClick(index: number): void {
-    // Ignore clicks during or immediately after dragging
-    if (this.isDragging() || (this.activeIndex === index && !this.dragArmed)) {
+    if (this.draggingIndex() !== null || this.suppressClick) {
       return;
     }
+    const currentSettled = this.settledButtonIndex();
 
-    this.toggleButtonSelection(index);
-    this.clearDragState();
+    if (currentSettled === index) {
+      this.updateButtonTransform(index, '');
+      this.settledButtonIndex.set(null);
+      this.settledTransform.set(null);
+      this.selectedValue.set(-1);
+    } else {
+      if (currentSettled !== null) {
+        this.updateButtonTransform(currentSettled, '');
+      }
+
+      this.toggleButtonSelection(index);
+
+      const transforms = this.preCalculatedTransforms();
+      const transformValue = transforms[index];
+      if (transformValue) {
+        this.updateButtonTransform(index, transformValue);
+        this.settledTransform.set(transformValue);
+        this.settledButtonIndex.set(index);
+      }
+    }
+
     this.emitSelectionResponse();
   }
 
   /**
-   * Calculates animation position for click or normal selection
+   * Updates the transform for a specific button
    */
-  private calculateAnimationPosition(index: number): string {
-    const totalButtons = this.localParameters.options.length;
-    const { currentButtonCenter, containerCenter } = calculateButtonCenter(totalButtons, index);
+  private updateButtonTransform(index: number, transform: string): void {
+    // Normalize empty transform to a stable origin value so tests can assert translate3d(0, 0, 0)
+    const normalized = (transform && transform.trim().length > 0) ?
+      transform :
+      'translate3d(0px, 0px, 0px)';
+    this.buttonTransforms.update(transforms => ({
+      ...transforms,
+      [index]: normalized
+    }));
+  }
 
-    if (this.localParameters.imageLandingXY !== '') {
-      const { xPx, yPx } = getDropLandingTranslate(this.localParameters.imageLandingXY, currentButtonCenter);
-      return `translate(${xPx}, ${yPx})`;
-    }
+  /**
+   * Determines if transitions should be disabled for a specific button
+   */
+  shouldDisableTransition(index: number): boolean {
+    return this.transitionDisabledButtons().has(index);
+  }
 
-    // Fallback positioning
-    const baseOffsetX = containerCenter - currentButtonCenter;
-    const transformY = this.localParameters.imagePosition === 'TOP' ? '-280px' : '280px';
-    return `translate(${baseOffsetX}px, ${transformY})`;
+  /**
+   * Adds a button to the transition-disabled set
+   */
+  private addTransitionDisabled(index: number): void {
+    this.transitionDisabledButtons.update(set => new Set([...set, index]));
+  }
+
+  /**
+   * Removes a button from the transition-disabled set
+   */
+  private removeTransitionDisabled(index: number): void {
+    this.transitionDisabledButtons.update(set => {
+      const newSet = new Set(set);
+      newSet.delete(index);
+      return newSet;
+    });
   }
 
   /**
@@ -479,17 +462,6 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   private toggleButtonSelection(index: number): void {
     const isCurrentlySelected = this.selectedValue() === index;
     this.selectedValue.set(isCurrentlySelected ? -1 : index);
-  }
-
-  /**
-   * Clears all drag-related state
-   */
-  private clearDragState(): void {
-    this.isDragging.set(false);
-    this.dragX.set(0);
-    this.dragY.set(0);
-    this.settledTransform.set(null);
-    this.isDragSettled.set(false);
   }
 
   /**
@@ -503,6 +475,19 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
       relevantForResponsesProgress: true
     };
     this.responses.emit([response]);
+  }
+
+  /**
+   * Restores the selection state based on user interaction.
+   * @param {Response} response - The response object containing a string `value`.
+   */
+  private restoreFromFormerState(response: Response): void {
+    const numeric = typeof response.value === 'string' ? parseInt(response.value, 10) : Number(response.value);
+    const selectedIndex = !Number.isNaN(numeric) ? numeric - 1 : -1;
+
+    if (selectedIndex >= 0 && selectedIndex < this.localParameters.options.length) {
+      this.selectedValue.set(selectedIndex);
+    }
   }
 
   /**
