@@ -11,7 +11,8 @@ $big-text-font-size: 112px;
 $small-text-font-size: 32px;
 $ribbon-bar-height: 30px;
 $audio-waves-animation-height: 100px;
-$gap-between-two-buttons: 106px;
+$gap-between-two-buttons-in-a-row: 106px;
+$gap-between-two-extra-large-buttons-in-a-row: 50px;
 
 /* Mixins */
 
@@ -43,6 +44,11 @@ $gap-between-two-buttons: 106px;
 
 @mixin smiley-box-shadow {
   box-shadow: 3px -4px 0 14px rgba(0, 0, 0, 0.2);
+}
+
+@mixin extra-large-button-size {
+  width: 353px;
+  height: 353px;
 }
 
 @mixin big-button-size {
