@@ -112,7 +112,9 @@ describe('BUTTONS Interaction E2E Tests', () => {
       { buttonType: 'BIG_SQUARE', file: 'buttons_buttonType_bigSquare_test.json' },
       { buttonType: 'SMALL_SQUARE', file: 'buttons_buttonType_smallSquare_test.json' },
       { buttonType: 'TEXT', file: 'buttons_buttonType_text_test.json' },
-      { buttonType: 'CIRCLE', file: 'buttons_buttonType_circle_test.json' }
+      { buttonType: 'CIRCLE', file: 'buttons_buttonType_circle_test.json' },
+      { buttonType: 'EXTRA_LARGE_SQUARE', file: 'buttons_buttonType_extraLargeSquare_test.json' },
+      { buttonType: 'LONG_RECTANGLE', file: 'buttons_buttonType_longRectangle_test.json' }
     ];
 
     buttonTypeConfigs.forEach(({ buttonType, file }) => {
@@ -133,7 +135,56 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  it('4a. Should have an image on the given position, if there is an imageSource parameter', () => {
+  it('4. Should handle special gap cases', () => {
+    const buttonTypeConfigs = [
+      {
+        buttonType: 'SMALL_SQUARE',
+        file: 'buttons_1Row_2_test.json',
+        className: 'two-buttons',
+        gap: 106
+      },
+      {
+        buttonType: 'EXTRA_LARGE_SQUARE',
+        file: 'buttons_buttonType_extraLargeSquare_test.json',
+        className: 'two-extra-large-buttons',
+        gap: 50
+      },
+      {
+        buttonType: 'LONG_RECTANGLE',
+        file: 'buttons_buttonType_longRectangle_test.json',
+        className: 'long-rectangle-buttons',
+        gap: 50
+      }
+    ];
+
+    buttonTypeConfigs.forEach(({
+      buttonType, file, className, gap
+    }) => {
+      cy.log(`Testing buttonType: ${buttonType}`);
+
+      // Set up test data
+      cy.setupTestData(subject, file, interactionType);
+
+      // Wait for the component to render
+      assertButtonExists();
+
+      // Ensure the row has the expected class
+      cy.get('[data-cy="button-row-0"]').should('have.class', className).then($el => {
+        const el = $el[0] as HTMLElement;
+        const style = getComputedStyle(el);
+
+        if (className === 'long-rectangle-buttons') {
+          // check row-gap
+          expect(style.getPropertyValue('row-gap').trim()).to.equal(`${gap}px`);
+        } else {
+          // check column-gap
+          expect(style.getPropertyValue('column-gap').trim()).to.equal(`${gap}px`);
+        }
+      });
+    });
+  });
+
+  it('5a. Should have an image on the given position, if there is an imageSource parameter', () => {
     let testData: UnitDefinition;
     // Set up test data
     cy.setupTestData(subject, defaultTestFile, interactionType);
@@ -159,7 +210,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  it('4b. Should not have an image on the given position, if imageSource parameter is empty', () => {
+  it('5b. Should not have an image on the given position, if imageSource parameter is empty', () => {
     let testData: UnitDefinition;
 
     // Set up test data
@@ -176,7 +227,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  it('5a. Should have a text under the buttons, If there is a text parameter', () => {
+  it('6a. Should have a text under the buttons, If there is a text parameter', () => {
     let testData: UnitDefinition;
     // Set up test data
     cy.setupTestData(subject, defaultTestFile, interactionType);
@@ -192,7 +243,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  it('5b. Should not display instruction text when text parameter is empty string', () => {
+  it('6b. Should not display instruction text when text parameter is empty string', () => {
     // Set up test data
     cy.setupTestData(subject, 'buttons_text_empty_test', interactionType);
 

@@ -66,6 +66,11 @@ $gap-between-two-extra-large-buttons-in-a-row: 50px;
   height: 170px;
 }
 
+@mixin long-rectangle-button-size {
+  width: 720px;
+  height: 175px;
+}
+
 @mixin word-button-size {
   height: 120px;
   min-width: 320px;
