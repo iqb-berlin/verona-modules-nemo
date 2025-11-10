@@ -48,7 +48,7 @@
       }
 
       &.two-extra-large-buttons-gap {
-        column-gap: variables.$gap-between-two-extra-large-buttons-in-a-row; /* 50px special case for 1 Row 2 buttons that has buttonType: EXTRA_LARGE */
+        column-gap: variables.$gap-between-two-extra-large-buttons-in-a-row; /* 50px special case for 1 Row 2 buttons that has buttonType: EXTRA_LARGE_SQUARE */
       }
 
       &.long-rectangle-buttons {
