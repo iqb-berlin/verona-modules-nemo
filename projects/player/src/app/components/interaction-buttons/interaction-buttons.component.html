@@ -3,18 +3,18 @@
   @if (localParameters.imageSource) {
     <div class="stimulus-wrapper"
          [class]="localParameters.imagePosition?.toLowerCase() + '-position' || ''"
-         [class.is-square]="isSquare"
+         [class.square]="!useFullArea && isSquare"
          [class.use-full-area]="useFullArea"
-         [class.has-custom-width]="hasCustomWidth"
-         [class.has-custom-height]="hasCustomHeight"
-         [style.max-width]="imageMaxWidthStyle"
-         [style.max-height]="imageMaxHeightStyle"
+         [class.has-custom-width]="!useFullArea && hasCustomWidth"
+         [class.has-custom-height]="!useFullArea && hasCustomHeight"
+         [style.max-width]="useFullArea ? null : imageMaxWidthStyle"
+         [style.max-height]="useFullArea ? null : imageMaxHeightStyle"
     >
       <img #imageElement
            [src]="localParameters.imageSource"
-           [alt]="" data-cy="stimulus-image"
-           (load)="onImageLoad()"
-      >
+           [alt]=""
+           data-cy="stimulus-image"
+           (load)="onImageLoad()">
     </div>
   }
 

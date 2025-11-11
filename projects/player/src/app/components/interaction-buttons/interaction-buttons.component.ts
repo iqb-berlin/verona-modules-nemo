@@ -272,6 +272,9 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
    * */
   onImageLoad(): void {
     const img = this.imageRef?.nativeElement as HTMLImageElement | undefined;
+    const maxHeight = this.localParameters?.imageMaxHeightPx ?? 0;
+    const maxWidth = this.localParameters?.imageMaxWidthPx ?? 0;
+
     if (!img || !img.naturalWidth || !img.naturalHeight) {
       this.isSquare = false;
       this.imageMaxWidthStyle = null;
@@ -285,21 +288,29 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
 
     this.useFullArea = !!this.localParameters.imageUseFullArea;
 
-    if (this.localParameters.imageMaxWidthPx &&
-      this.localParameters.imageMaxWidthPx !== 0 &&
-      this.localParameters.imageMaxWidthPx <= 1000) { // 1000px is $max-image-width defined in_variables.scss
+    if (this.useFullArea) {
+      // full-area takes precedence — clear other modifiers and styles
+      this.hasCustomWidth = false;
+      this.hasCustomHeight = false;
+      this.imageMaxWidthStyle = null;
+      this.imageMaxHeightStyle = null;
+      return;
+    }
+
+    if (maxWidth > 0 && maxWidth <= 1000) { // $max-image-width defined in_variables.scss
       this.hasCustomWidth = true;
-      this.imageMaxWidthStyle = `${this.localParameters.imageMaxWidthPx}px`;
+      this.imageMaxWidthStyle = `${maxWidth}px`;
     } else {
       this.hasCustomWidth = false;
       this.imageMaxWidthStyle = null;
     }
 
-    if (this.localParameters.imageMaxHeightPx &&
-      this.localParameters.imageMaxHeightPx !== 0 &&
-      this.localParameters.imageMaxHeightPx <= 350) { // 350px is $max-image-height defined in_variables.scss
+    if (maxHeight > 0 && maxHeight <= 525) {
       this.hasCustomHeight = true;
-      this.imageMaxHeightStyle = `${this.localParameters.imageMaxHeightPx}px`;
+      this.imageMaxHeightStyle = `${maxHeight}px`;
+    } else if (maxHeight > 525) {
+      this.hasCustomHeight = true;
+      this.imageMaxHeightStyle = '525px'; // $max-full-area-height defined in _variables.scss
     } else {
       this.hasCustomHeight = false;
       this.imageMaxHeightStyle = null;

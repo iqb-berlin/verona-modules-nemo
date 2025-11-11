@@ -21,13 +21,14 @@
   }
 
   /* Ensure square images stay narrow */
-  .stimulus-wrapper.is-square {
+  .stimulus-wrapper.square {
     max-width: variables.$square-image-width;
     width: auto;
   }
 
   .stimulus-wrapper.use-full-area {
     max-height: variables.$max-full-area-height;
+    max-width: variables.$max-image-width;
   }
 
   .top-position {
@@ -88,7 +89,7 @@
     }
 
     /* Ensure square images stay narrow */
-    .stimulus-wrapper.is-square {
+    .stimulus-wrapper.square {
       max-width: variables.$square-image-width;
       width: auto;
     }
