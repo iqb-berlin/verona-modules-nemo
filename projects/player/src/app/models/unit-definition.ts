@@ -45,7 +45,10 @@ export interface InteractionButtonParams {
   options: InteractionOptions;
   imageSource: string;
   imagePosition: ImagePositionEnum;
-  text: string;
+  imageMaxWidthPx?: number;
+  imageMaxHeightPx?: number;
+  imageUseFullArea?: boolean;
+  text?: string;
   multiSelect?: boolean;
   numberOfRows?: number;
   buttonType: ButtonTypeEnum;
@@ -57,8 +60,8 @@ export interface InteractionDropParams {
   variableId: string;
   options: SelectionOption[];
   imageSource: string;
-  imagePosition: ImagePositionEnum;
-  imageLandingXY: string;
+  imagePosition?: ImagePositionEnum;
+  imageLandingXY?: string;
   text: string;
   formerState?: Response[];
 }
