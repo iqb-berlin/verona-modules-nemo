@@ -274,6 +274,8 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     const img = this.imageRef?.nativeElement as HTMLImageElement | undefined;
     const maxHeight = this.localParameters?.imageMaxHeightPx ?? 0;
     const maxWidth = this.localParameters?.imageMaxWidthPx ?? 0;
+    const maxFullAreaHeight = 400; // $max-full-area-height defined in _variables.scss
+    const maxImageWidth = 1000; // $max-image-width defined in_variables.scss
 
     if (!img || !img.naturalWidth || !img.naturalHeight) {
       this.isSquare = false;
@@ -297,7 +299,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       return;
     }
 
-    if (maxWidth > 0 && maxWidth <= 1000) { // $max-image-width defined in_variables.scss
+    if (maxWidth > 0 && maxWidth <= maxImageWidth) {
       this.hasCustomWidth = true;
       this.imageMaxWidthStyle = `${maxWidth}px`;
     } else {
@@ -305,12 +307,12 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       this.imageMaxWidthStyle = null;
     }
 
-    if (maxHeight > 0 && maxHeight <= 525) {
+    if (maxHeight > 0 && maxHeight <= maxFullAreaHeight) {
       this.hasCustomHeight = true;
       this.imageMaxHeightStyle = `${maxHeight}px`;
-    } else if (maxHeight > 525) {
+    } else if (maxHeight > maxFullAreaHeight) {
       this.hasCustomHeight = true;
-      this.imageMaxHeightStyle = '525px'; // $max-full-area-height defined in _variables.scss
+      this.imageMaxHeightStyle = `${maxFullAreaHeight}px`;
     } else {
       this.hasCustomHeight = false;
       this.imageMaxHeightStyle = null;
