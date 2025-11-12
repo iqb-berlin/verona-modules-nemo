@@ -1,5 +1,5 @@
 import {
-  Component, signal, effect, inject
+  Component, signal, effect, inject, ViewChild, ElementRef
 } from '@angular/core';
 
 import { Response } from '@iqbspecs/response/response.interface';
@@ -34,8 +34,23 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   imagePosition: string = 'TOP';
   /** Boolean to track if the former the state has been restored from response. */
   private hasRestoredFromFormerState = false;
+  /** Flag to mark square-ish images (~1:1 AR). */
+  isSquare = false;
+  /** Flag to mark images with custom width. */
+  hasCustomWidth = false;
+  /** Flag to mark images with custom height. */
+  hasCustomHeight = false;
+  /** Flag to mark images useFullArea: true. */
+  useFullArea = false;
+  /** Custom width style for images with imageMaxWidthPx set and smaller than 1000px. */
+  imageMaxWidthStyle: string | null = null;
+  /** Custom height style for images with imageMaxHeightPx set and smaller than 350px. */
+  imageMaxHeightStyle: string | null = null;
 
   veronaPostService = inject(VeronaPostService);
+
+  /** Reference to the image element for aspect ratio detection. */
+  @ViewChild('imageElement', { static: false }) imageRef!: ElementRef<HTMLImageElement>;
 
   constructor() {
     super();
@@ -54,6 +69,9 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         this.localParameters.triggerNavigationOnSelect = parameters.triggerNavigationOnSelect || false;
         this.localParameters.buttonType = parameters.buttonType || 'MEDIUM_SQUARE';
         this.localParameters.text = parameters.text || '';
+        this.localParameters.imageMaxWidthPx = parameters.imageMaxWidthPx || 0;
+        this.localParameters.imageMaxHeightPx = parameters.imageMaxHeightPx || 0;
+        this.localParameters.imageUseFullArea = parameters.imageUseFullArea || false;
 
         if (this.localParameters.imageSource) {
           this.localParameters.imagePosition = parameters.imagePosition || 'LEFT';
@@ -248,6 +266,59 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     return distribution;
   }
 
+  /**
+   * Called when the stimulus image has loaded to determine if it needs extra styling
+   * @returns {void}
+   * */
+  onImageLoad(): void {
+    const img = this.imageRef?.nativeElement as HTMLImageElement | undefined;
+    const maxHeight = this.localParameters?.imageMaxHeightPx ?? 0;
+    const maxWidth = this.localParameters?.imageMaxWidthPx ?? 0;
+    const maxFullAreaHeight = 400; // $max-full-area-height defined in _variables.scss
+    const maxImageWidth = 1000; // $max-image-width defined in_variables.scss
+
+    if (!img || !img.naturalWidth || !img.naturalHeight) {
+      this.isSquare = false;
+      this.imageMaxWidthStyle = null;
+      this.imageMaxHeightStyle = null;
+      return;
+    }
+    const aspectRatio = img.naturalWidth / img.naturalHeight;
+
+    const squareTolerance = 0.05; // 5% tolerance from 1:1
+    this.isSquare = Math.abs(aspectRatio - 1) <= squareTolerance;
+
+    this.useFullArea = !!this.localParameters.imageUseFullArea;
+
+    if (this.useFullArea) {
+      // full-area takes precedence — clear other modifiers and styles
+      this.hasCustomWidth = false;
+      this.hasCustomHeight = false;
+      this.imageMaxWidthStyle = null;
+      this.imageMaxHeightStyle = null;
+      return;
+    }
+
+    if (maxWidth > 0 && maxWidth <= maxImageWidth) {
+      this.hasCustomWidth = true;
+      this.imageMaxWidthStyle = `${maxWidth}px`;
+    } else {
+      this.hasCustomWidth = false;
+      this.imageMaxWidthStyle = null;
+    }
+
+    if (maxHeight > 0 && maxHeight <= maxFullAreaHeight) {
+      this.hasCustomHeight = true;
+      this.imageMaxHeightStyle = `${maxHeight}px`;
+    } else if (maxHeight > maxFullAreaHeight) {
+      this.hasCustomHeight = true;
+      this.imageMaxHeightStyle = `${maxFullAreaHeight}px`;
+    } else {
+      this.hasCustomHeight = false;
+      this.imageMaxHeightStyle = null;
+    }
+  }
+
   onButtonClick(index: number): void {
     // Update UI state
     this.updateSelection(index);
@@ -338,6 +409,9 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       options: {},
       imageSource: '',
       imagePosition: 'TOP',
+      imageMaxWidthPx: 0,
+      imageMaxHeightPx: 0,
+      imageUseFullArea: false,
       text: '',
       multiSelect: false,
       triggerNavigationOnSelect: false,
