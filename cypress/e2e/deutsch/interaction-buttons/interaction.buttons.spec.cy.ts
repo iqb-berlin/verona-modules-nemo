@@ -210,91 +210,49 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  it('5b. Should handle max-width and max-height when imageMaxWidthPx, ' +
-    '' +
-    'imageMaxHeightPx and imageUseFullArea parameters are set', () => {
-    const maxFullAreaHeight = 400; // $max-full-area-height defined in _variables.scss
-    const maxImageWidth = 1000; // $max-image-width defined in _variables.scss
-    const maxImageHeight = 350; // $max-image-height defined in _variables.scss
+  it('5b. Should handle max-height when imageUseFullArea parameter is set', () => {
+    // Keep this in sync with projects/player/src/styles/_variables.scss
+    const maxFullAreaHeight = 390; // $max-full-area-height
 
     const imageConfigs = [
       {
-        imageMaxWidthPx: 0,
-        imageMaxHeightPx: 0,
         imageUseFullArea: true,
-        file: 'buttons_imageMaxWidthPx_0_imageMaxHeightPx_0_useFullArea_true_test.json'
+        file: 'buttons_useFullArea_true_test.json'
       },
       {
-        imageMaxWidthPx: 0,
-        imageMaxHeightPx: 200,
         imageUseFullArea: false,
-        file: 'buttons_imageMaxWidthPx_0_imageMaxHeightPx_200_test.json'
-      },
-      {
-        imageMaxWidthPx: 900,
-        imageMaxHeightPx: 0,
-        imageUseFullArea: false,
-        file: 'buttons_imageMaxWidthPx_900_imageMaxHeightPx_0_test.json'
-      },
-      {
-        imageMaxWidthPx: 700,
-        imageMaxHeightPx: 400,
-        imageUseFullArea: false,
-        file: 'buttons_imageMaxWidthPx_700_imageMaxHeightPx_400_test.json'
+        file: 'buttons_useFullArea_false_test.json'
       }
     ];
 
     // Implement assertions per the described logic
-    imageConfigs.forEach(({
-      imageMaxWidthPx, imageMaxHeightPx, imageUseFullArea, file
-    }) => {
+    imageConfigs.forEach(({ imageUseFullArea, file }) => {
       // Set up test data
       cy.setupTestData(subject, file, interactionType);
 
       // Wait for the component to render
       assertButtonExists();
 
-      // Determine expected custom width/height following the rules
-      let expectedWidth = 0;
-      let expectedHeight = 0;
-
-      if (imageUseFullArea) {
-        expectedWidth = maxImageWidth;
-        expectedHeight = maxFullAreaHeight;
-      } else if (imageMaxWidthPx === 0 && imageMaxHeightPx !== 0) {
-        expectedWidth = maxImageWidth;
-        expectedHeight = imageMaxHeightPx;
-      } else if (imageMaxWidthPx !== 0 && imageMaxHeightPx === 0) {
-        expectedWidth = imageMaxWidthPx;
-        expectedHeight = maxImageHeight;
-      } else if (imageMaxWidthPx !== 0 && imageMaxHeightPx !== 0) {
-        expectedWidth = imageMaxWidthPx;
-        // Height cannot exceed the full-area cap (400) according to component logic
-        expectedHeight = Math.min(imageMaxHeightPx, maxFullAreaHeight);
-      }
-
       // Remove click layer
       cy.removeClickLayer();
       // Check if there is an image
       cy.get('[data-cy="stimulus-image"]').should('exist').and('be.visible');
 
-      // Assert computed styles on the stimulus wrapper
+      // Assert computed max-height on the stimulus wrapper
+      // In current styles, only .stimulus-wrapper.use-full-area has a max-height cap; otherwise, max-height is 'none'.
       cy.get('.stimulus-wrapper').should('exist').then($el => {
         const el = $el[0] as HTMLElement;
         const style = getComputedStyle(el);
 
-        // Validate max-width and max-height as strings with px
-        const maxWidthValue = style.getPropertyValue('max-width').trim();
         const maxHeightValue = style.getPropertyValue('max-height').trim();
 
-        // Expected values as px strings
-        const expectedWidthPx = `${expectedWidth}px`;
-        const expectedHeightPx = `${expectedHeight}px`;
-
-        // For useFullArea: both max-width and max-height must match the full-area values.
-        // For other cases: max-width and/or max-height should reflect the computed expectations.
-        expect(maxWidthValue).to.equal(expectedWidthPx);
-        expect(maxHeightValue).to.equal(expectedHeightPx);
+        if (imageUseFullArea) {
+          const expectedHeightPx = `${maxFullAreaHeight}px`;
+          expect(maxHeightValue).to.equal(expectedHeightPx);
+        } else {
+          // No max-height should be applied to the wrapper when not using full area
+          expect(maxHeightValue).to.equal('none');
+        }
       });
     });
   });

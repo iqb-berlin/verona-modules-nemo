@@ -1,14 +1,10 @@
 <div class="buttons-container" data-cy="buttons-container"
-     [class.flex-row]="imagePosition === 'LEFT'">
+     [class.flex-row]="imagePosition === 'LEFT'"
+     [class.use-full-area]="useFullArea">
   @if (localParameters.imageSource) {
     <div class="stimulus-wrapper"
          [class]="localParameters.imagePosition?.toLowerCase() + '-position' || ''"
-         [class.square]="!useFullArea && isSquare"
          [class.use-full-area]="useFullArea"
-         [class.has-custom-width]="!useFullArea && hasCustomWidth"
-         [class.has-custom-height]="!useFullArea && hasCustomHeight"
-         [style.max-width]="useFullArea ? null : imageMaxWidthStyle"
-         [style.max-height]="useFullArea ? null : imageMaxHeightStyle"
     >
       <img #imageElement
            [src]="localParameters.imageSource"
