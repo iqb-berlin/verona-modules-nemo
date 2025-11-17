@@ -2,8 +2,8 @@
   @if (isStandalone) {
     <stars-standalone-menu></stars-standalone-menu>
   }
-  @if (unitService.mainAudio()?.audioSource) {
-    <stars-main-audio [mainAudio]="unitService.mainAudio()" playerId="mainAudio"></stars-main-audio>
+  @if (unitService.effectiveMainAudio()?.audioSource) {
+    <stars-main-audio [mainAudio]="unitService.effectiveMainAudio()" [playerId]="unitService.currentPlayerId()"></stars-main-audio>
   }
   @if (unitService.continueButton() === "ALWAYS" ||
       (unitService.continueButton() === "ON_MAIN_AUDIO_COMPLETE" && responsesService.mainAudioComplete()) ||
@@ -23,27 +23,30 @@
     @if (hasRibbonBars()) {
       <stars-ribbon-bar></stars-ribbon-bar>
     }
-    @if (unitService.interaction() === 'BUTTONS') {
+    @if (hasOpeningImage()) {
+      <stars-opening-image></stars-opening-image>
+    }
+    @if (!unitService.openingFlowActive() && unitService.interaction() === 'BUTTONS') {
       <stars-interaction-buttons class="interaction"
       [parameters]="getParametersWithFormerState()"
       (responses)="responsesService.newResponses($event)"></stars-interaction-buttons>
-    } @else if (unitService.interaction() === 'DROP') {
+    } @else if (!unitService.openingFlowActive() && unitService.interaction() === 'DROP') {
       <stars-interaction-drop class="interaction"
         [parameters]="getParametersWithFormerState()"
         (responses)="responsesService.newResponses($event)"></stars-interaction-drop>
-    } @else if (unitService.interaction() === 'WRITE') {
+    } @else if (!unitService.openingFlowActive() && unitService.interaction() === 'WRITE') {
       <stars-interaction-write class="interaction"
         [parameters]="getParametersWithFormerState()"
         (responses)="responsesService.newResponses($event)"></stars-interaction-write>
-    } @else if (unitService.interaction() === 'IMAGE_ONLY') {
+    } @else if (!unitService.openingFlowActive() && unitService.interaction() === 'IMAGE_ONLY') {
       <stars-interaction-image-only class="interaction"
         [parameters]="unitService.parameters()"
         (responses)="responsesService.newResponses($event)"></stars-interaction-image-only>
-    } @else if (unitService.interaction() === 'VIDEO') {
+    } @else if (!unitService.openingFlowActive() && unitService.interaction() === 'VIDEO') {
       <stars-interaction-video class="interaction"
         [parameters]="unitService.parameters()"
         (responses)="responsesService.newResponses($event)"></stars-interaction-video>
-    } @else if (unitService.interaction() === 'FIND_ON_IMAGE') {
+    } @else if (!unitService.openingFlowActive() && unitService.interaction() === 'FIND_ON_IMAGE') {
       <stars-interaction-find-on-image class="interaction"
         [parameters]="getParametersWithFormerState()"
         (responses)="responsesService.newResponses($event)"></stars-interaction-find-on-image>

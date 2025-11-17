@@ -9,6 +9,7 @@ export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED' | 'CLAP_HANDS' | 'S
 export type ButtonTypeEnum = 'MEDIUM_SQUARE' | 'BIG_SQUARE' | 'SMALL_SQUARE' | 'TEXT' | 'CIRCLE' | 'EXTRA_LARGE_SQUARE' | 'LONG_RECTANGLE';
 export type ImagePositionEnum = 'TOP' | 'LEFT' | 'BOTTOM';
 export type TargetSizeEnum = 'MEDIUM' | 'LARGE' | 'SMALL';
+export type OpeningImageStartTriggerEnum = 'UNIT_START' | 'START_BUTTON' | 'MAIN_AUDIO_END';
 
 export interface UnitDefinition {
   id: string;
@@ -17,6 +18,7 @@ export interface UnitDefinition {
   ribbonBars?: boolean;
   continueButtonShow?: ContinueButtonEnum;
   mainAudio?: MainAudio;
+  openingImage?: OpeningImageParams;
   interactionType: InteractionEnum;
   interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams |
   InteractionImageOnlyParams | InteractionFindOnImageParams;
@@ -104,4 +106,12 @@ export interface MainAudio {
   animateButton?: boolean;
   maxPlay?: number;
   disableInteractionUntilComplete?: boolean;
+}
+
+export interface OpeningImageParams {
+  imageSource: string;
+  startTrigger?: OpeningImageStartTriggerEnum;
+  startDelayMS?: number;
+  presentationDurationMS?: number;
+  audioSource?: string;
 }

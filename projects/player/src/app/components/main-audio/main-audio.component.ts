@@ -7,6 +7,7 @@ import { ClickLayerComponent } from './click-layer.component';
 import { SafeResourceUrlPipe } from '../../pipes/safe-resource-url.pipe';
 import { ResponsesService } from '../../services/responses.service';
 import { MainAudio } from '../../models/unit-definition';
+import { UnitService } from '../../services/unit.service';
 
 @Component({
   selector: 'stars-main-audio',
@@ -31,6 +32,7 @@ export class MainAudioComponent {
   isPlaying: boolean = false;
 
   responsesService = inject(ResponsesService);
+  unitService = inject(UnitService);
 
   constructor() {
     effect(() => {
@@ -48,6 +50,15 @@ export class MainAudioComponent {
         this.playCount.set(0);
         this.maxPlay = this.localAudio.maxPlay;
         this.isPlaying = false;
+
+        // Auto-play for opening intro audio (uses separate playerId)
+        if (this.unitService.currentPlayerId() === 'openingAudio' && this.audioElementRef) {
+          // slight delay to ensure element is ready
+          setTimeout(() => {
+            // attempt autoplay; browsers may block, but tests should allow data URLs
+            this.audioElementRef.nativeElement.play().catch(() => {/* ignore */});
+          }, 0);
+        }
       }
     });
   }
@@ -64,6 +75,11 @@ export class MainAudioComponent {
 
   onPause() {
     this.isPlaying = false;
+  }
+
+  onEnded() {
+    // Notify UnitService so it can manage opening intro flow audio override end
+    this.unitService.audioEnded(this.playerId());
   }
 
   canPlay(): boolean {

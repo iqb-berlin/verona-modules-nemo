@@ -24,6 +24,10 @@ export class AppComponent implements OnInit {
     return this.unitService.ribbonBars();
   }
 
+  hasOpeningImage(): boolean {
+    return !!this.unitService.openingImageParams();
+  }
+
   getParametersWithFormerState = computed(() => {
     const params = this.unitService.parameters();
     const baseParams = params as Record<string, any> || {};

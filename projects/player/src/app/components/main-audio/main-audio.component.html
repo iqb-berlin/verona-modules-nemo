@@ -11,7 +11,8 @@
       <audio #audioPlayer
              [src]="localAudio.audioSource | safeResourceUrl"
              (play)="onPlay()"
-             (pause)="onPause()">
+             (pause)="onPause()"
+             (ended)="onEnded()">
       </audio>
       <label>
         Audio
