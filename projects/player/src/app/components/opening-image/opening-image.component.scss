@@ -2,17 +2,38 @@
 @use 'variables';
 
 .opening-image-wrapper {
+  position: fixed;
+  inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
+  z-index: 99;
 
   img {
-    max-width: 90vw;
-    max-height: 90vh;
     width: auto;
     height: auto;
     object-fit: contain;
   }
+}
+
+.opening-placeholder {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.start-button {
+  @include variables.text;
+  font-size: 24px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: none;
+  background: #0d6efd;
+  color: #fff;
+  cursor: pointer;
 }

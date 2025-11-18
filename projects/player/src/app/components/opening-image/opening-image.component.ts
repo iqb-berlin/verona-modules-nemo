@@ -18,46 +18,61 @@ export class OpeningImageComponent {
   responsesService = inject(ResponsesService);
 
   parameters = signal<OpeningImageParams | null>(null);
+  /** Whether the opening audio has been started */
   private started = false;
+  /** Whether the delay timer has elapsed */
+  private delayElapsed = signal(false);
 
   constructor() {
+    // Effect 1: react to new parameters, (re)start delay timer from unit load
     effect(() => {
       const openingImageParameters = this.unitService.openingImageParams();
       this.parameters.set(openingImageParameters);
-      if (!openingImageParameters || this.started) return;
-
-      const trigger = (openingImageParameters.startTrigger || 'UNIT_START').toUpperCase();
+      // reset local state on new data
+      this.started = false;
+      this.delayElapsed.set(false);
+      if (!openingImageParameters) return;
       const delay = openingImageParameters.startDelayMS ?? 0;
-      const duration = openingImageParameters.presentationDurationMS ?? 0;
+      if (Number.isFinite(delay) && delay > 0) {
+        setTimeout(() => this.delayElapsed.set(true), delay);
+      } else {
+        this.delayElapsed.set(true);
+      }
+    });
+
+    // Effect 2: evaluate start trigger conditions
+    effect(() => {
+      const openingImageParameters = this.parameters();
+      if (!openingImageParameters || this.started === true) return;
+      const trigger = (openingImageParameters.startTrigger || 'UNIT_START').toUpperCase();
+      const canStartNow = this.delayElapsed();
+      if (!canStartNow) return;
 
       if (trigger === 'UNIT_START') {
         this.started = true;
-        this.unitService.startOpeningImage(delay, duration);
+        this.unitService.startOpeningAudio();
       } else if (trigger === 'MAIN_AUDIO_END') {
-        // Read dependency so effect re-runs when main audio completes
-        const mainDone = this.responsesService.mainAudioComplete();
-        if (mainDone && !this.started) {
+        const mainAudioDone = this.responsesService.mainAudioComplete();
+        if (mainAudioDone) {
           this.started = true;
-          this.unitService.startOpeningImage(delay, duration);
+          this.unitService.startOpeningAudio();
         }
       }
+      // START_BUTTON handled by UI when delay has elapsed
     });
   }
 
   shouldShowStartButton(): boolean {
-    const p = this.parameters();
-    if (!p) return false;
-    const trigger = (p.startTrigger || 'UNIT_START').toUpperCase();
+    const openingImageParameters = this.parameters();
+    if (!openingImageParameters) return false;
+    const trigger = (openingImageParameters.startTrigger || 'UNIT_START').toUpperCase();
     // show button only while opening flow is active and before started
-    return trigger === 'START_BUTTON' && this.unitService.openingFlowActive() && !this.started;
+    return trigger === 'START_BUTTON' && this.unitService.openingFlowActive() && !this.started && this.delayElapsed();
   }
 
   startByButton() {
     if (this.started) return;
     this.started = true;
-    const p = this.parameters();
-    const delay = p?.startDelayMS ?? 0;
-    const duration = p?.presentationDurationMS ?? 0;
-    this.unitService.startOpeningImage(delay, duration);
+    this.unitService.startOpeningAudio();
   }
 }

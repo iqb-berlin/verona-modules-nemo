@@ -7,7 +7,7 @@
                         [playerId]="playerId()"
                         [isPlaying]="isPlaying"
                         [playCount]="playCount()"
-                        [disabled]="!canPlay()">
+                        [disabled]="!canPlay() && !isPlaying">
       <audio #audioPlayer
              [src]="localAudio.audioSource | safeResourceUrl"
              (play)="onPlay()"
