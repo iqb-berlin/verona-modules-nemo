@@ -5,6 +5,10 @@
     <div class="stimulus-wrapper"
          [class]="localParameters.imagePosition?.toLowerCase() + '-position' || ''"
          [class.use-full-area]="useFullArea"
+         [style.height.px]="!useFullArea && localParameters.imagePosition === 'TOP' ? topPositionHeight() : null"
+         [style.max-height]="isTopSingleRowWithImage() && !useFullArea ? 'calc(100vh - 220px)' : null"
+         [style.position]="!useFullArea && isTopSingleRowWithImage() ? 'fixed' : null"
+         [style.top.px]="!useFullArea && isTopSingleRowWithImage() ? 120 : null"
     >
       <img #imageElement
            [src]="localParameters.imageSource"
@@ -14,7 +18,7 @@
     </div>
   }
 
-  <div class="buttons-wrapper">
+  <div class="buttons-wrapper" [style.position]="isTopSingleRowWithImage() ? 'fixed' : null" [style.bottom.px]="isTopSingleRowWithImage() ? 100 : null">
     @for (row of optionRows; track $index) {
       <div class="row" [class.two-buttons]="optionRows.length === 1 && row.length === 2 && localParameters.buttonType !== 'LONG_RECTANGLE' && localParameters.buttonType !== 'EXTRA_LARGE_SQUARE'"
            [class.two-extra-large-buttons]="localParameters.buttonType === 'EXTRA_LARGE_SQUARE' && optionRows.length === 1 && row.length === 2"

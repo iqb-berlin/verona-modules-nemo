@@ -4,8 +4,8 @@
 .buttons-container {
   @include variables.flex-center;
   flex-direction: column;
-  width: 80%;
-  height: 80%;
+  width: 100%;
+  height: 100%;
   min-height: 0;
 
   &.use-full-area:not(.flex-row) {
@@ -13,8 +13,6 @@
     grid-template-rows: auto auto auto;
     align-content: start;
     justify-items: center;
-    width: 80%;
-    height: 100%;
     min-height: 0;
     min-width: 0;
 
@@ -24,7 +22,6 @@
       justify-self: stretch;
       width: 100%;
       height: auto;
-      max-height: #{variables.$max-full-area-height};
       min-height: 0;
       min-width: 0;
       margin-bottom: 0;
@@ -70,9 +67,18 @@
     }
   }
 
-  .top-position {
-    width: auto;
-    height: 250px;
+  .stimulus-wrapper.top-position {
+    width: 100%;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: auto;
+      max-height: 100%;
+      object-fit: contain;
+      padding: 0;
+      display: block;
+    }
   }
 
   .stimulus-wrapper.use-full-area.top-position {
@@ -96,6 +102,8 @@
     flex-direction: column;
     flex: 0 0 auto;
     gap: variables.$small-gap-margin;
+    padding-left: variables.$big-gap-margin;
+    padding-right: variables.$big-gap-margin;
 
     .row {
       @include variables.flex-center;
@@ -121,6 +129,7 @@
 
   &.flex-row {
     flex-direction: row;
+    padding-left: variables.$big-gap-margin;
 
     .stimulus-wrapper {
       width: variables.$square-image-width;

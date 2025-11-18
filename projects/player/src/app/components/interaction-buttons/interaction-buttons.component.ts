@@ -37,6 +37,9 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   /** Flag to mark images useFullArea: true. */
   useFullArea = false;
 
+  /** Signal to control layout sizing for image TOP. */
+  topPositionHeight = signal<number>(250);
+
   veronaPostService = inject(VeronaPostService);
 
   /** Reference to the image element for aspect ratio detection. */
@@ -97,6 +100,20 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         }
       }
     });
+  }
+
+  /**
+   * Helper: Returns true when image is on TOP, there is exactly one row configured,
+   * and an imageSource is provided (non-empty).
+   * This replaces repeated checks like: `imagePosition === 'TOP' && localParameters.numberOfRows === 1`.
+   */
+  isTopSingleRowWithImage(): boolean {
+    const params = this.localParameters;
+    return (
+      !!params?.imageSource &&
+      (params?.imagePosition || 'TOP') === 'TOP' &&
+      (params?.numberOfRows || 0) === 1
+    );
   }
 
   private resetSelection(): void {
