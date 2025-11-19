@@ -1,14 +1,14 @@
 <div class="buttons-container" data-cy="buttons-container"
-     [class.flex-row]="imagePosition === 'LEFT'">
+     [class.flex-row]="imagePosition === 'LEFT'"
+     [class.use-full-area]="useFullArea">
   @if (localParameters.imageSource) {
     <div class="stimulus-wrapper"
          [class]="localParameters.imagePosition?.toLowerCase() + '-position' || ''"
-         [class.square]="!useFullArea && isSquare"
          [class.use-full-area]="useFullArea"
-         [class.has-custom-width]="!useFullArea && hasCustomWidth"
-         [class.has-custom-height]="!useFullArea && hasCustomHeight"
-         [style.max-width]="useFullArea ? null : imageMaxWidthStyle"
-         [style.max-height]="useFullArea ? null : imageMaxHeightStyle"
+         [style.max-height.px]="useFullArea ? imgWrapperMaxHeight() : null"
+         [style.height.px]="!useFullArea && isTopSingleRowWithImage() ? imgWrapperHeight() : null"
+         [style.position]="!useFullArea && isTopSingleRowWithImage() ? 'fixed' : null"
+         [style.top.px]="!useFullArea && isTopSingleRowWithImage() ? distanceFromTop() : null"
     >
       <img #imageElement
            [src]="localParameters.imageSource"
@@ -18,7 +18,7 @@
     </div>
   }
 
-  <div class="buttons-wrapper">
+  <div class="buttons-wrapper" [style.position]="isTopSingleRowWithImage() ? 'fixed' : null" [style.bottom.px]="isTopSingleRowWithImage() ? distanceFromBottom() : null">
     @for (row of optionRows; track $index) {
       <div class="row" [class.two-buttons]="optionRows.length === 1 && row.length === 2 && localParameters.buttonType !== 'LONG_RECTANGLE' && localParameters.buttonType !== 'EXTRA_LARGE_SQUARE'"
            [class.two-extra-large-buttons]="localParameters.buttonType === 'EXTRA_LARGE_SQUARE' && optionRows.length === 1 && row.length === 2"

@@ -34,18 +34,15 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   imagePosition: string = 'TOP';
   /** Boolean to track if the former the state has been restored from response. */
   private hasRestoredFromFormerState = false;
-  /** Flag to mark square-ish images (~1:1 AR). */
-  isSquare = false;
-  /** Flag to mark images with custom width. */
-  hasCustomWidth = false;
-  /** Flag to mark images with custom height. */
-  hasCustomHeight = false;
   /** Flag to mark images useFullArea: true. */
   useFullArea = false;
-  /** Custom width style for images with imageMaxWidthPx set and smaller than 1000px. */
-  imageMaxWidthStyle: string | null = null;
-  /** Custom height style for images with imageMaxHeightPx set and smaller than 350px. */
-  imageMaxHeightStyle: string | null = null;
+  /** Signal to control stimulus-wrapper height for image TOP. */
+  imgWrapperHeight = signal<number>(330);
+  imgWrapperMaxHeight = signal<number>(500);
+  /** Signal to control distance from bottom for buttons-wrapper. */
+  distanceFromBottom = signal<number>(100);
+  /** Signal to control distance from top for stimulus-wrapper. */
+  distanceFromTop = signal<number>(125);
 
   veronaPostService = inject(VeronaPostService);
 
@@ -69,8 +66,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         this.localParameters.triggerNavigationOnSelect = parameters.triggerNavigationOnSelect || false;
         this.localParameters.buttonType = parameters.buttonType || 'MEDIUM_SQUARE';
         this.localParameters.text = parameters.text || '';
-        this.localParameters.imageMaxWidthPx = parameters.imageMaxWidthPx || 0;
-        this.localParameters.imageMaxHeightPx = parameters.imageMaxHeightPx || 0;
         this.localParameters.imageUseFullArea = parameters.imageUseFullArea || false;
 
         if (this.localParameters.imageSource) {
@@ -109,6 +104,20 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         }
       }
     });
+  }
+
+  /**
+   * Helper: Returns true when image is on TOP, there is exactly one row configured,
+   * and an imageSource is provided (non-empty).
+   * This replaces repeated checks like: `imagePosition === 'TOP' && localParameters.numberOfRows === 1`.
+   */
+  isTopSingleRowWithImage(): boolean {
+    const params = this.localParameters;
+    return (
+      !!params?.imageSource &&
+      (params?.imagePosition || 'TOP') === 'TOP' &&
+      (params?.numberOfRows || 0) === 1
+    );
   }
 
   private resetSelection(): void {
@@ -272,51 +281,12 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
    * */
   onImageLoad(): void {
     const img = this.imageRef?.nativeElement as HTMLImageElement | undefined;
-    const maxHeight = this.localParameters?.imageMaxHeightPx ?? 0;
-    const maxWidth = this.localParameters?.imageMaxWidthPx ?? 0;
-    const maxFullAreaHeight = 400; // $max-full-area-height defined in _variables.scss
-    const maxImageWidth = 1000; // $max-image-width defined in_variables.scss
 
     if (!img || !img.naturalWidth || !img.naturalHeight) {
-      this.isSquare = false;
-      this.imageMaxWidthStyle = null;
-      this.imageMaxHeightStyle = null;
       return;
     }
-    const aspectRatio = img.naturalWidth / img.naturalHeight;
-
-    const squareTolerance = 0.05; // 5% tolerance from 1:1
-    this.isSquare = Math.abs(aspectRatio - 1) <= squareTolerance;
 
     this.useFullArea = !!this.localParameters.imageUseFullArea;
-
-    if (this.useFullArea) {
-      // full-area takes precedence — clear other modifiers and styles
-      this.hasCustomWidth = false;
-      this.hasCustomHeight = false;
-      this.imageMaxWidthStyle = null;
-      this.imageMaxHeightStyle = null;
-      return;
-    }
-
-    if (maxWidth > 0 && maxWidth <= maxImageWidth) {
-      this.hasCustomWidth = true;
-      this.imageMaxWidthStyle = `${maxWidth}px`;
-    } else {
-      this.hasCustomWidth = false;
-      this.imageMaxWidthStyle = null;
-    }
-
-    if (maxHeight > 0 && maxHeight <= maxFullAreaHeight) {
-      this.hasCustomHeight = true;
-      this.imageMaxHeightStyle = `${maxHeight}px`;
-    } else if (maxHeight > maxFullAreaHeight) {
-      this.hasCustomHeight = true;
-      this.imageMaxHeightStyle = `${maxFullAreaHeight}px`;
-    } else {
-      this.hasCustomHeight = false;
-      this.imageMaxHeightStyle = null;
-    }
   }
 
   onButtonClick(index: number): void {
@@ -409,8 +379,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       options: {},
       imageSource: '',
       imagePosition: 'TOP',
-      imageMaxWidthPx: 0,
-      imageMaxHeightPx: 0,
       imageUseFullArea: false,
       text: '',
       multiSelect: false,
