@@ -36,9 +36,13 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   private hasRestoredFromFormerState = false;
   /** Flag to mark images useFullArea: true. */
   useFullArea = false;
-
-  /** Signal to control layout sizing for image TOP. */
-  topPositionHeight = signal<number>(250);
+  /** Signal to control stimulus-wrapper height for image TOP. */
+  imgWrapperHeight = signal<number>(330);
+  imgWrapperMaxHeight = signal<number>(500);
+  /** Signal to control distance from bottom for buttons-wrapper. */
+  distanceFromBottom = signal<number>(100);
+  /** Signal to control distance from top for stimulus-wrapper. */
+  distanceFromTop = signal<number>(125);
 
   veronaPostService = inject(VeronaPostService);
 
