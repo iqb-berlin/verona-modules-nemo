@@ -89,6 +89,9 @@
     width: 70px;
     height: 70px;
     margin: 3px;
+    &:last-child {
+      margin-left: 79px;
+    }
   }
 
   .backspace-button {
