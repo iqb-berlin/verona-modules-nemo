@@ -19,7 +19,7 @@
 .text-wrapper {
   display: block;
   margin-bottom: 24px;
-  width: 100%;
+  min-width: 150px;
 
   .text-display {
     display: block;
@@ -42,7 +42,19 @@
   @include variables.flex-center;
   flex-direction: row;
   position: relative;
-  width: calc(65px * 9);
+
+  &.characters-keyboard {
+    width: calc(65px * 9);
+  }
+
+  &.numbers-keyboard {
+    width: calc(65px * 10);
+  }
+
+  &.numbers_block-keyboard {
+    width: calc(65px * 3);
+
+  }
 
   .grapheme-list {
     float: left;

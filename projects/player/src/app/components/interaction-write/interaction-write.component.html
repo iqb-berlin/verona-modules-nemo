@@ -3,7 +3,7 @@
     <img [src]="localParameters.imageSource" [alt]="" data-cy="stimulus-image">
   </div>
 
-  <div class="text-wrapper" data-cy="text-wrapper">
+  <div class="text-wrapper" data-cy="text-wrapper" [style.width]="localParameters.keyboardMode === 'CHARACTERS' ? '100%' : 'auto'">
     <div class="text-display" data-cy="text-display">
       <div class="text-content">
         @if (currentText) {
@@ -13,48 +13,76 @@
     </div>
   </div>
 
-  <div class="keyboard-wrapper" data-cy="keyboard-wrapper">
+  <div class="keyboard-wrapper" data-cy="keyboard-wrapper" [class]="localParameters.keyboardMode.toLowerCase() + '-keyboard'">
     <div>
-      <div class="character-list">
-        @for (button of characterList; track $index) {
-          <button type="button"
-                  class="keyboard-button"
-                  [attr.aria-label]="currentText.length === 0 ? button.toUpperCase() : button"
-                  (click)="addChar(button)"
-                  [disabled]="isDisabled"
-                  [attr.data-cy]="'character-button-' + button"
-          >
-            {{ currentText.length === 0 ? button.toUpperCase() : button }}
-          </button>
-        }
-      </div>
-
-      <div class="grapheme-list">
-        @if (localParameters.addUmlautKeys) {
-          @for (button of umlautListChars; track $index) {
+      @if (localParameters.keyboardMode === 'CHARACTERS') {
+        <div class="character-list">
+          @for (button of characterList; track $index) {
             <button type="button"
                     class="keyboard-button"
                     [attr.aria-label]="currentText.length === 0 ? button.toUpperCase() : button"
                     (click)="addChar(button)"
                     [disabled]="isDisabled"
-                    [attr.data-cy]="'grapheme-button-' + button"
+                    [attr.data-cy]="'character-button-' + button"
             >
-              {{ currentText.length === 0  ? button.toUpperCase() : button }}
+              {{ currentText.length === 0 ? button.toUpperCase() : button }}
+            </button>
+          }
+        </div>
+
+        <div class="grapheme-list">
+          @if (localParameters.addUmlautKeys) {
+            @for (button of umlautListChars; track $index) {
+              <button type="button"
+                      class="keyboard-button"
+                      [attr.aria-label]="currentText.length === 0 ? button.toUpperCase() : button"
+                      (click)="addChar(button)"
+                      [disabled]="isDisabled"
+                      [attr.data-cy]="'grapheme-button-' + button"
+              >
+                {{ currentText.length === 0  ? button.toUpperCase() : button }}
+              </button>
+            }
+          }
+          @for (button of localParameters.keysToAdd; track $index) {
+            <button type="button"
+                    class="keyboard-button"
+                    [attr.aria-label]="currentText.length === 0 ? capitalize(button) : button"
+                    (click)="addChar(button)"
+                    [disabled]="isDisabled"
+                    [attr.data-cy]="'keyboard-button-' + button"
+            >
+              {{ currentText.length === 0  ? capitalize(button) : button }}
+            </button>
+          }
+        </div>
+      } @else if (localParameters.keyboardMode === 'NUMBERS') {
+        @for (button of numbersList; track $index) {
+          <button type="button"
+                  class="keyboard-button"
+                  [attr.aria-label]="currentText.length === 0 ? button : button"
+                  (click)="addChar(button)"
+                  [disabled]="isDisabled"
+                  [attr.data-cy]="'numbers-button-' + button"
+          >
+            {{ button }}
+          </button>
+        }
+      } @else if (localParameters.keyboardMode === 'NUMBERS_BLOCK') {
+        @for (buttonList of numbersListBlock; track $index) {
+          @for (button of buttonList; track $index) {
+            <button type="button"
+                    class="keyboard-button"
+                    [attr.aria-label]="currentText.length === 0 ? button : button"
+                    (click)="addChar(button)"
+                    [disabled]="isDisabled"
+                    [attr.data-cy]="'numbers-button-' + button"
+            >
+              {{ button }}
             </button>
           }
         }
-        @for (button of localParameters.keysToAdd; track $index) {
-          <button type="button"
-                  class="keyboard-button"
-                  [attr.aria-label]="currentText.length === 0 ? capitalize(button) : button"
-                  (click)="addChar(button)"
-                  [disabled]="isDisabled"
-                  [attr.data-cy]="'keyboard-button-' + button"
-          >
-            {{ currentText.length === 0  ? capitalize(button) : button }}
-          </button>
-        }
-      </div>
+      }
     </div>
 
     @if (localParameters.addBackspaceKey) {
