@@ -6,6 +6,27 @@
   padding: 1rem;
 }
 
+.input-wrapper {
+  @include variables.flex-center;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.numbers_block-type {
+  .input-wrapper {
+    gap: 5rem;
+    padding-top: 3rem;
+    flex-direction: row;
+  }
+}
+
+.numbers-type {
+  .input-wrapper {
+    gap: 3rem;
+    padding-top: 2rem;
+  }
+}
+
 .stimulus-wrapper {
   margin: 0 auto;
   height: 25vh;
@@ -20,6 +41,7 @@
   display: block;
   margin-bottom: 24px;
   min-width: 150px;
+  width: auto;
 
   .text-display {
     display: block;
@@ -38,23 +60,42 @@
   }
 }
 
+.characters-type {
+  .text-wrapper {
+    width: 90%;
+  }
+}
+
+.numbers_block-type {
+  .keyboard-wrapper {
+    width: calc(65px * 3);
+  }
+
+  .stimulus-wrapper {
+    height: 35vh;
+  }
+}
+
+.characters-type {
+  .keyboard-wrapper {
+    width: calc(65px * 9);
+  }
+}
+
+.numbers-type {
+  .keyboard-wrapper {
+    width: calc(65px * 10);
+  }
+
+  .stimulus-wrapper {
+    height: 35vh;
+  }
+}
+
 .keyboard-wrapper {
   @include variables.flex-center;
   flex-direction: row;
   position: relative;
-
-  &.characters-keyboard {
-    width: calc(65px * 9);
-  }
-
-  &.numbers-keyboard {
-    width: calc(65px * 10);
-  }
-
-  &.numbers_block-keyboard {
-    width: calc(65px * 3);
-
-  }
 
   .grapheme-list {
     float: left;
