@@ -75,7 +75,7 @@ export interface InteractionWriteParams {
   text: string;
   addBackspaceKey: boolean;
   addUmlautKeys: boolean;
-  keyboardMode: 'CHARACTERS' | 'NUMBERS' | 'NUMBERS_BLOCK';
+  keyboardMode: 'CHARACTERS' | 'NUMBERS_LINE' | 'NUMBERS_BLOCK';
   keysToAdd: string[];
   maxInputLength: number;
   formerState?: Response[];
