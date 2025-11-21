@@ -6,6 +6,12 @@
   padding: 1rem;
 }
 
+.input-wrapper {
+  @include variables.flex-center;
+  flex-direction: column;
+  padding: 1rem;
+}
+
 .stimulus-wrapper {
   margin: 0 auto;
   height: 25vh;
@@ -19,7 +25,8 @@
 .text-wrapper {
   display: block;
   margin-bottom: 24px;
-  width: 100%;
+  min-width: 150px;
+  width: auto;
 
   .text-display {
     display: block;
@@ -38,11 +45,115 @@
   }
 }
 
+.characters-type {
+  .text-wrapper {
+    width: 90%;
+  }
+}
+
+.numbers_block-type {
+  .keyboard-wrapper {
+    width: calc(76px * 3);
+  }
+
+  .stimulus-wrapper {
+    height: 35vh;
+  }
+
+  .input-wrapper {
+    gap: 5rem;
+    padding-top: 3rem;
+    flex-direction: row;
+    align-items: flex-start;
+
+    .text-wrapper {
+      width: 160px;
+      height: 160px;
+      border-radius: 12px;
+      background-color: #f0f0f0;
+      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+
+      .text-display {
+        border: none;
+        min-height: 160px;
+
+        .text-content {
+          font-size: 7rem;
+          margin-top: 16px;
+        }
+      }
+    }
+  }
+
+  .keyboard-button {
+    width: 70px;
+    height: 70px;
+    margin: 3px;
+    font-size: 40px;
+
+    &:last-child {
+      margin-left: 79px;
+    }
+  }
+
+  .backspace-button {
+    right: -100px;
+  }
+}
+
+.characters-type {
+  .keyboard-wrapper {
+    width: calc(65px * 9);
+  }
+}
+
+.numbers_line-type {
+  .keyboard-wrapper {
+    width: calc(76px * 10);
+  }
+
+  .stimulus-wrapper {
+    height: 35vh;
+  }
+
+  .keyboard-button {
+    width: 70px;
+    height: 70px;
+    margin: 3px;
+    font-size: 40px;
+  }
+
+  .backspace-button {
+    right: -100px;
+  }
+
+  .input-wrapper {
+    padding-top: 2rem;
+
+    .text-wrapper {
+      width: 160px;
+      height: 160px;
+      border-radius: 12px;
+      background-color: #f0f0f0;
+      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+
+      .text-display {
+        border: none;
+        min-height: 160px;
+
+        .text-content {
+          font-size: 7rem;
+          margin-top: 16px;
+        }
+      }
+    }
+  }
+}
+
 .keyboard-wrapper {
   @include variables.flex-center;
   flex-direction: row;
   position: relative;
-  width: calc(65px * 9);
 
   .grapheme-list {
     float: left;
