@@ -5,7 +5,7 @@ import {
 @Component({
   selector: 'stars-click-layer',
   template: `
-    <div #starsClickLayer class="layer"></div>
+    <div #starsClickLayer class="layer" data-cy="click-layer"></div>
   `,
 
   styles: `
@@ -17,7 +17,8 @@ import {
       height: 100%;
       background-color: transparent;
       cursor: pointer;
-      z-index: 99
+      z-index: 99;
+      -webkit-tap-highlight-color: transparent;
     }
   `
 })

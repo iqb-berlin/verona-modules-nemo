@@ -1,12 +1,16 @@
+import { Response } from '@iqbspecs/response/response.interface';
 import { VariableInfo } from './responses';
 import { AudioFeedback } from './feedback';
 
-export type ContinueButtonEnum = 'ALWAYS' | 'NO' | 'ON_ANY_RESPONSE' | 'ON_AUDIO_AND_RESPONSE' |
-'ON_RESPONSES_COMPLETE' | 'ON_MAIN_AUDIO_COMPLETE' | 'ON_VIDEO_COMPLETE';
+// eslint-disable-next-line max-len
+export type ContinueButtonEnum = 'ALWAYS' | 'NO' | 'ON_ANY_RESPONSE' | 'ON_RESPONSES_COMPLETE' |
+'ON_MAIN_AUDIO_COMPLETE' | 'ON_VIDEO_COMPLETE' | 'ON_AUDIO_AND_RESPONSE';
 export type InteractionEnum = 'BUTTONS' | 'DROP' | 'WRITE' | 'FIND_ON_IMAGE' | 'VIDEO' | 'IMAGE_ONLY' | 'NONE';
-export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED' | 'CLAP_HANDS';
-export type ButtonTypeEnum = 'MEDIUM_SQUARE' | 'BIG_SQUARE' | 'SMALL_SQUARE' | 'TEXT' | 'CIRCLE';
-export type ImagePositionEnum = 'TOP' | 'LEFT';
+export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED' | 'CLAP_HANDS' | 'SMILEY_1' | 'SMILEY_2' |
+'SMILEY_3' | 'SMILEY_4' | 'SMILEY_5';
+export type ButtonTypeEnum = 'MEDIUM_SQUARE' | 'BIG_SQUARE' | 'SMALL_SQUARE' | 'TEXT' | 'CIRCLE' |
+'EXTRA_LARGE_SQUARE' | 'LONG_RECTANGLE';
+export type ImagePositionEnum = 'TOP' | 'LEFT' | 'BOTTOM';
 export type TargetSizeEnum = 'MEDIUM' | 'LARGE' | 'SMALL';
 
 export interface UnitDefinition {
@@ -39,28 +43,30 @@ export interface InteractionOptions {
   repeatButton?: RepeatButtonConfig;
 }
 
-export interface Coding {
-  value: number | string;
-  code: number;
-  score: number;
-}
-
 export interface InteractionButtonParams {
   variableId: string;
   options: InteractionOptions;
   imageSource: string;
   imagePosition: ImagePositionEnum;
-  text: string;
+  imageMaxWidthPx?: number;
+  imageMaxHeightPx?: number;
+  imageUseFullArea?: boolean;
+  text?: string;
   multiSelect?: boolean;
   numberOfRows?: number;
   buttonType: ButtonTypeEnum;
+  triggerNavigationOnSelect?: boolean;
+  formerState?: Response[];
 }
 
 export interface InteractionDropParams {
   variableId: string;
   options: SelectionOption[];
   imageSource: string;
+  imagePosition?: ImagePositionEnum;
+  imageLandingXY?: string;
   text: string;
+  formerState?: Response[];
 }
 
 export interface InteractionWriteParams {
@@ -69,11 +75,14 @@ export interface InteractionWriteParams {
   text: string;
   addBackspaceKey: boolean;
   addUmlautKeys: boolean;
+  keyboardMode: 'CHARACTERS' | 'NUMBERS_LINE' | 'NUMBERS_BLOCK';
   keysToAdd: string[];
   maxInputLength: number;
+  formerState?: Response[];
 }
 
 export interface InteractionImageOnlyParams {
+  variableId: string;
   imageSource: string;
 }
 
@@ -83,6 +92,7 @@ export interface InteractionFindOnImageParams {
   text: string;
   showArea: string;
   size: TargetSizeEnum;
+  formerState?: Response[];
 }
 
 export interface InteractionVideoParams {
@@ -97,4 +107,5 @@ export interface MainAudio {
   firstClickLayer?: boolean;
   animateButton?: boolean;
   maxPlay?: number;
+  disableInteractionUntilComplete?: boolean;
 }

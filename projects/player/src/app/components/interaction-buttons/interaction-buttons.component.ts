@@ -1,8 +1,10 @@
 import {
-  Component, signal, effect, OnInit
+  Component, signal, effect, inject, ViewChild, ElementRef
 } from '@angular/core';
 
+import { Response } from '@iqbspecs/response/response.interface';
 import { StarsResponse } from '../../services/responses.service';
+import { VeronaPostService } from '../../services/verona-post.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import {
   InteractionButtonParams,
@@ -19,56 +21,103 @@ import { StandardButtonComponent } from '../../shared/standard-button/standard-b
   styleUrls: ['./interaction-buttons.component.scss']
 })
 
-export class InteractionButtonsComponent extends InteractionComponentDirective implements OnInit {
-  localParameters: InteractionButtonParams;
-  // array of booleans for each option
+export class InteractionButtonsComponent extends InteractionComponentDirective {
+  /** Local copy of the component parameters with defaults applied. */
+  localParameters!: InteractionButtonParams;
+  /** Array of booleans for each option. */
   selectedValues = signal<boolean[]>([]);
-  // options sorted by rows
-  optionRows: Array<Array<RowOption>> = null;
-  // Array of all options aka Buttons to be shown
-  allOptions: Array<SelectionOption> = null;
-  // imagePosition for stimulus image if available
+  /** Options sorted by rows. */
+  optionRows: Array<Array<RowOption>> = [];
+  /** Array of all options aka Buttons to be shown. */
+  allOptions: Array<SelectionOption> = [];
+  /** imagePosition for stimulus image if available. */
   imagePosition: string = 'TOP';
+  /** Boolean to track if the former the state has been restored from response. */
+  private hasRestoredFromFormerState = false;
+  /** Flag to mark images useFullArea: true. */
+  useFullArea = false;
+  /** Signal to control stimulus-wrapper height for image TOP. */
+  imgWrapperHeight = signal<number>(330);
+  imgWrapperMaxHeight = signal<number>(500);
+  /** Signal to control distance from bottom for buttons-wrapper. */
+  distanceFromBottom = signal<number>(100);
+  /** Signal to control distance from top for stimulus-wrapper. */
+  distanceFromTop = signal<number>(125);
+
+  veronaPostService = inject(VeronaPostService);
+
+  /** Reference to the image element for aspect ratio detection. */
+  @ViewChild('imageElement', { static: false }) imageRef!: ElementRef<HTMLImageElement>;
 
   constructor() {
     super();
 
     effect(() => {
       const parameters = this.parameters() as InteractionButtonParams;
-
       this.localParameters = this.createDefaultParameters();
+      this.hasRestoredFromFormerState = false;
 
       if (parameters) {
-        this.localParameters.options = parameters.options || null;
+        this.localParameters.options = parameters.options || {};
         this.localParameters.variableId = parameters.variableId || 'BUTTONS';
-        this.localParameters.imageSource = parameters.imageSource || null;
+        this.localParameters.imageSource = parameters.imageSource || '';
         this.localParameters.numberOfRows = parameters.numberOfRows || 1;
         this.localParameters.multiSelect = parameters.multiSelect || false;
+        this.localParameters.triggerNavigationOnSelect = parameters.triggerNavigationOnSelect || false;
         this.localParameters.buttonType = parameters.buttonType || 'MEDIUM_SQUARE';
-        this.localParameters.numberOfRows = parameters.numberOfRows || 1;
-        this.localParameters.text = parameters.text || null;
+        this.localParameters.text = parameters.text || '';
+        this.localParameters.imageUseFullArea = parameters.imageUseFullArea || false;
 
         if (this.localParameters.imageSource) {
           this.localParameters.imagePosition = parameters.imagePosition || 'LEFT';
         } else {
           this.localParameters.imagePosition = 'TOP';
         }
-      }
+        this.allOptions = this.createOptions();
+        this.optionRows = this.getRowsOptions();
 
-      this.resetSelection();
-      this.allOptions = this.createOptions();
-      this.optionRows = this.getRowsOptions();
+        // Only restore from former state once, on initial load
+        if (!this.hasRestoredFromFormerState) {
+          const formerStateResponse: Response[] = parameters.formerState || [];
+
+          if (Array.isArray(formerStateResponse) && formerStateResponse.length > 0) {
+            const foundResponse = formerStateResponse.find(
+              response => response.id === this.localParameters.variableId
+            );
+
+            if (foundResponse && foundResponse.value) {
+              this.restoreFromFormerState(foundResponse);
+              this.hasRestoredFromFormerState = true;
+              return;
+            }
+          }
+
+          // No former state found - initialize as new
+          this.resetSelection();
+          this.responses.emit([{
+            id: this.localParameters.variableId,
+            status: 'DISPLAYED',
+            value: 0,
+            relevantForResponsesProgress: false
+          }]);
+          this.hasRestoredFromFormerState = true;
+        }
+      }
     });
   }
 
-  ngOnInit() {
-    this.responses.emit([{
-      // @ts-expect-error access parameter of unknown
-      id: this.parameters().variableId || 'BUTTONS',
-      status: 'DISPLAYED',
-      value: 0,
-      relevantForResponsesProgress: false
-    }]);
+  /**
+   * Helper: Returns true when image is on TOP, there is exactly one row configured,
+   * and an imageSource is provided (non-empty).
+   * This replaces repeated checks like: `imagePosition === 'TOP' && localParameters.numberOfRows === 1`.
+   */
+  isTopSingleRowWithImage(): boolean {
+    const params = this.localParameters;
+    return (
+      !!params?.imageSource &&
+      (params?.imagePosition || 'TOP') === 'TOP' &&
+      (params?.numberOfRows || 0) === 1
+    );
   }
 
   private resetSelection(): void {
@@ -87,20 +136,26 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
     if (!this.localParameters.options) return [];
 
     // eslint-disable-next-line
-    let options:any[];
+    let options: SelectionOption[];
 
     if (this.localParameters.options?.repeatButton) {
+      const repeatButton = this.localParameters.options.repeatButton;
       options = Array.from(
-        { length: this.localParameters.options.repeatButton.numberOfOptions },
+        { length: repeatButton.numberOfOptions },
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        _ => ({
-          text: this.localParameters.options.repeatButton.option?.text || null,
-          imageSource: this.localParameters.options.repeatButton.option?.imageSource || null,
-          icon: this.localParameters.options.repeatButton.option?.icon || null
-        })
+        _ => {
+          const opt: SelectionOption = {
+            text: repeatButton.option?.text || '',
+            imageSource: repeatButton.option?.imageSource || ''
+          };
+          if (repeatButton.option?.icon !== undefined) {
+            opt.icon = repeatButton.option.icon;
+          }
+          return opt;
+        }
       );
     } else {
-      options = this.localParameters.options?.buttons || null;
+      options = this.localParameters.options?.buttons || [];
     }
 
     if (this.localParameters.imageSource) {
@@ -115,67 +170,203 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
   getRowsOptions():Array<Array<RowOption>> {
     if (!this.localParameters.options) return [];
 
-    const numberOfRows = this.localParameters.numberOfRows;
+    const numberOfRows = this.localParameters.numberOfRows || 1;
     const rows: Array<Array<RowOption>> = [];
 
-    let options = this.allOptions;
+    const options = this.allOptions;
     const baseId = this.localParameters.variableId;
+    const totalOptions = options.length;
 
-    // calculate number of options in each row, last row might be shorter
-    const numberOfOptionsPerRow = Math.ceil(options.length / numberOfRows);
+    const optionsPerRow = this.getCustomDistribution(totalOptions, numberOfRows);
 
-    // generate arrays of options for each row
-    while (options.length > 0) {
-      const startIndex = rows.length * numberOfOptionsPerRow;
+    let currentIndex = 0;
+
+    optionsPerRow.forEach(optionsInThisRow => {
+      // Skip if no options for this row
+      if (optionsInThisRow <= 0) {
+        return; // continue to next iteration
+      }
+
+      // Make sure we don't exceed available options
+      const availableOptions = options.length - currentIndex;
+      const actualOptionsForRow = Math.min(optionsInThisRow, availableOptions);
+
+      if (actualOptionsForRow <= 0) {
+        return; // continue to next iteration
+      }
+
       const singleRowOptionsIndexed: RowOption[] = options
-        .slice(0, numberOfOptionsPerRow)
-        /* generate array of object containing option data and generated id
-           and keep track of index in allOptions array */
+        .slice(currentIndex, currentIndex + actualOptionsForRow)
         .map((option, i) => ({
           option,
-          index: startIndex + i,
-          id: this.localParameters.multiSelect ? `${baseId}_${startIndex + i}` : baseId
+          index: currentIndex + i,
+          id: this.localParameters.multiSelect ? `${baseId}_${currentIndex + i}` : baseId
         }));
 
       rows.push(singleRowOptionsIndexed);
-      // slice off options of current row and go to the next chunk of options
-      options = options.slice(numberOfOptionsPerRow);
-    }
+      currentIndex += actualOptionsForRow;
+    });
 
     return rows;
   }
 
-  onButtonClick(index: number): void {
-    let selectedValues = this.selectedValues();
-    const numberOfOptions = this.localParameters.options?.buttons?.length ||
-      this.localParameters.options?.repeatButton?.numberOfOptions || 0;
+  // eslint-disable-next-line class-methods-use-this
+  private getCustomDistribution(totalOptions: number, numberOfRows: number): number[] {
+    if (numberOfRows === 1) {
+      return [totalOptions];
+    }
 
+    if (numberOfRows === 2) {
+      const firstRow = Math.ceil(totalOptions / 2);
+      return [firstRow, totalOptions - firstRow];
+    }
+
+    if (numberOfRows === 3) {
+      // For 3 rows: check if we can distribute evenly first
+      if (totalOptions % numberOfRows === 0) {
+        const evenAmount = totalOptions / numberOfRows;
+        return [evenAmount, evenAmount, evenAmount];
+      }
+
+      if (totalOptions <= 3) {
+        const result: number[] = [];
+        for (let i = 0; i < numberOfRows; i++) {
+          result.push(i < totalOptions ? 1 : 0);
+        }
+        return result;
+      }
+
+      // 5-5-1 layout
+      if (totalOptions >= 10) {
+        const forLastRow = 1;
+        const remaining = totalOptions - forLastRow;
+        const forFirstRow = Math.ceil(remaining / 2);
+        const forSecondRow = remaining - forFirstRow;
+        return [forFirstRow, forSecondRow, forLastRow];
+      } else {
+        const baseAmount = Math.floor(totalOptions / numberOfRows);
+        const remainder = totalOptions % numberOfRows;
+
+        const result: number[] = [];
+        for (let i = 0; i < numberOfRows; i++) {
+          result.push(baseAmount + (i < remainder ? 1 : 0));
+        }
+        return result;
+      }
+    }
+
+    // For more than 3 rows
+    const distribution: number[] = [];
+    let remainingOptions = totalOptions;
+
+    for (let i = 0; i < numberOfRows; i++) {
+      const remainingRows = numberOfRows - i;
+
+      if (remainingRows === 1) {
+        distribution.push(remainingOptions);
+      } else {
+        const mustLeaveForOthers = remainingRows - 1;
+        const canTakeNow = Math.max(1, remainingOptions - mustLeaveForOthers);
+        distribution.push(canTakeNow);
+        remainingOptions -= canTakeNow;
+      }
+    }
+
+    return distribution;
+  }
+
+  /**
+   * Called when the stimulus image has loaded to determine if it needs extra styling
+   * @returns {void}
+   * */
+  onImageLoad(): void {
+    const img = this.imageRef?.nativeElement as HTMLImageElement | undefined;
+
+    if (!img || !img.naturalWidth || !img.naturalHeight) {
+      return;
+    }
+
+    this.useFullArea = !!this.localParameters.imageUseFullArea;
+  }
+
+  onButtonClick(index: number): void {
+    // Update UI state
+    this.updateSelection(index);
+
+    // Emit the restored state
+    this.emitResponse('VALUE_CHANGED', true);
+
+    // Check if triggerNavigationOnSelect is enabled
+    if (this.localParameters.triggerNavigationOnSelect === true) {
+      setTimeout(() => {
+        this.veronaPostService.sendVopUnitNavigationRequestedNotification('next');
+      }, 500);
+    }
+  }
+
+  /**
+   * Updates the selection state based on user interaction
+   */
+  private updateSelection(index: number): void {
     if (this.localParameters.multiSelect) {
-      // toggle selected item for multiselect
+      // Toggle the clicked item
+      const selectedValues = this.selectedValues();
       selectedValues[index] = !selectedValues[index];
       this.selectedValues.set(selectedValues);
     } else {
-      // reset array and set selected item to true for single select
-      // no toggle here
-      selectedValues = Array.from(
-        { length: numberOfOptions },
-        () => false
-      );
-      selectedValues[index] = true;
-      this.selectedValues.set(selectedValues);
+      // Single select: reset all and select clicked item
+      this.setSelectionAtIndex(index);
     }
+  }
 
-    /* stringify boolean array to string of 0 and 1 for multiselect or
-       index of selected item for single select */
+  /**
+   * Sets selection to a specific index (single select mode)
+   */
+  private setSelectionAtIndex(index: number): void {
+    const numberOfOptions = this.localParameters.options?.buttons?.length ||
+      this.localParameters.options?.repeatButton?.numberOfOptions || 0;
+
+    const selectedValues = Array.from(
+      { length: numberOfOptions },
+      (_, i) => i === index
+    );
+    this.selectedValues.set(selectedValues);
+  }
+
+  /**
+   * Restores the selection state based on user interaction.
+   * @param {Response} response - The response object containing a string `value`.
+   */
+  private restoreFromFormerState(response: Response): void {
+    if (!response.value || typeof response.value !== 'string') {
+      return;
+    }
+    if (this.localParameters.multiSelect) {
+      // Restore multiselect: "010" => [false, true, false]
+      const selectedStates = response.value
+        .split('')
+        .map((char: string) => char === '1');
+      this.selectedValues.set(selectedStates);
+    } else {
+      // Restore single select: "2" => [false, true, false]
+      const selectedIndex = parseInt(response.value, 10) - 1;
+      this.setSelectionAtIndex(selectedIndex);
+    }
+  }
+
+  /**
+   * Emits the current selection state as a response
+   */
+  private emitResponse(status: 'DISPLAYED' | 'VALUE_CHANGED', relevant: boolean): void {
     const value = this.localParameters.multiSelect ?
       this.selectedValues().map(item => (item ? 1 : 0)).join('') :
       (this.selectedValues().findIndex(item => item) + 1).toString();
 
     const response: StarsResponse = {
       id: this.localParameters.variableId,
-      status: 'VALUE_CHANGED',
+      status: status,
       value: value,
-      relevantForResponsesProgress: true
+      relevantForResponsesProgress: relevant
     };
 
     this.responses.emit([response]);
@@ -185,11 +376,13 @@ export class InteractionButtonsComponent extends InteractionComponentDirective i
   private createDefaultParameters(): InteractionButtonParams {
     return {
       variableId: 'BUTTONS',
-      options: null,
-      imageSource: null,
+      options: {},
+      imageSource: '',
       imagePosition: 'TOP',
-      text: null,
+      imageUseFullArea: false,
+      text: '',
       multiSelect: false,
+      triggerNavigationOnSelect: false,
       numberOfRows: 1,
       buttonType: 'MEDIUM_SQUARE'
     };

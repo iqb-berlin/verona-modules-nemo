@@ -1,15 +1,29 @@
-<div class="buttons-container"
-     [class.flex-row]="imagePosition === 'LEFT'">
+<div class="buttons-container" data-cy="buttons-container"
+     [class.flex-row]="imagePosition === 'LEFT'"
+     [class.use-full-area]="useFullArea">
   @if (localParameters.imageSource) {
     <div class="stimulus-wrapper"
-         [class]="localParameters.imagePosition?.toLowerCase() + '-position' || ''">
-      <img [src]="localParameters.imageSource" [alt]="">
+         [class]="localParameters.imagePosition?.toLowerCase() + '-position' || ''"
+         [class.use-full-area]="useFullArea"
+         [style.max-height.px]="useFullArea ? imgWrapperMaxHeight() : null"
+         [style.height.px]="!useFullArea && isTopSingleRowWithImage() ? imgWrapperHeight() : null"
+         [style.position]="!useFullArea && isTopSingleRowWithImage() ? 'fixed' : null"
+         [style.top.px]="!useFullArea && isTopSingleRowWithImage() ? distanceFromTop() : null"
+    >
+      <img #imageElement
+           [src]="localParameters.imageSource"
+           [alt]=""
+           data-cy="stimulus-image"
+           (load)="onImageLoad()">
     </div>
   }
 
-  <div class="buttons-wrapper">
+  <div class="buttons-wrapper" [style.position]="isTopSingleRowWithImage() ? 'fixed' : null" [style.bottom.px]="isTopSingleRowWithImage() ? distanceFromBottom() : null">
     @for (row of optionRows; track $index) {
-      <div class="row">
+      <div class="row" [class.two-buttons]="optionRows.length === 1 && row.length === 2 && localParameters.buttonType !== 'LONG_RECTANGLE' && localParameters.buttonType !== 'EXTRA_LARGE_SQUARE'"
+           [class.two-extra-large-buttons]="localParameters.buttonType === 'EXTRA_LARGE_SQUARE' && optionRows.length === 1 && row.length === 2"
+           [class.long-rectangle-buttons]="localParameters.buttonType === 'LONG_RECTANGLE'"
+           [attr.data-cy]="'button-row-' + $index">
         @for (button of row; track $index) {
           <stars-standard-button
             [id]="button.id"
@@ -20,6 +34,7 @@
             [icon]="button.option.icon"
             [selected]="selectedValues()[button.index]"
             [type]="localParameters.buttonType"
+            [attr.data-cy]="'button-' + button.index"
             (buttonClick)="onButtonClick(button.index)">
           </stars-standard-button>
         }
@@ -29,7 +44,7 @@
 
   @if (localParameters.text) {
     <div class="text-wrapper">
-      <span>{{localParameters.text}}</span>
+      <span data-cy="instruction-text">{{localParameters.text}}</span>
     </div>
   }
 </div>

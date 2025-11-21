@@ -4,11 +4,32 @@
 .buttons-container {
   @include variables.flex-center;
   flex-direction: column;
-  width: 80%;
-  height: 80%;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+
+  &.use-full-area:not(.flex-row) {
+    display: grid;
+    align-content: start;
+    justify-items: center;
+
+    .stimulus-wrapper.use-full-area {
+      margin-bottom: unset;
+
+      img {
+        height: auto;
+        width: auto;
+        object-fit: contain;
+        padding: 0;
+        display: block;
+        box-sizing: border-box;
+      }
+    }
+  }
 
   .stimulus-wrapper {
     @include variables.flex-center;
+    flex: 0 0 auto;
     margin-bottom: variables.$big-gap-margin;
 
     img {
@@ -16,55 +37,79 @@
     }
   }
 
-  .left-position {
-    justify-content: end;
-  }
+  .stimulus-wrapper.top-position {
+    width: 100%;
+    overflow: hidden;
 
-  .top-position {
-    width: 250px;
-    height: 250px;
+    img {
+      width: 100%;
+      height: auto;
+      max-height: 100%;
+      object-fit: contain;
+      padding: 0;
+      display: block;
+    }
   }
 
   .text-wrapper {
-    width: 100%;
-    height: 10%;
+    width: 200px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+
     display: flex;
-    margin-top: variables.$small-gap-margin;
+    justify-content: center;
+    align-items: center;
 
     span {
+      display: block;
+      width: 100%;
       margin: 0 auto;
+      text-align: center;
     }
   }
 
   .buttons-wrapper {
     @include variables.flex-center;
     flex-direction: column;
-    padding-left: variables.$small-gap-margin;
+    flex: 0 0 auto;
+    gap: variables.$small-gap-margin;
 
     .row {
       @include variables.flex-center;
       flex-direction: row;
       width: 100%;
+      column-gap: variables.$small-gap-margin; /* default spacing between buttons */
+
+      &.two-buttons {
+        column-gap: variables.$gap-between-two-buttons-in-a-row; /* 106px special case for 1 Row 2 buttons */
+      }
+
+      &.two-extra-large-buttons {
+        column-gap: variables.$gap-between-two-extra-large-buttons-in-a-row; /* 50px special case for 1 Row 2 buttons that has buttonType: EXTRA_LARGE_SQUARE */
+      }
+
+      &.long-rectangle-buttons {
+        flex-direction: column;
+        row-gap: variables.$gap-between-two-extra-large-buttons-in-a-row;
+      }
     }
   }
 
 
   &.flex-row {
     flex-direction: row;
+    column-gap: variables.$small-gap-margin;
+    padding-left: variables.$big-gap-margin;
 
     .stimulus-wrapper {
-      width: 300px;
-      height: 300px;
+      width: variables.$square-image-width;
+      height: variables.$square-image-height;
       margin: 0;
 
       img {
         @include variables.responsive-image;
       }
-    }
-
-    .buttons-wrapper {
-      width: 50%;
-      margin-top: variables.$small-gap-margin;
     }
   }
 }

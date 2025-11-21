@@ -30,18 +30,36 @@ export class ResponsesService {
   pendingAudioFeedback = signal(false);
   private pendingAudioFeedbackSource = '';
   feedbackDefinitions: FeedbackDefinition[] = [];
+  formerStateResponses = signal<Response[]>([]);
+
+  /**
+  * Interpret mixed input as a number
+   * @param value mixed input
+   * @returns number
+  * */
+  // eslint-disable-next-line class-methods-use-this
+  private asNumberOrZero(value: unknown): number {
+    if (typeof value === 'number') return value;
+    if (typeof value === 'boolean') return value ? 1 : 0;
+    if (typeof value === 'string') {
+      const n = Number.parseFloat(value);
+      return Number.isNaN(n) ? 0 : n;
+    }
+    if (Array.isArray(value)) return value.length > 0 ? this.asNumberOrZero(value[0]) : 0;
+    return 0;
+  }
 
   setNewData(unitDefinition: UnitDefinition = null) {
     this.firstInteractionDone.set(false);
     this.unitDefinitionProblem.set('');
-    this.mainAudioComplete.set(false);
     this.videoComplete.set(false);
-    this.responseProgress.set('none');
     this.variableInfo = [];
     this.allResponses = [];
+    this.lastResponsesString = '';
     this.pendingAudioFeedback.set(false);
     this.pendingAudioFeedbackSource = '';
     this.feedbackDefinitions = [];
+
     if (unitDefinition) {
       const problems: string[] = [];
       if (unitDefinition.variableInfo && unitDefinition.variableInfo.length > 0) {
@@ -91,25 +109,58 @@ export class ResponsesService {
       }
       if (problems.length > 0) this.unitDefinitionProblem.set(problems.join('; '));
     }
+
+    // Restore from former state if available
+    const former = this.formerStateResponses();
+    if (former && former.length > 0) {
+      const mainAudioResp = former.find(r => r.id === 'mainAudio');
+      if (mainAudioResp) {
+        const n = this.asNumberOrZero(mainAudioResp.value);
+        if (n >= 1) {
+          this.mainAudioComplete.set(true);
+        }
+      }
+      // Restore allResponses from former state
+      const deepCopy: Response[] = JSON.parse(JSON.stringify(former));
+      this.allResponses = deepCopy;
+      this.lastResponsesString = JSON.stringify(former);
+    }
   }
 
   newResponses(responses: StarsResponse[]) {
     responses.forEach(response => {
       const codedResponse = this.getCodedResponse(response);
       const responseInStore = this.allResponses.find(r => r.id === response.id);
-      if (responseInStore) {
-        responseInStore.value = response.value;
-        responseInStore.status = codedResponse.status;
-        responseInStore.code = codedResponse.code;
-        responseInStore.score = codedResponse.score;
-      } else {
-        this.allResponses.push(codedResponse);
-      }
+
       if (response.id === 'mainAudio') {
-        this.mainAudioComplete.set(response.value as number >= 1);
-      }
-      if (response.id === 'videoPlayer') {
-        this.videoComplete.set(response.value as number >= 1);
+        const incomingN = this.asNumberOrZero(response.value);
+        if (responseInStore) {
+          const prevN = this.asNumberOrZero(responseInStore.value);
+          // keep maximum to avoid regressions from brief seeks/back jumps
+          responseInStore.value = Math.max(prevN, incomingN);
+          responseInStore.status = codedResponse.status;
+          responseInStore.code = codedResponse.code;
+          responseInStore.score = codedResponse.score;
+        } else {
+          codedResponse.value = incomingN;
+          this.allResponses.push(codedResponse);
+        }
+        if (incomingN >= 1 || this.mainAudioComplete()) {
+          this.mainAudioComplete.set(true);
+        }
+      } else {
+        // Default behavior for all other responses
+        if (responseInStore) {
+          responseInStore.value = response.value;
+          responseInStore.status = codedResponse.status;
+          responseInStore.code = codedResponse.code;
+          responseInStore.score = codedResponse.score;
+        } else {
+          this.allResponses.push(codedResponse);
+        }
+        if (response.id === 'videoPlayer') {
+          this.videoComplete.set((response.value as number) >= 1);
+        }
       }
     });
 
@@ -126,14 +177,17 @@ export class ResponsesService {
         dataParts: {
           responses: responsesAsString
         },
-        responseProgress: this.responseProgress()
+        responseProgress: this.responseProgress(),
+        presentationProgress: this.getPresentationStatus()
       };
 
       if (this.hasParentWindow) {
         // tslint:disable-next-line:no-console
         console.log('unit state changed: ', unitState);
-      } else if (this.veronaPostService) {
+      }
+      if (this.veronaPostService) {
         this.veronaPostService.sendVopStateChangedNotification({ unitState });
+        console.log('unit state changed: ', unitState);
       }
       if (this.feedbackDefinitions.length > 0 && responses.length > 0) {
         this.provideFeedback(responses[0].id);
@@ -260,6 +314,11 @@ export class ResponsesService {
     return isComplete ? 'complete' : 'some';
   }
 
+  private getPresentationStatus(): Progress {
+    if (this.mainAudioComplete()) return 'complete';
+    return 'some';
+  }
+
   getAudioFeedback(setAsPlayed: boolean): string {
     const returnValue = this.pendingAudioFeedbackSource;
     if (setAsPlayed) {
@@ -317,7 +376,90 @@ export class ResponsesService {
       this.pendingAudioFeedback.set(true);
       this.pendingAudioFeedbackSource = audioToPlay;
     }
-    // console.log(this.pendingAudioFeedback(), ' <<>> ', audioToPlay);
+  }
+
+  setFormerState(unitState: UnitState | null) {
+    const prevPresentation = this.getPresentationStatus();
+    const prevResponse = this.responseProgress();
+
+    if (!unitState) {
+      this.formerStateResponses.set([]);
+      this.mainAudioComplete.set(false);
+      this.allResponses = [];
+      this.lastResponsesString = '';
+      this.responseProgress.set('none');
+    } else if (unitState.dataParts) {
+      const dataParts = unitState.dataParts || {};
+      const responsesJson = Object.values(dataParts)[0];
+
+      if (responsesJson) {
+        try {
+          const parsedResponses = JSON.parse(responsesJson as string) as Response[];
+          this.formerStateResponses.set(parsedResponses);
+
+          const deepCopy: Response[] = JSON.parse(JSON.stringify(parsedResponses));
+          this.allResponses = deepCopy;
+          this.lastResponsesString = responsesJson as string;
+
+          // Restore mainAudio completion from saved responses
+          const mainAudioResp = parsedResponses.find(r => r.id === 'mainAudio');
+          if (mainAudioResp) {
+            const n = this.asNumberOrZero(mainAudioResp.value);
+            this.mainAudioComplete.set(n >= 1);
+          } else {
+            this.mainAudioComplete.set(false);
+          }
+
+          // Restore responseProgress: if any interaction response has VALUE_CHANGED (or CODING_COMPLETE), mark complete
+          const hasInteractionValueChanged =
+            parsedResponses.some(r => (r.status === 'VALUE_CHANGED' || r.status === 'CODING_COMPLETE') &&
+              r.id !== 'mainAudio' && r.id !== 'videoPlayer');
+          if (hasInteractionValueChanged) {
+            this.responseProgress.set('complete');
+          } else if (unitState.responseProgress) {
+            // fall back to provided responseProgress from unitState when available
+            this.responseProgress.set(unitState.responseProgress);
+          } else {
+            this.responseProgress.set('none');
+          }
+        } catch (error) {
+          console.warn('RESPONSE SERVICE Failed to parse former state responses:', error);
+          this.formerStateResponses.set([]);
+          this.mainAudioComplete.set(false);
+          this.allResponses = [];
+          this.lastResponsesString = '';
+          this.responseProgress.set('none');
+        }
+      } else {
+        // No responses present in former state
+        this.formerStateResponses.set([]);
+        this.mainAudioComplete.set(false);
+        this.allResponses = [];
+        this.lastResponsesString = '';
+        this.responseProgress.set('none');
+      }
+    }
+
+    const newPresentation = this.getPresentationStatus();
+    const newResponse = this.responseProgress();
+    if ((newPresentation !== prevPresentation || newResponse !== prevResponse) && this.veronaPostService) {
+      const restoredDataParts: Record<string, string> = unitState?.dataParts ?
+        { ...unitState.dataParts } :
+        {};
+      const unitStateToPost: UnitState = {
+        unitStateDataType: UnitStateDataType,
+        dataParts: restoredDataParts,
+        responseProgress: newResponse,
+        presentationProgress: newPresentation
+      };
+
+      // Keep lastResponsesString in sync to avoid duplicate postings after first interaction
+      if (restoredDataParts && restoredDataParts.responses) {
+        this.lastResponsesString = restoredDataParts.responses;
+      }
+
+      this.veronaPostService.sendVopStateChangedNotification({ unitState: unitStateToPost });
+    }
   }
 }
 

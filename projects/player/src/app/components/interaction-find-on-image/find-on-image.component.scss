@@ -4,23 +4,31 @@
 .find-on-image-container {
   @include variables.flex-center;
   flex-direction: column;
-  width: 85%;
-  height: 70%;
-  padding-top: 18px;
+  margin: 10px 80px 20px 80px;
+  height: 100%;
 
   .image-wrapper {
-    @include variables.flex-center;
     position: relative;
-    @include variables.viewportRatio(16, 9);
+    width: 100%;
+    max-width: 100%;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 
     img {
-      @include variables.responsive-image;
+      object-fit: contain;
+      max-width: 100%;
+      max-height: 100%;
       padding: 0;
+      width: auto;
+      height: auto;
     }
 
     .area-style {
-      background: rgba(255, 255, 255, 0.3);
-      border: colors.$highlight dashed 1px;
+      background: rgba(255, 255, 255, 0.5);
+      border: colors.$highlight dashed 2px;
       position: absolute;
       z-index: 5;
       pointer-events: none;
@@ -40,28 +48,11 @@
       &.disabled {
         display: none;
       }
-
-      &.small-size {
-        width: 50px;
-        height: 50px;
-      }
-
-      &.medium-size {
-        width: 70px;
-        height: 70px;
-      }
-
-      &.large-size {
-        width: 100px;
-        height: 100px;
-      }
     }
   }
 
   .text-wrapper {
-    height: 10%;
-    width: 80%;
-    padding-top: 24px;
+    padding-top: 12px;
     text-align: center;
 
     span {

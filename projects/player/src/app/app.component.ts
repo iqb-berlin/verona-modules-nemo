@@ -1,4 +1,6 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import {
+  Component, computed, HostListener, OnInit
+} from '@angular/core';
 import { Subject } from 'rxjs';
 
 import { VeronaPostService } from './services/verona-post.service';
@@ -14,19 +16,22 @@ import { VopStartCommand } from './models/verona';
   styleUrls: ['./app.component.scss'],
   standalone: false
 })
+
 export class AppComponent implements OnInit {
-  isStandalone: boolean;
+  isStandalone: boolean | undefined;
   private ngUnsubscribe = new Subject<void>();
   hasRibbonBars(): boolean {
     return this.unitService.ribbonBars();
   }
 
-  isWhiteBackground(): boolean {
-    const bgColor = this.unitService.backgroundColor().toLowerCase();
-    // Check for white color variations
-    return bgColor === '#ffffff' || bgColor === '#fff' ||
-      bgColor === '#eeeeee' || bgColor === '#eee';
-  }
+  getParametersWithFormerState = computed(() => {
+    const params = this.unitService.parameters();
+    const baseParams = params as Record<string, any> || {};
+    return {
+      ...baseParams,
+      formerState: this.responsesService.formerStateResponses()
+    };
+  });
 
   constructor(
     public unitService: UnitService,
@@ -39,13 +44,20 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.veronaSubscriptionService.vopStartCommand
       .subscribe((message: VopStartCommand) => {
-        const unitDefinition = JSON.parse(message.unitDefinition);
-        this.unitService.setNewData(unitDefinition);
+        const unitDefinition = message.unitDefinition ? JSON.parse(message.unitDefinition) : {};
         this.veronaPostService.sessionID = message.sessionId;
+        this.responsesService.setFormerState(message.unitState ? message.unitState : null);
+        this.unitService.setNewData(unitDefinition);
         this.responsesService.setNewData(unitDefinition);
       });
     this.isStandalone = window === window.parent;
     this.veronaPostService.sendReadyNotification(this.metadataService.playerMetadata);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  disabledOverlay(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   @HostListener('window:blur')

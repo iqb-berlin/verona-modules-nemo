@@ -4,27 +4,26 @@
 .drop-select-container {
   @include variables.flex-center;
   flex-direction: column;
-  padding-top: 7%;
+  padding-top: 8%;
+  width: 100%;
+  height: 100%;
 
-  .stimulus-wrapper, .interaction-wrapper {
-    display: block;
-    width: 100%;
+  // Image at the bottom, buttons at the top
+  &.image-position-bottom {
+    flex-direction: column-reverse;
+  }
+
+  // Image at the top, buttons at the bottom
+  &.image-position-top {
+    flex-direction: column;
   }
 
   .stimulus-wrapper {
-    height: 70%;
-
+    padding: 0 variables.$small-gap-margin 0 variables.$small-gap-margin;
     img {
-      display: block;
-      width: auto;
-      height: 80%;
-      padding-top: 40px;
-      margin: 0 auto;
+      @include variables.responsive-image;
+      padding: unset;
     }
-  }
-
-  .interaction-wrapper {
-    height: 30%;
   }
 }
 
@@ -32,34 +31,20 @@
   @include variables.flex-center;
   flex-direction: row;
   width: 100%;
-  /* align center to stimulus pic with half of gap/box-shadow */
-  padding-left: 12px;
+  margin: 20px 0;
 }
 
 .animate-wrapper {
-  transition: all 1s ease-in-out;
+  margin-right: variables.$small-gap-margin;
+  transition: transform 1s ease-in-out;
 
   &.no-transition {
     transition: none;
   }
 }
 
-@media screen and (max-height: 700px) {
-  .drop-select-container {
-    padding-top: 13%;
-
-    .stimulus-wrapper {
-      height: 65%;
-    }
-  }
-}
-
-@media screen and (max-height: 700px) {
-  .drop-select-container {
-    padding-top: 12%;
-
-    .stimulus-wrapper {
-      height: 65%;
-    }
+@media screen and (max-height: 600px) {
+  .stimulus-wrapper {
+    height: 300px;
   }
 }

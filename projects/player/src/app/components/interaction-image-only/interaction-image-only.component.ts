@@ -12,7 +12,7 @@ import { InteractionImageOnlyParams } from '../../models/unit-definition';
 })
 
 export class InteractionImageOnlyComponent extends InteractionComponentDirective {
-  localParameters: InteractionImageOnlyParams;
+  localParameters!: InteractionImageOnlyParams;
 
   constructor() {
     super();
@@ -21,7 +21,14 @@ export class InteractionImageOnlyComponent extends InteractionComponentDirective
       const parameters = this.parameters() as InteractionImageOnlyParams;
       this.localParameters = this.createDefaultParameters();
       if (parameters) {
-        this.localParameters.imageSource = parameters.imageSource || null;
+        this.localParameters.variableId = parameters.variableId || 'IMAGE_ONLY';
+        this.localParameters.imageSource = parameters.imageSource || '';
+        this.responses.emit([{
+          id: this.localParameters.variableId,
+          status: 'DISPLAYED',
+          value: '',
+          relevantForResponsesProgress: false
+        }]);
       }
     });
   }
@@ -29,7 +36,8 @@ export class InteractionImageOnlyComponent extends InteractionComponentDirective
   // eslint-disable-next-line class-methods-use-this
   private createDefaultParameters(): InteractionImageOnlyParams {
     return {
-      imageSource: null
+      variableId: '',
+      imageSource: ''
     };
   }
 }

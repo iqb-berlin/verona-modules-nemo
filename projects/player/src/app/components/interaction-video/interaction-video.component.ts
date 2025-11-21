@@ -17,7 +17,7 @@ import { InteractionVideoParams } from '../../models/unit-definition';
 })
 
 export class InteractionVideoComponent extends InteractionComponentDirective implements AfterViewInit {
-  localParameters: InteractionVideoParams;
+  localParameters!: InteractionVideoParams;
   playing = signal(false);
 
   playCount = 0;
@@ -33,10 +33,16 @@ export class InteractionVideoComponent extends InteractionComponentDirective imp
       this.localParameters = this.createDefaultParameters();
 
       if (parameters) {
-        this.localParameters.imageSource = parameters.imageSource || null;
-        this.localParameters.videoSource = parameters.videoSource || null;
+        this.localParameters.imageSource = parameters.imageSource || '';
+        this.localParameters.videoSource = parameters.videoSource || '';
         this.localParameters.text = parameters.text || '';
-        this.localParameters.variableId = parameters.variableId || 'videoPlayer';
+        this.localParameters.variableId = parameters.variableId || 'VIDEO';
+        this.responses.emit([{
+          id: this.localParameters.variableId,
+          status: 'DISPLAYED',
+          value: '',
+          relevantForResponsesProgress: false
+        }]);
 
         this.playing.set(false);
       }
@@ -71,6 +77,11 @@ export class InteractionVideoComponent extends InteractionComponentDirective imp
     this.playCount += 1;
 
     this.sendPlaybackTimeChanged();
+
+    // Reset the video to show the poster again
+    this.currentTime = 0;
+    this.videoPlayerRef.nativeElement.currentTime = 0;
+    this.videoPlayerRef.nativeElement.load();
   }
 
   sendPlaybackTimeChanged(): void {
@@ -95,8 +106,8 @@ export class InteractionVideoComponent extends InteractionComponentDirective imp
   private createDefaultParameters(): InteractionVideoParams {
     return {
       variableId: 'videoPlayer',
-      imageSource: null,
-      videoSource: null,
+      imageSource: '',
+      videoSource: '',
       text: ''
     };
   }

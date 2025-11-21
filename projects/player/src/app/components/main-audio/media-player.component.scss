@@ -1,3 +1,6 @@
+@use 'colors';
+@use 'variables';
+
 .audio-button-container {
   display: flex;
   justify-content: center;
@@ -48,7 +51,7 @@
   }
 
   .audio-button-animation {
-    height: 100px;
+    height: variables.$audio-waves-animation-height;
     opacity: 0;
     margin-top: 5px;
     transition: opacity ease-in-out 0.5s;
@@ -59,4 +62,9 @@
       transition-delay: 0s;
     }
   }
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

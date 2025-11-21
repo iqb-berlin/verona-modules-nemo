@@ -1,6 +1,8 @@
 <div class="button-option input-wrapper"
-     [class]="type().toLowerCase() +'-type'"
-     [class.text-button-mode]="textMode()">
+     [class]="(type() || '').toLowerCase() + '-type'"
+     [class.text-button-mode]="textMode()"
+     [class.has-smiley-icon]="icon()?.startsWith('SMILEY')"
+     data-cy="input-wrapper">
   <input
     [type]="inputType()"
     [name]="id()"
@@ -8,26 +10,20 @@
     [value]="value()"
     (click)="onClick()"
     [checked]="selected()"
+    [attr.data-selected]="selected()"
   />
   <label [for]="id() + '_' + value()">
-    @if (type() !== 'CIRCLE') {
+    @if (type() === 'CIRCLE') {
+      @if (icon()) {
+        <stars-standard-icon [icon]="icon()" [selected]="!!selected()"></stars-standard-icon>
+      }
+    } @else {
       @if (image()) {
-        <img [src]="image()" [alt]="">
+        <img [src]="image()" [class.long-rectangle-img]="type() === 'LONG_RECTANGLE'" [alt]="" data-cy="button-with-imageSource">
       } @else if (icon()) {
-        @if (icon() === 'CHECK_GREEN') {
-          <svg class="accept-icon" width="92" height="78" viewBox="0 0 92 78" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M8 45.2L30.2007 69.1756C30.6071 69.6146 31.3055 69.6008 31.6943 69.1462L84 8" stroke="#4A7611" stroke-width="16" stroke-linecap="round"/>
-          </svg>
-        } @else if (icon() === 'CLOSE_RED') {
-          <svg class="reject-icon" width="84" height="85" viewBox="0 0 84 85" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M8 10.1006L76 75.8713" stroke="#B83A1E" stroke-width="16" stroke-linecap="round"/>
-            <path d="M74.8853 8.98535L9.11451 76.9854" stroke="#B83A1E" stroke-width="16" stroke-linecap="round"/>
-          </svg>
-        } @else if (icon() === 'CLAP_HANDS') {
-          <img src="assets/images/hands/clapping-hand.png" alt="Clapping hands" class="clap-hands">
-        }
+        <stars-standard-icon [icon]="icon()" [selected]="!!selected()"></stars-standard-icon>
       } @else if (text()) {
-        <span>
+        <span data-cy="button-with-text">
           {{ text() }}
         </span>
       }
