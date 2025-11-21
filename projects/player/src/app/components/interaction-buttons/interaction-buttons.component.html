@@ -9,6 +9,7 @@
          [style.height.px]="!useFullArea && isTopSingleRowWithImage() ? imgWrapperHeight() : null"
          [style.position]="!useFullArea && isTopSingleRowWithImage() ? 'fixed' : null"
          [style.top.px]="!useFullArea && isTopSingleRowWithImage() ? distanceFromTop() : null"
+         data-cy="stimulus-wrapper"
     >
       <img #imageElement
            [src]="localParameters.imageSource"
@@ -18,11 +19,18 @@
     </div>
   }
 
-  <div class="buttons-wrapper" [style.position]="isTopSingleRowWithImage() ? 'fixed' : null" [style.bottom.px]="isTopSingleRowWithImage() ? distanceFromBottom() : null">
+  <div [class.row-buttons-wrapper]="localParameters.buttonAlignment === 'ROW_BUTTON'"
+       [class.column-buttons-wrapper]="localParameters.buttonAlignment === 'AUTO'"
+       [class.with-tall-rectangle-buttons]="localParameters.buttonType === 'TALL_RECTANGLE'"
+       [style.position]="isTopSingleRowWithImage() ? 'fixed' : null" [style.bottom.px]="isTopSingleRowWithImage() ? distanceFromBottom() : null"
+       data-cy="buttons-wrapper"
+  >
     @for (row of optionRows; track $index) {
-      <div class="row" [class.two-buttons]="optionRows.length === 1 && row.length === 2 && localParameters.buttonType !== 'LONG_RECTANGLE' && localParameters.buttonType !== 'EXTRA_LARGE_SQUARE'"
+      <div class="button-row"
+           [class.two-buttons]="optionRows.length === 1 && row.length === 2 && localParameters.buttonType !== 'LONG_RECTANGLE' && localParameters.buttonType !== 'EXTRA_LARGE_SQUARE'"
            [class.two-extra-large-buttons]="localParameters.buttonType === 'EXTRA_LARGE_SQUARE' && optionRows.length === 1 && row.length === 2"
            [class.long-rectangle-buttons]="localParameters.buttonType === 'LONG_RECTANGLE'"
+           [class.six-or-more-buttons]="row.length >= 6"
            [attr.data-cy]="'button-row-' + $index">
         @for (button of row; track $index) {
           <stars-standard-button

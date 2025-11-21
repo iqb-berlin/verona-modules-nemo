@@ -374,13 +374,13 @@ describe('BUTTONS Interaction E2E Tests', () => {
     assertButtonExists();
 
     // Both wrappers should be position: fixed
-    cy.get('.buttons-wrapper').should('exist').then($el => {
+    cy.get('[data-cy="buttons-wrapper"]').should('exist').then($el => {
       const style = getComputedStyle($el[0] as HTMLElement);
       expect(style.position).to.equal('fixed');
       expect(style.bottom).to.equal(`${distanceFromBottom}px`);
     });
 
-    cy.get('.stimulus-wrapper').should('exist').then($el => {
+    cy.get('[data-cy="stimulus-wrapper"]').should('exist').then($el => {
       const style = getComputedStyle($el[0] as HTMLElement);
       expect(style.position).to.equal('fixed');
       expect(style.top).to.equal(`${distanceFromTop}px`);

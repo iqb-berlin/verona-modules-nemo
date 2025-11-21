@@ -73,6 +73,11 @@ $square-image-height: 300px;
   height: 175px;
 }
 
+@mixin tall-rectangle-button-size {
+  width: 85px;
+  height: 225px;
+}
+
 @mixin word-button-size {
   height: 120px;
   min-width: 320px;

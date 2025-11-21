@@ -25,10 +25,16 @@
   }
 
   label {
-    .long-rectangle-img {
+    img {
       width: 100%;
       height: 100%;
+      border-radius: variables.$border-radius;
+    }
+    .long-rectangle-img {
       object-fit: fill;
+    }
+    .tall-rectangle-img {
+      object-fit: cover;
     }
   }
 
@@ -194,6 +200,10 @@
 
   &.long_rectangle-type {
     @include variables.long-rectangle-button-size;
+  }
+
+  &.tall_rectangle-type {
+    @include variables.tall-rectangle-button-size;
   }
 
   &.text-type {

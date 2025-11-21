@@ -69,31 +69,41 @@
     }
   }
 
-  .buttons-wrapper {
+  .button-row {
     @include variables.flex-center;
-    flex-direction: column;
+    flex-direction: row;
+    width: 100%;
+    column-gap: variables.$small-gap-margin; /* default spacing between buttons */
+
+    &.six-or-more-buttons {
+      column-gap: 8px;
+    }
+
+    &.two-buttons {
+      column-gap: variables.$gap-between-two-buttons-in-a-row; /* 106px special case for 1 Row 2 buttons */
+    }
+
+    &.two-extra-large-buttons {
+      column-gap: variables.$gap-between-two-extra-large-buttons-in-a-row; /* 50px special case for 1 Row 2 buttons that has buttonType: EXTRA_LARGE_SQUARE */
+    }
+
+    &.long-rectangle-buttons {
+      flex-direction: column;
+      row-gap: variables.$gap-between-two-extra-large-buttons-in-a-row;
+    }
+  }
+
+  .row-buttons-wrapper {
+    @include variables.flex-center;
+    flex-direction: row;
     flex: 0 0 auto;
     gap: variables.$small-gap-margin;
+  }
 
-    .row {
-      @include variables.flex-center;
-      flex-direction: row;
-      width: 100%;
-      column-gap: variables.$small-gap-margin; /* default spacing between buttons */
-
-      &.two-buttons {
-        column-gap: variables.$gap-between-two-buttons-in-a-row; /* 106px special case for 1 Row 2 buttons */
-      }
-
-      &.two-extra-large-buttons {
-        column-gap: variables.$gap-between-two-extra-large-buttons-in-a-row; /* 50px special case for 1 Row 2 buttons that has buttonType: EXTRA_LARGE_SQUARE */
-      }
-
-      &.long-rectangle-buttons {
-        flex-direction: column;
-        row-gap: variables.$gap-between-two-extra-large-buttons-in-a-row;
-      }
-    }
+  .column-buttons-wrapper {
+    @include variables.flex-center;
+    flex-direction: column;
+    row-gap: variables.$small-gap-margin; /* default spacing between buttons */
   }
 
 
@@ -109,6 +119,38 @@
 
       img {
         @include variables.responsive-image;
+      }
+    }
+
+    &:has(.row-buttons-wrapper.with-tall-rectangle-buttons) {
+      .stimulus-wrapper.left-position {
+        flex: 0 0 40%;
+        max-width: 40%;
+        width: 40%;
+        height: 520px;
+
+        img {
+          /* Keep aspect ratio and avoid cropping for portrait images */
+          width: 100%;
+          height: auto;
+          max-height: 100%;
+          object-fit: contain;
+          display: block;
+        }
+      }
+
+      .row-buttons-wrapper.with-tall-rectangle-buttons {
+        flex: 1 1 60%;
+        max-width: 60%;
+        width: 60%;
+        /* override flex-center from mixin: align content to the start */
+        justify-content: flex-start;
+        align-items: flex-start;
+
+        /* Ensure rows themselves don't center their children */
+        .button-row {
+          justify-content: flex-start;
+        }
       }
     }
   }
