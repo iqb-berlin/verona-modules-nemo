@@ -20,6 +20,13 @@ export class InteractionWriteComponent extends InteractionComponentDirective {
   currentText: string = '';
   /** An array of lowercase alphabet characters. */
   characterList = [...'abcdefghijklmnopqrstuvwxyz'];
+  numbersList: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  numbersListBlock = [
+    ['1', '2', '3'],
+    ['4', '5', '6'],
+    ['7', '8', '9'],
+    ['0']
+  ];
   /** Small array of additional characters (German umlauts). */
   umlautListChars = [...'äöü'];
   /** Boolean to track if the former state has been restored from response. */
@@ -38,6 +45,7 @@ export class InteractionWriteComponent extends InteractionComponentDirective {
         this.localParameters.addUmlautKeys = parameters.addUmlautKeys || true;
         this.localParameters.keysToAdd = parameters.keysToAdd || [];
         this.localParameters.variableId = parameters.variableId || 'WRITE';
+        this.localParameters.keyboardMode = parameters.keyboardMode || 'CHARACTERS';
         this.localParameters.maxInputLength = parameters.maxInputLength || 10;
         this.localParameters.imageSource = parameters.imageSource || '';
         this.localParameters.text = parameters.text || '';
@@ -135,6 +143,7 @@ export class InteractionWriteComponent extends InteractionComponentDirective {
       text: '',
       addBackspaceKey: true,
       addUmlautKeys: true,
+      keyboardMode: 'CHARACTERS',
       keysToAdd: [],
       maxInputLength: 10
     };

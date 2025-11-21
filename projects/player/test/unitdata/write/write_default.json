@@ -16,6 +16,7 @@
     "text": "Tastatur",
     "addBackspaceKey": true,
     "addUmlautKeys": true,
+    "keyboardMode": "CHARACTERS",
     "keysToAdd": [
       "eu",
       "au",
