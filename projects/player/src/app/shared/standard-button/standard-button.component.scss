@@ -204,6 +204,10 @@
 
   &.tall_rectangle-type {
     @include variables.tall-rectangle-button-size;
+    label {
+      background-color: transparent;
+      border: 8px solid transparent;
+    }
   }
 
   &.text-type {
