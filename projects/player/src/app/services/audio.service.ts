@@ -86,6 +86,11 @@ export class AudioService {
     this._isPlaying.set(false);
   }
 
+  /**
+   * Function to set the audio source and reset the playback position to the beginning.
+   * @param src - audio source as base64 string
+   * @returns Promise<boolean> - resolves to true if the audio source was successfully set
+   */
   setAudioSrc(src: string): Promise<boolean> {
     return new Promise(resolve => {
       setTimeout(() => {
@@ -103,6 +108,10 @@ export class AudioService {
     });
   }
 
+  /**
+   * Function to play the current audio source. Checks for the audioId
+   * @returns Promise<boolean> - resolves to true if the audio source was successfully played
+   */
   getPlayFinished(id: string): Promise<boolean> {
     if (id !== this.audioId()) return Promise.resolve(false);
     this.play();
