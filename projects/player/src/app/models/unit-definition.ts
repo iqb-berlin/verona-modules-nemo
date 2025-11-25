@@ -119,6 +119,8 @@ export interface InteractionPolygonButtonsParams {
 export interface MainAudio {
   audioSource: string;
   maxPlay?: number;
+  firstClickLayer?: boolean; // TODO: deprecated, use firstAudioOptions.firstClickLayer
+  animateButton?: boolean; // TODO: deprecated, use firstAudioOptions.animateButton
   disableInteractionUntilComplete?: boolean;
 }
 
