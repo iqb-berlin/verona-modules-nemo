@@ -1,0 +1,25 @@
+<div class="count-container" data-cy="interaction-count">
+  <div class="count-text">{{ localParameters?.text }}</div>
+
+  <div class="image-panel"></div>
+
+  <div class="icons-wrapper" data-cy="icons-wrapper">
+    <div class="tens-wrapper" data-cy="tens-wrapper">
+      @for (t of tensItems(); track $index) {
+        <div class="icon-item tens">
+          <stars-standard-icon icon="TENS"></stars-standard-icon>
+        </div>
+      }
+    </div>
+    <div
+      class="ones-wrapper"
+      data-cy="ones-wrapper"
+    >
+      @for (o of onesItems(); track $index) {
+        <div class="icon-item ones">
+          <stars-standard-icon icon="ONES"></stars-standard-icon>
+        </div>
+      }
+    </div>
+  </div>
+</div>

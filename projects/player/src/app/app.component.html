@@ -47,6 +47,10 @@
       <stars-interaction-find-on-image class="interaction"
         [parameters]="getParametersWithFormerState()"
         (responses)="responsesService.newResponses($event)"></stars-interaction-find-on-image>
+    } @else if (unitService.interaction() === 'COUNT') {
+      <stars-interaction-count class="interaction"
+        [parameters]="getParametersWithFormerState()"
+        (responses)="responsesService.newResponses($event)"></stars-interaction-count>
     }
     @if (hasRibbonBars()) {
       <stars-ribbon-bar></stars-ribbon-bar>

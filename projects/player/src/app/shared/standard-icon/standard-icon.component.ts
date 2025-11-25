@@ -28,6 +28,7 @@ export class StandardIconComponent {
 
   // eslint-disable-next-line class-methods-use-this
   private renderIconHtml(iconKey: string, selected: boolean): string {
+    console.log('Rendering icon:', iconKey);
     switch (iconKey) {
       case 'CHECK_GREEN': {
         return `
@@ -144,6 +145,62 @@ export class StandardIconComponent {
             <circle cx="39.7607" cy="47.2991" r="6.57877" fill="#0050E5"/>
             <path d="M61.7928 93.9645C78.2636 93.9645 84.2434 83.7342 85.5217 77.2688C85.7074 76.3296 84.9489 75.515 83.9916 75.515L39.385 75.515C38.4196 75.515 37.6589 76.3432 37.8586 77.2878C39.2259 83.7542 45.3382 93.9645 61.7928 93.9645Z" stroke="#0050E5" stroke-width="6.57877"/>
           </svg>`;
+      }
+      case 'ONES': {
+        if (selected) {
+          return `
+            <svg width="58" height="58" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <g filter="url(#filter0_dd_1047_1079)">
+                 <rect width="50" height="50" rx="16" fill="#DCDCDC"/>
+               </g>
+               <circle cx="25" cy="25" r="15" fill="#0050E5"/>
+            </svg>`;
+        }
+        return `
+          <svg width="58" height="58" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g filter="url(#filter0_d_1047_1063)">
+              <rect width="50" height="50" rx="16" fill="white"/>
+              <rect x="0.5" y="0.5" width="49" height="49" rx="15.5" stroke="#DBDDE7"/>
+            </g>
+            <circle cx="25" cy="25" r="15" fill="#0050E5"/>
+          </svg>`;
+      }
+      case 'TENS': {
+        if (selected) {
+          return `
+            <svg width="652" height="58" viewBox="0 0 652 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g filter="url(#filter0_dd_1047_1082)">
+                <rect width="644" height="50" rx="16" fill="#DCDCDC"/>
+              </g>
+              <circle cx="24.5156" cy="25" r="15" fill="#0050E5"/>
+              <circle cx="355" cy="25" r="15" fill="#0050E5"/>
+              <circle cx="91" cy="25" r="15" fill="#0050E5"/>
+              <circle cx="421" cy="25" r="15" fill="#0050E5"/>
+              <circle cx="157" cy="25" r="15" fill="#0050E5"/>
+              <circle cx="487" cy="25" r="15" fill="#0050E5"/>
+              <circle cx="223" cy="25" r="15" fill="#0050E5"/>
+              <circle cx="553" cy="25" r="15" fill="#0050E5"/>
+              <circle cx="289" cy="25" r="15" fill="#0050E5"/>
+              <circle cx="619" cy="25" r="15" fill="#0050E5"/>
+            </svg>`;
+        }
+        return `
+          <svg width="652" height="58" viewBox="0 0 652 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g filter="url(#filter0_d_1047_978)">
+              <rect width="644" height="50" rx="16" fill="white"/>
+              <rect x="0.5" y="0.5" width="643" height="49" rx="15.5" stroke="#DBDDE7"/>
+            </g>
+            <circle cx="24.5146" cy="25" r="15" fill="#0050E5"/>
+            <circle cx="354.999" cy="25" r="15" fill="#0050E5"/>
+            <circle cx="90.999" cy="25" r="15" fill="#0050E5"/>
+            <circle cx="420.999" cy="25" r="15" fill="#0050E5"/>
+            <circle cx="156.999" cy="25" r="15" fill="#0050E5"/>
+            <circle cx="486.999" cy="25" r="15" fill="#0050E5"/>
+            <circle cx="222.999" cy="25" r="15" fill="#0050E5"/>
+            <circle cx="552.999" cy="25" r="15" fill="#0050E5"/>
+            <circle cx="288.999" cy="25" r="15" fill="#0050E5"/>
+            <circle cx="618.999" cy="25" r="15" fill="#0050E5"/>
+           </svg>`;
       }
       default:
         return '';
