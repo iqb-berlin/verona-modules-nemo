@@ -11,20 +11,20 @@ import {
 })
 
 export class UnitService {
-  mainAudio = signal<MainAudio>(null);
+  mainAudio = signal<MainAudio | undefined>(undefined);
   backgroundColor = signal('#EEE');
   continueButton = signal<ContinueButtonEnum>('ALWAYS');
-  interaction = signal<InteractionEnum>(null);
+  interaction = signal<InteractionEnum | undefined>(undefined);
   parameters = signal<unknown>({});
   hasInteraction = signal(false);
   ribbonBars = signal<boolean>(false);
   disableInteractionUntilComplete = signal(false);
 
   reset() {
-    this.mainAudio.set(null);
+    this.mainAudio.set(undefined);
     this.backgroundColor.set('#EEE');
     this.continueButton.set('ALWAYS');
-    this.interaction.set('NONE');
+    this.interaction.set(undefined);
     this.parameters.set({});
     this.hasInteraction.set(false);
     this.ribbonBars.set(false);
