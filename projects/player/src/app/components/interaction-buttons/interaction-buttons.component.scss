@@ -105,7 +105,7 @@
     row-gap: variables.$small-gap-margin; /* default spacing between buttons */
   }
 
-// Flex row layout for image and buttons side by side
+  // Flex row layout for image and buttons side by side
   &.flex-row {
     flex-direction: row;
     column-gap: variables.$small-gap-margin;
@@ -122,14 +122,19 @@
     }
 
     &:has(.row-buttons-wrapper.with-tall-rectangle-buttons) {
+      display: grid;
+      grid-template-columns: 35% 1fr;
+      column-gap: variables.$small-gap-margin;
+      justify-content: start;
+      align-content: center;
+      align-items: end;
       .stimulus-wrapper.left-position {
-        flex: 0 0 35%;
-        max-width: 35%;
-        width: 35%;
+        flex: initial;
+        max-width: 100%;
+        width: 100%;
         height: auto;
 
         img {
-          /* Keep aspect ratio and avoid cropping for portrait images */
           width: 100%;
           height: auto;
           max-height: 100%;
@@ -139,14 +144,12 @@
       }
 
       .row-buttons-wrapper.with-tall-rectangle-buttons {
-        flex: 1 1 60%;
-        max-width: 60%;
-        width: 60%;
-        /* override flex-center from mixin: align content to the start */
+        flex: initial;
+        max-width: 100%;
+        width: 100%;
         justify-content: flex-start;
         align-items: flex-start;
 
-        /* Ensure rows themselves don't center their children */
         .button-row {
           justify-content: flex-start;
         }
