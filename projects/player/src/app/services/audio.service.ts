@@ -1,5 +1,4 @@
 import { Injectable, signal } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
@@ -57,8 +56,6 @@ export class AudioService {
     return this.playerStatus.asObservable();
   }
 
-  letsPlay = toObservable(this._isPlaying);
-
   play() {
     this._audioElement?.play();
     this._isPlaying.set(true);
@@ -71,13 +68,15 @@ export class AudioService {
 
   setAudioSrc(src: string): Promise<boolean> {
     return new Promise(resolve => {
-      this.getPlayerStatus().subscribe(status => {
-        if (status === 'paused') {
-          if (this._audioElement) this._audioElement.src = src;
-          this._audioElement?.load();
-          resolve(true);
-        }
-      });
+      setTimeout(() => {
+        this.getPlayerStatus().subscribe(status => {
+          if (status === 'paused') {
+            if (this._audioElement) this._audioElement.src = src;
+            this._audioElement?.load();
+            resolve(true);
+          }
+        });
+      }, 50);
     });
   }
 
