@@ -106,7 +106,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  it('3. Should handle different button types (BIG_SQUARE, TEXT, etc.)', () => {
+  it.only('3. Should handle different button types (BIG_SQUARE, TEXT, etc.)', () => {
     const buttonTypeConfigs = [
       { buttonType: 'MEDIUM_SQUARE', file: 'buttons_buttonType_mediumSquare_test.json' },
       { buttonType: 'BIG_SQUARE', file: 'buttons_buttonType_bigSquare_test.json' },
@@ -114,7 +114,8 @@ describe('BUTTONS Interaction E2E Tests', () => {
       { buttonType: 'TEXT', file: 'buttons_buttonType_text_test.json' },
       { buttonType: 'CIRCLE', file: 'buttons_buttonType_circle_test.json' },
       { buttonType: 'EXTRA_LARGE_SQUARE', file: 'buttons_buttonType_extraLargeSquare_test.json' },
-      { buttonType: 'LONG_RECTANGLE', file: 'buttons_buttonType_longRectangle_test.json' }
+      { buttonType: 'LONG_RECTANGLE', file: 'buttons_buttonType_longRectangle_test.json' },
+      { buttonType: 'TALL_RECTANGLE', file: 'buttons_buttonType_tallRectangle_test.json' }
     ];
 
     buttonTypeConfigs.forEach(({ buttonType, file }) => {

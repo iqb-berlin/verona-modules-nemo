@@ -30,7 +30,7 @@
            [class.two-buttons]="optionRows.length === 1 && row.length === 2 && localParameters.buttonType !== 'LONG_RECTANGLE' && localParameters.buttonType !== 'EXTRA_LARGE_SQUARE'"
            [class.two-extra-large-buttons]="localParameters.buttonType === 'EXTRA_LARGE_SQUARE' && optionRows.length === 1 && row.length === 2"
            [class.long-rectangle-buttons]="localParameters.buttonType === 'LONG_RECTANGLE'"
-           [class.six-or-more-buttons]="row.length >= 6"
+           [class.tall-rectangle-buttons]="localParameters.buttonType === 'TALL_RECTANGLE'"
            [attr.data-cy]="'button-row-' + $index">
         @for (button of row; track $index) {
           <stars-standard-button

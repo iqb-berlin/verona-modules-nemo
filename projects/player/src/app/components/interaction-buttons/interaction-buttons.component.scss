@@ -75,10 +75,6 @@
     width: 100%;
     column-gap: variables.$small-gap-margin; /* default spacing between buttons */
 
-    &.six-or-more-buttons {
-      column-gap: 8px;
-    }
-
     &.two-buttons {
       column-gap: variables.$gap-between-two-buttons-in-a-row; /* 106px special case for 1 Row 2 buttons */
     }
@@ -90,6 +86,9 @@
     &.long-rectangle-buttons {
       flex-direction: column;
       row-gap: variables.$gap-between-two-extra-large-buttons-in-a-row;
+    }
+    &.tall-rectangle-buttons {
+      column-gap: 0;
     }
   }
 
@@ -106,7 +105,7 @@
     row-gap: variables.$small-gap-margin; /* default spacing between buttons */
   }
 
-
+// Flex row layout for image and buttons side by side
   &.flex-row {
     flex-direction: row;
     column-gap: variables.$small-gap-margin;
@@ -124,10 +123,10 @@
 
     &:has(.row-buttons-wrapper.with-tall-rectangle-buttons) {
       .stimulus-wrapper.left-position {
-        flex: 0 0 40%;
-        max-width: 40%;
-        width: 40%;
-        height: 520px;
+        flex: 0 0 35%;
+        max-width: 35%;
+        width: 35%;
+        height: auto;
 
         img {
           /* Keep aspect ratio and avoid cropping for portrait images */
