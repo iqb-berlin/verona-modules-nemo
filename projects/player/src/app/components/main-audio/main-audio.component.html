@@ -1,5 +1,5 @@
 <div class="audio-instruction-container">
-  @if (showLayer) {
+  @if (showLayer()) {
     <stars-click-layer (click)="layerClicked()"></stars-click-layer>
   }
   <div class="audio-button-wrapper">

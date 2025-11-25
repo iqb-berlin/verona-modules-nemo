@@ -22,7 +22,7 @@ import { ClickLayerComponent } from './click-layer.component';
 
 export class MainAudioComponent {
   mainAudio = input.required();
-  playerId = input('');
+  audioId = input('');
   elementValueChanged = output();
 
   audioService = inject(AudioService);
@@ -47,17 +47,35 @@ export class MainAudioComponent {
       if (localAudio) {
         this.audioService.setAudioSrc(localAudio.audioSource).then(() => {
           this.audioLoaded.set(true);
+          this.audioService.setAudioId(this.audioId());
         });
       }
     });
+
+    effect(() => {
+      if (this.audioService.isPlaying()) {
+        this.animationItem?.play();
+      } else {
+        this.animationItem?.stop();
+      }
+    });
+
+    setTimeout(() => {
+      if (!this.responsesService.firstInteractionDone()) this.movingButton.set(true);
+    }, 10000);
   }
 
   play() {
     if (this.audioLoaded()) {
-      this.audioService.getPlayFinished().then(resolve => {
-        if (resolve) console.log('play finished');
-      });
+      this.animationItem?.play();
+      this.audioService.getPlayFinished(this.audioId())
+        .then(resolve => {
+          this.animationItem?.stop();
+          if (resolve) console.log('play finished');
+        });
     }
+    this.responsesService.firstInteractionDone.set(true);
+    this.movingButton.set(false);
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -70,14 +88,8 @@ export class MainAudioComponent {
   }
 
   layerClicked() {
-    if (this.audioLoaded()) {
-      this.audioService.getPlayFinished()
-        .then(resolve => {
-          if (resolve) console.log('play finished');
-        });
-      this.showLayer.set(false);
-    }
-    this.responsesService.firstInteractionDone.set(true);
+    this.play();
+    this.showLayer.set(false);
   }
 
 /*  mainAudio = input.required();

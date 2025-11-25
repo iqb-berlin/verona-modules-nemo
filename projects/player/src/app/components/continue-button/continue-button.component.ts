@@ -34,7 +34,7 @@ export class ContinueButtonComponent {
       if (newAudioSource !== this.lastAudioSource) {
         this.audioService.setAudioSrc(newAudioSource).then(() => {
           this.audioService.setAudioId('AudioFeedback');
-          this.audioService.getPlayFinished().then(() => {
+          this.audioService.getPlayFinished('AudioFeedback').then(() => {
             // TODO function when audio finished
           });
         });
