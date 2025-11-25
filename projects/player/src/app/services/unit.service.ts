@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 
 import {
-  ContinueButtonEnum,
+  ContinueButtonEnum, FirstAudioOptionsParams,
   InteractionEnum,
   MainAudio, UnitDefinition
 } from '../models/unit-definition';
@@ -11,6 +11,7 @@ import {
 })
 
 export class UnitService {
+  firstAudioOptions = signal<FirstAudioOptionsParams | undefined>(undefined);
   mainAudio = signal<MainAudio | undefined>(undefined);
   backgroundColor = signal('#EEE');
   continueButton = signal<ContinueButtonEnum>('ALWAYS');
@@ -22,6 +23,7 @@ export class UnitService {
 
   reset() {
     this.mainAudio.set(undefined);
+    this.firstAudioOptions.set(undefined);
     this.backgroundColor.set('#EEE');
     this.continueButton.set('ALWAYS');
     this.interaction.set(undefined);
@@ -34,7 +36,21 @@ export class UnitService {
   setNewData(unitDefinition: unknown) {
     this.reset();
     const def = unitDefinition as UnitDefinition;
+    const firstAudioOptions: FirstAudioOptionsParams = {};
+    this.firstAudioOptions.set(def.firstAudioOptions || firstAudioOptions);
+    this.hasInteraction.set(def.interactionType !== undefined || def.interactionParameters !== undefined);
     if (def.mainAudio) this.mainAudio.set(def.mainAudio);
+    // Backward compatibility for animateButton and firstClickLayer
+    if (this.mainAudio()?.animateButton) {
+      if (!this.firstAudioOptions()?.animateButton) {
+        this.firstAudioOptions.set({ ...this.firstAudioOptions(), animateButton: this.mainAudio().animateButton });
+      }
+    }
+    if (this.mainAudio()?.firstClickLayer) {
+      if (!this.firstAudioOptions()?.firstClickLayer) {
+        this.firstAudioOptions.set({ ...this.firstAudioOptions(), firstClickLayer: this.mainAudio().firstClickLayer });
+      }
+    }
     const pattern = /^#([a-f0-9]{3}|[a-f0-9]{6})$/i;
     if (def.backgroundColor && pattern.test(def.backgroundColor)) {
       this.backgroundColor.set(def.backgroundColor);
