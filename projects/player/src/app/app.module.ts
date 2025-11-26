@@ -26,6 +26,8 @@ import { InteractionImageOnlyComponent } from './components/interaction-image-on
 import { InteractionVideoComponent } from './components/interaction-video/interaction-video.component';
 import { InteractionFindOnImageComponent } from './components/interaction-find-on-image/find-on-image.component';
 import { RibbonBarComponent } from './components/ribbon-bar/ribbon-bar.component';
+import { InteractionPolygonButtonsComponent }
+  from './components/interaction-polygon-buttons/interaction-polygon-buttons.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +54,8 @@ import { RibbonBarComponent } from './components/ribbon-bar/ribbon-bar.component
     InteractionImageOnlyComponent,
     InteractionVideoComponent,
     InteractionFindOnImageComponent,
-    RibbonBarComponent
+    RibbonBarComponent,
+    InteractionPolygonButtonsComponent
   ],
   providers: [
     provideZonelessChangeDetection(),

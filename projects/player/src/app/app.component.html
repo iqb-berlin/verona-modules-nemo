@@ -47,6 +47,10 @@
       <stars-interaction-find-on-image class="interaction"
         [parameters]="getParametersWithFormerState()"
         (responses)="responsesService.newResponses($event)"></stars-interaction-find-on-image>
+    } @else if (unitService.interaction() === 'POLYGON_BUTTONS') {
+      <stars-interaction-polygon-buttons class="interaction"
+                                       [parameters]="getParametersWithFormerState()"
+                                       (responses)="responsesService.newResponses($event)"></stars-interaction-polygon-buttons>
     }
     @if (hasRibbonBars()) {
       <stars-ribbon-bar></stars-ribbon-bar>
