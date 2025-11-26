@@ -61,8 +61,6 @@ export class InteractionPolygonButtonsComponent extends InteractionComponentDire
         }]);
         this.hasRestoredFromFormerState = true;
       }
-
-      console.log('localParameters', this.localParameters);
     });
     super();
   }
@@ -77,15 +75,11 @@ export class InteractionPolygonButtonsComponent extends InteractionComponentDire
     ));
   }
 
-  click(event) {
-    this.updateSelection(event.target.id);
+  click(index) {
+    this.updateSelection(index);
     this.emitResponse('VALUE_CHANGED', true);
   }
 
-  /**
-   * Restores the selection state based on user interaction.
-   * @param {Response} response - The response object containing a string `value`.
-   */
   private restoreFromFormerState(response: Response): void {
     if (!response.value || typeof response.value !== 'string') {
       return;
@@ -99,13 +93,13 @@ export class InteractionPolygonButtonsComponent extends InteractionComponentDire
     } else {
       // Restore single select: "2" => [false, true, false]
       const selectedIndex = parseInt(response.value, 10) - 1;
-      this.setSelectionAtIndex(selectedIndex);
+      this.resetSelection();
+      const selectedValues = this.selectedValues();
+      selectedValues[selectedIndex] = true;
+      this.selectedValues.set(selectedValues);
     }
   }
 
-  /**
-   * Updates the selection state based on user interaction
-   */
   private updateSelection(index: number): void {
     if (this.localParameters.multiSelect) {
       // Toggle the clicked item
@@ -119,27 +113,8 @@ export class InteractionPolygonButtonsComponent extends InteractionComponentDire
       selectedValues[index] = true;
       this.selectedValues.set(selectedValues);
     }
-    console.log('updateSelection', this.selectedValues());
   }
 
-  /**
-   * Sets selection to a specific index (single select mode)
-   */
-  private setSelectionAtIndex(index: number): void {
-    console.log('setSelectionAtIndex', index);
-    const numberOfOptions = this.localParameters.options?.length || 0;
-
-    const selectedValues = Array.from(
-      { length: numberOfOptions },
-      (_, i) => i === index
-    );
-    this.selectedValues.set(selectedValues);
-    console.log('setSelectionAtIndex', selectedValues);
-  }
-
-  /**
-   * Emits the current selection state as a response
-   */
   private emitResponse(status: 'DISPLAYED' | 'VALUE_CHANGED', relevant: boolean): void {
     const value = this.localParameters.multiSelect ?
       this.selectedValues().map(item => (item ? 1 : 0)).join('') :
