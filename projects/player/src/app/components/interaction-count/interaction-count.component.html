@@ -1,12 +1,68 @@
 <div class="count-container" data-cy="interaction-count">
   <div class="count-text">{{ localParameters?.text }}</div>
 
-  <div class="image-panel"></div>
+  <div
+    #countContainer
+    class="image-panel"
+    data-cy="image-panel"
+  >
+    <div class="image-half upper"
+         cdkDropList
+         #imageTensList="cdkDropList"
+         [cdkDropListData]="imageTensSignal()"
+         [cdkDropListConnectedTo]="[tensList]"
+         [cdkDropListEnterPredicate]="tensEnterPredicate"
+         (cdkDropListDropped)="handleDrop($event)"
+         data-cy="image-panel-upper">
+      @for (item of imageTensSignal(); track item.id) {
+        <div class="icon-item tens"
+             cdkDrag
+             [cdkDragStartDelay]="0"
+             [cdkDragData]="item"
+             (cdkDragStarted)="onDragStarted()"
+             (cdkDragEnded)="onDragEnded()"
+             (click)="onItemClick(item, 'imageTens')">
+          <stars-standard-icon [icon]="item.icon"></stars-standard-icon>
+        </div>
+      }
+    </div>
+    <div class="image-half lower"
+         cdkDropList
+         #imageOnesList="cdkDropList"
+         [cdkDropListData]="imageOnesSignal()"
+         [cdkDropListConnectedTo]="[onesList]"
+         [cdkDropListEnterPredicate]="onesEnterPredicate"
+         (cdkDropListDropped)="handleDrop($event)"
+         data-cy="image-panel-lower">
+      @for (item of imageOnesSignal(); track item.id) {
+        <div class="icon-item ones"
+             cdkDrag
+             [cdkDragStartDelay]="0"
+             [cdkDragData]="item"
+             (cdkDragStarted)="onDragStarted()"
+             (cdkDragEnded)="onDragEnded()"
+             (click)="onItemClick(item, 'imageOnes')">
+          <stars-standard-icon [icon]="item.icon"></stars-standard-icon>
+        </div>
+      }
+    </div>
+  </div>
 
   <div class="icons-wrapper" data-cy="icons-wrapper">
-    <div class="tens-wrapper" data-cy="tens-wrapper">
-      @for (t of tensItems(); track $index) {
-        <div class="icon-item tens">
+    <div class="tens-wrapper"
+         data-cy="tens-wrapper"
+         cdkDropList
+         #tensList="cdkDropList"
+         [cdkDropListData]="tensSourceSignal()"
+         [cdkDropListConnectedTo]="[imageTensList]"
+         [cdkDropListEnterPredicate]="tensEnterPredicate"
+         (cdkDropListDropped)="handleDrop($event)"
+    >
+      @for (tens of tensSourceSignal(); track tens.id) {
+        <div class="icon-item tens" cdkDrag [cdkDragStartDelay]="0" [cdkDragData]="t"
+             (cdkDragStarted)="onDragStarted()"
+             (cdkDragEnded)="onDragEnded()"
+             (click)="onItemClick(tens, 'tens')">
           <stars-standard-icon icon="TENS"></stars-standard-icon>
         </div>
       }
@@ -14,9 +70,18 @@
     <div
       class="ones-wrapper"
       data-cy="ones-wrapper"
+      cdkDropList
+      #onesList="cdkDropList"
+      [cdkDropListData]="onesSourceSignal()"
+      [cdkDropListConnectedTo]="[imageOnesList]"
+      [cdkDropListEnterPredicate]="onesEnterPredicate"
+      (cdkDropListDropped)="handleDrop($event)"
     >
-      @for (o of onesItems(); track $index) {
-        <div class="icon-item ones">
+      @for (ones of onesSourceSignal(); track ones.id) {
+        <div class="icon-item ones" cdkDrag [cdkDragStartDelay]="0" [cdkDragData]="o"
+             (cdkDragStarted)="onDragStarted()"
+             (cdkDragEnded)="onDragEnded()"
+             (click)="onItemClick(ones, 'ones')">
           <stars-standard-icon icon="ONES"></stars-standard-icon>
         </div>
       }

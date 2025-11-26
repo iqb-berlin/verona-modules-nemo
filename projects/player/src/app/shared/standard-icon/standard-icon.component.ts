@@ -28,7 +28,6 @@ export class StandardIconComponent {
 
   // eslint-disable-next-line class-methods-use-this
   private renderIconHtml(iconKey: string, selected: boolean): string {
-    console.log('Rendering icon:', iconKey);
     switch (iconKey) {
       case 'CHECK_GREEN': {
         return `

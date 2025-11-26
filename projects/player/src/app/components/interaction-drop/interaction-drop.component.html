@@ -23,7 +23,7 @@
         (cdkDragStarted)="onDragStarted($event, $index)"
         (cdkDragReleased)="onDragReleased($index)"
         (cdkDragEnded)="onDragEnded($event, $index)"
-        [style.transform]="buttonTransforms()[$index]"
+        [style.transform]="draggingIndex() === $index ? null : buttonTransforms()[$index]"
         [attr.data-cy]="'drop-animate-wrapper-' + $index"
       >
         <stars-standard-button
