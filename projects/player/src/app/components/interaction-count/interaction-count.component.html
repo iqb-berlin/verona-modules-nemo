@@ -20,7 +20,7 @@
              [cdkDragStartDelay]="0"
              [cdkDragData]="item"
              (cdkDragStarted)="onDragStarted()"
-             (cdkDragEnded)="onDragEnded()"
+             (cdkDragEnded)="onDragEnded($event, item, 'imageTens')"
              (click)="onItemClick(item, 'imageTens')">
           <stars-standard-icon [icon]="item.icon"></stars-standard-icon>
         </div>
@@ -40,7 +40,7 @@
              [cdkDragStartDelay]="0"
              [cdkDragData]="item"
              (cdkDragStarted)="onDragStarted()"
-             (cdkDragEnded)="onDragEnded()"
+             (cdkDragEnded)="onDragEnded($event, item, 'imageOnes')"
              (click)="onItemClick(item, 'imageOnes')">
           <stars-standard-icon [icon]="item.icon"></stars-standard-icon>
         </div>
@@ -59,9 +59,12 @@
          (cdkDropListDropped)="handleDrop($event)"
     >
       @for (tens of tensSourceSignal(); track tens.id) {
-        <div class="icon-item tens" cdkDrag [cdkDragStartDelay]="0" [cdkDragData]="t"
+        <div class="icon-item tens"
+             cdkDrag
+             [cdkDragStartDelay]="0"
+             [cdkDragData]="tens"
              (cdkDragStarted)="onDragStarted()"
-             (cdkDragEnded)="onDragEnded()"
+             (cdkDragEnded)="onDragEnded($event, tens, 'tens')"
              (click)="onItemClick(tens, 'tens')">
           <stars-standard-icon icon="TENS"></stars-standard-icon>
         </div>
@@ -78,10 +81,13 @@
       (cdkDropListDropped)="handleDrop($event)"
     >
       @for (ones of onesSourceSignal(); track ones.id) {
-        <div class="icon-item ones" cdkDrag [cdkDragStartDelay]="0" [cdkDragData]="o"
+        <div class="icon-item ones"
+             cdkDrag [cdkDragStartDelay]="0"
+             [cdkDragData]="ones"
              (cdkDragStarted)="onDragStarted()"
-             (cdkDragEnded)="onDragEnded()"
-             (click)="onItemClick(ones, 'ones')">
+             (cdkDragEnded)="onDragEnded($event, ones, 'ones')"
+             (click)="onItemClick(ones, 'ones')"
+        >
           <stars-standard-icon icon="ONES"></stars-standard-icon>
         </div>
       }

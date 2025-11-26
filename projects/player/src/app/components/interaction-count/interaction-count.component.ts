@@ -37,6 +37,8 @@ export class InteractionCountComponent extends InteractionComponentDirective {
 
   /** Suppress click right after a drag starts to avoid accidental toggles */
   private suppressClick = false;
+  /** Tracks whether the current drag sequence ended with a valid CDK drop */
+  private dropOccurred = false;
 
   // Enter predicates to ensure items return only to their initial wrapper
   // eslint-disable-next-line class-methods-use-this
@@ -101,6 +103,7 @@ export class InteractionCountComponent extends InteractionComponentDirective {
   // eslint-disable-next-line class-methods-use-this
   handleDrop(event: CdkDragDrop<CountItem[]>) {
     console.log('HANDLE DROP, event is', event);
+    this.dropOccurred = true;
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
@@ -127,13 +130,36 @@ export class InteractionCountComponent extends InteractionComponentDirective {
   // eslint-disable-next-line class-methods-use-this
   onDragStarted(): void {
     this.suppressClick = true;
+    this.dropOccurred = false;
   }
 
   /** Clear click suppression shortly after drag end */
   // eslint-disable-next-line class-methods-use-this
-  onDragEnded(): void {
+  onDragEnded(_event: any, item?: CountItem, context?: 'tens' | 'ones' | 'imageTens' | 'imageOnes'): void {
     // Use a timeout so the click from the drag end does not fire
     setTimeout(() => { this.suppressClick = false; }, 0);
+
+    if (this.dropOccurred) return;
+
+    if (!item || !context) return;
+
+    // If dragged from wrappers and released => move to image panel half
+    // If dragged from image panel and released => move back to its wrapper
+    if (context === 'tens') {
+      if (item.icon === 'TENS') this.moveItemBetween(this.tensSourceSignal, this.imageTensSignal, item);
+      return;
+    }
+    if (context === 'ones') {
+      if (item.icon === 'ONES') this.moveItemBetween(this.onesSourceSignal, this.imageOnesSignal, item);
+      return;
+    }
+    if (context === 'imageTens') {
+      if (item.icon === 'TENS') this.moveItemBetween(this.imageTensSignal, this.tensSourceSignal, item);
+      return;
+    }
+    if (context === 'imageOnes') {
+      if (item.icon === 'ONES') this.moveItemBetween(this.imageOnesSignal, this.onesSourceSignal, item);
+    }
   }
 
   /** Click handler to toggle item between its wrapper and image panel */
@@ -142,10 +168,10 @@ export class InteractionCountComponent extends InteractionComponentDirective {
 
     if (item.icon === 'TENS') {
       if (context === 'tens') {
-        // move from tensSource -> imageTens
+        // move from tensSource => imageTens
         this.moveItemBetween(this.tensSourceSignal, this.imageTensSignal, item);
       } else if (context === 'imageTens') {
-        // move back from imageTens -> tensSource
+        // move back from imageTens => tensSource
         this.moveItemBetween(this.imageTensSignal, this.tensSourceSignal, item);
       }
       return;
@@ -153,10 +179,10 @@ export class InteractionCountComponent extends InteractionComponentDirective {
 
     if (item.icon === 'ONES') {
       if (context === 'ones') {
-        // move from onesSource -> imageOnes
+        // move from onesSource => imageOnes
         this.moveItemBetween(this.onesSourceSignal, this.imageOnesSignal, item);
       } else if (context === 'imageOnes') {
-        // move back from imageOnes -> onesSource
+        // move back from imageOnes => onesSource
         this.moveItemBetween(this.imageOnesSignal, this.onesSourceSignal, item);
       }
     }
