@@ -2,6 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { ResponsesService } from './responses.service';
+import { AudioOptions } from '../models/unit-definition';
 
 @Injectable({
   providedIn: 'root'
@@ -88,15 +89,16 @@ export class AudioService {
 
   /**
    * Function to set the audio source and reset the playback position to the beginning.
-   * @param src - audio source as base64 string
+   * @param audio - audio source as base64 string
    * @returns Promise<boolean> - resolves to true if the audio source was successfully set
    */
-  setAudioSrc(src: string): Promise<boolean> {
+  setAudioSrc(audio: AudioOptions): Promise<boolean> {
     return new Promise(resolve => {
       setTimeout(() => {
         this.getPlayerStatus().subscribe(status => {
           if (status === 'paused') {
-            if (this._audioElement) this._audioElement.src = src;
+            if (this._audioElement) this._audioElement.src = audio.audioSource;
+            this._audioId.set(audio.audioId || 'audio');
             this._audioElement?.load();
             this._playCount.set(0);
             this.currentTime = 0;

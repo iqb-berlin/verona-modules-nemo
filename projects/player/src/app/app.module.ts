@@ -17,8 +17,8 @@ import { AppComponent } from './app.component';
 import { InteractionButtonsComponent } from './components/interaction-buttons/interaction-buttons.component';
 import { ContinueButtonComponent } from './components/continue-button/continue-button.component';
 import { StandaloneMenuComponent } from './components/standalone-menu/standalone-menu.component';
-import { MainAudioComponent } from './components/main-audio/main-audio.component';
-import { ClickLayerComponent } from './components/main-audio/click-layer.component';
+import { AudioComponent } from './components/audio/audio.component';
+import { ClickLayerComponent } from './components/audio/click-layer.component';
 import { StandardButtonComponent } from './shared/standard-button/standard-button.component';
 import { InteractionWriteComponent } from './components/interaction-write/interaction-write.component';
 import { InteractionDropComponent } from './components/interaction-drop/interaction-drop.component';
@@ -40,9 +40,8 @@ import { RibbonBarComponent } from './components/ribbon-bar/ribbon-bar.component
     StandaloneMenuComponent,
     SafeResourceUrlPipe,
     LinebreaksHtmlPipe,
-    MainAudioComponent,
+    AudioComponent,
     ClickLayerComponent,
-    MainAudioComponent,
     InteractionButtonsComponent,
     ContinueButtonComponent,
     StandardButtonComponent,

@@ -134,3 +134,10 @@ export interface OpeningImageParams {
   imageSource: string;
   presentationDurationMS?: number;
 }
+
+export interface AudioOptions {
+  audioSource: string;
+  audioId: string;
+  maxPlay?: number;
+  value?: string;
+}

@@ -7,7 +7,7 @@
 
   <!-- audio controller -->
   @if (unitService.mainAudio()?.audioSource) {
-    <stars-main-audio [audio]="unitService.mainAudio()" [firstAudioOptions]="unitService.firstAudioOptions()" [audioId]="'mainAudio'"></stars-main-audio>
+    <stars-audio [audio]="unitService.mainAudio()" [firstAudioOptions]="unitService.firstAudioOptions()" [audioId]="'mainAudio'"></stars-audio>
   }
 
   <!-- Continue Button -->
@@ -60,10 +60,6 @@
       [parameters]="getParametersWithFormerState()"
       (responses)="responsesService.newResponses($event)"></stars-interaction-find-on-image>
   }
-
-  {{responsesService.responseProgress()}}
-  {{responsesService.mainAudioComplete()}}
-  {{unitService.continueButton()}}
 
   <!-- lower ribbons -->
   @if (hasRibbonBars()) {

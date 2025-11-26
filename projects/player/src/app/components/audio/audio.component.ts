@@ -11,16 +11,16 @@ import { FirstAudioOptionsParams, MainAudio } from '../../models/unit-definition
 import { ClickLayerComponent } from './click-layer.component';
 
 @Component({
-  selector: 'stars-main-audio',
-  templateUrl: 'main-audio.component.html',
+  selector: 'stars-audio',
+  templateUrl: 'audio.component.html',
   imports: [
     LottieComponent,
     ClickLayerComponent
   ],
-  styleUrl: 'main-audio.component.scss'
+  styleUrl: 'audio.component.scss'
 })
 
-export class MainAudioComponent implements OnInit {
+export class AudioComponent implements OnInit {
   audio = input.required();
   firstAudioOptions = input<FirstAudioOptionsParams>();
   audioId = input('');
@@ -45,9 +45,11 @@ export class MainAudioComponent implements OnInit {
     effect(() => {
       const localAudio = this.audio() as MainAudio;
       if (localAudio) {
-        this.audioService.setAudioSrc(localAudio.audioSource).then(() => {
+        this.audioService.setAudioSrc({
+          audioSource: localAudio.audioSource,
+          audioId: this.audioId()
+        }).then(() => {
           this.audioLoaded.set(true);
-          this.audioService.setAudioId(this.audioId());
         });
       }
     });
@@ -79,7 +81,6 @@ export class MainAudioComponent implements OnInit {
       this.audioService.getPlayFinished(this.audioId())
         .then(resolve => {
           this.animationItem?.stop();
-          if (resolve) console.log('play finished');
         });
     }
     this.responsesService.firstInteractionDone.set(true);
@@ -99,60 +100,4 @@ export class MainAudioComponent implements OnInit {
     this.play();
     this.showLayer.set(false);
   }
-
-/*  mainAudio = input.required();
-  localAudio:MainAudio | null = null;
-  playerId = input.required<string>();
-
-  showLayer = false;
-  @ViewChild('audioPlayer', { static: false }) audioElementRef!: ElementRef<HTMLAudioElement>;
-  playCount = signal(0);
-  maxPlay = 0;
-  isPlaying: boolean = false;
-
-  responsesService = inject(ResponsesService);
-
-  constructor() {
-    effect(() => {
-      this.localAudio = this.mainAudio() as MainAudio;
-
-      if (this.localAudio) {
-        if (this.audioElementRef) {
-          this.audioElementRef.nativeElement.pause();
-          this.audioElementRef.nativeElement.currentTime = 0;
-        }
-        this.localAudio.audioSource = this.localAudio.audioSource ?
-          this.localAudio.audioSource : null;
-        // Show the first-click layer only if configured AND the main audio has not been completed
-        this.showLayer = !!this.localAudio.firstClickLayer && !this.responsesService.mainAudioComplete();
-        this.playCount.set(0);
-        this.maxPlay = this.localAudio.maxPlay;
-        this.isPlaying = false;
-      }
-    });
-  }
-
-  onPlay() {
-    if (this.maxPlay !== 0 && this.playCount() >= this.maxPlay) {
-      this.audioElementRef?.nativeElement.pause();
-      console.warn('Maximum play limit reached');
-      return;
-    }
-    this.playCount.set(this.playCount() + 1);
-    this.isPlaying = true;
-  }
-
-  onPause() {
-    this.isPlaying = false;
-  }
-
-  canPlay(): boolean {
-    return this.maxPlay === 0 || this.playCount() < this.maxPlay;
-  }
-
-  layerClicked() {
-    if (this.audioElementRef) this.audioElementRef.nativeElement.play();
-    this.responsesService.firstInteractionDone.set(true);
-    this.showLayer = false;
-  } */
 }
