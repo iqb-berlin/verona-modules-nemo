@@ -7,7 +7,7 @@
 
   <!-- audio controller -->
   @if (unitService.mainAudio()?.audioSource) {
-    <stars-audio [audio]="unitService.mainAudio()" [firstAudioOptions]="unitService.firstAudioOptions()" [audioId]="'mainAudio'"></stars-audio>
+    <stars-audio [audio]="unitService.mainAudio()" [firstAudioOptions]="unitService.firstAudioOptions()"></stars-audio>
   }
 
   <!-- Continue Button -->
