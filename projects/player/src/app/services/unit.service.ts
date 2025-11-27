@@ -1,9 +1,11 @@
 import { Injectable, signal } from '@angular/core';
 
 import {
-  ContinueButtonEnum, FirstAudioOptionsParams,
+  AudioOptions,
+  ContinueButtonEnum,
+  FirstAudioOptionsParams,
   InteractionEnum,
-  MainAudio, UnitDefinition
+  UnitDefinition
 } from '../models/unit-definition';
 
 @Injectable({
@@ -12,7 +14,7 @@ import {
 
 export class UnitService {
   firstAudioOptions = signal<FirstAudioOptionsParams | undefined>(undefined);
-  mainAudio = signal<MainAudio | undefined>(undefined);
+  mainAudio = signal<AudioOptions | undefined>(undefined);
   backgroundColor = signal('#EEE');
   continueButton = signal<ContinueButtonEnum>('ALWAYS');
   interaction = signal<InteractionEnum | undefined>(undefined);
@@ -39,7 +41,8 @@ export class UnitService {
     const firstAudioOptions: FirstAudioOptionsParams = {};
     this.firstAudioOptions.set(def.firstAudioOptions || firstAudioOptions);
     this.hasInteraction.set(def.interactionType !== undefined || def.interactionParameters !== undefined);
-    if (def.mainAudio) this.mainAudio.set(def.mainAudio);
+    // add audioId to mainAudio object to be able to use it in audioService.setAudioSrc()
+    if (def.mainAudio) this.mainAudio.set({ ...def.mainAudio, audioId: 'mainAudio' } as AudioOptions);
     // Backward compatibility for animateButton and firstClickLayer
     if (this.mainAudio()?.animateButton) {
       if (!this.firstAudioOptions()?.animateButton) {

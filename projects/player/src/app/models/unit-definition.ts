@@ -135,9 +135,7 @@ export interface OpeningImageParams {
   presentationDurationMS?: number;
 }
 
-export interface AudioOptions {
-  audioSource: string;
+export interface AudioOptions extends MainAudio {
   audioId: string;
-  maxPlay?: number;
   value?: string;
 }

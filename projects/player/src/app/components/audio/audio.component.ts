@@ -7,7 +7,7 @@ import { AnimationItem } from 'lottie-web';
 
 import { ResponsesService } from '../../services/responses.service';
 import { AudioService } from '../../services/audio.service';
-import { FirstAudioOptionsParams, MainAudio } from '../../models/unit-definition';
+import { AudioOptions, FirstAudioOptionsParams } from '../../models/unit-definition';
 import { ClickLayerComponent } from './click-layer.component';
 
 @Component({
@@ -21,9 +21,8 @@ import { ClickLayerComponent } from './click-layer.component';
 })
 
 export class AudioComponent implements OnInit {
-  audio = input.required();
+  audio = input.required<AudioOptions>();
   firstAudioOptions = input<FirstAudioOptionsParams>();
-  audioId = input('');
   elementValueChanged = output();
 
   audioService = inject(AudioService);
@@ -43,12 +42,8 @@ export class AudioComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const localAudio = this.audio() as MainAudio;
-      if (localAudio) {
-        this.audioService.setAudioSrc({
-          audioSource: localAudio.audioSource,
-          audioId: this.audioId()
-        }).then(() => {
+      if (this.audio().audioSource) {
+        this.audioService.setAudioSrc(this.audio()).then(() => {
           this.audioLoaded.set(true);
         });
       }
@@ -78,7 +73,7 @@ export class AudioComponent implements OnInit {
   play() {
     if (this.audioLoaded()) {
       this.animationItem?.play();
-      this.audioService.getPlayFinished(this.audioId())
+      this.audioService.getPlayFinished(this.audio().audioId)
         .then(resolve => {
           this.animationItem?.stop();
         });

@@ -99,10 +99,13 @@ export class AudioService {
           if (status === 'paused') {
             if (this._audioElement) this._audioElement.src = audio.audioSource;
             this._audioId.set(audio.audioId || 'audio');
+            this._maxPlay.set(audio.maxPlay || 0);
             this._audioElement?.load();
-            this._playCount.set(0);
+            const playCount = Math.abs(Number(audio.value));
+            const percentElapsed = Number(audio.value) - playCount;
+            this._playCount.set(playCount || 0);
             this.currentTime = 0;
-            this.percentElapsed = 0;
+            this.percentElapsed = percentElapsed || 0;
             resolve(true);
           }
         });
@@ -116,6 +119,7 @@ export class AudioService {
    */
   getPlayFinished(id: string): Promise<boolean> {
     if (id !== this.audioId()) return Promise.resolve(false);
+    if (this.maxPlay() !== 0 && this.playCount() >= this.maxPlay()) return Promise.resolve(false);
     this.play();
     return new Promise(resolve => {
       setTimeout(() => {
