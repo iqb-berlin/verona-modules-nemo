@@ -1,10 +1,7 @@
-@if (shouldShowStartButton()) {
-  <div class="opening-placeholder" data-cy="opening-image-start">
-    <button class="start-button" type="button" (click)="startByButton()">Start</button>
-  </div>
-}
-@if (unitService.showOpeningImage()) {
+@if (unitService.openingFlowActive()) {
   <div class="opening-image-wrapper" data-cy="opening-image">
-    <img [src]="parameters()?.imageSource" alt="Image" />
+    @if (unitService.showOpeningImage()) {
+      <img [src]="unitService.openingImageParams()?.imageSource" alt="Image" />
+    }
   </div>
 }
