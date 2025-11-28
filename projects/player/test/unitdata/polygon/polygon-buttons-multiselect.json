@@ -15,11 +15,11 @@
     "multiSelect": true,
     "options": [
       {
-        "points": "M 70,340 l 75,-100 l 140,0 l -65,100 z",
+        "svgPath": "M 70,340 l 75,-100 l 140,0 l -65,100 z",
         "label": "Parallelogram"
       },
       {
-        "points": "M 200,400 l 0,150 l 150,0 l 0,-150 z",
+        "svgPath": "M 200,400 l 0,150 l 150,0 l 0,-150 z",
         "label": "Rectangle"
       }
     ]
