@@ -63,6 +63,10 @@
     <stars-interaction-polygon-buttons class="interaction"
       [parameters]="getParametersWithFormerState()"
       (responses)="responsesService.newResponses($event)"></stars-interaction-polygon-buttons>
+  } @else if (unitService.interaction() === 'COUNT') {
+    <stars-interaction-count class="interaction"
+      [parameters]="getParametersWithFormerState()"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-count>
   }
 
   <!-- lower ribbons -->
