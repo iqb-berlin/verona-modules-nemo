@@ -26,6 +26,8 @@ import { InteractionImageOnlyComponent } from './components/interaction-image-on
 import { InteractionVideoComponent } from './components/interaction-video/interaction-video.component';
 import { InteractionFindOnImageComponent } from './components/interaction-find-on-image/find-on-image.component';
 import { RibbonBarComponent } from './components/ribbon-bar/ribbon-bar.component';
+import { InteractionPolygonButtonsComponent }
+  from './components/interaction-polygon-buttons/interaction-polygon-buttons.component';
 import { OpeningImageComponent } from './components/opening-image/opening-image.component';
 
 @NgModule({
@@ -51,6 +53,8 @@ import { OpeningImageComponent } from './components/opening-image/opening-image.
     InteractionImageOnlyComponent,
     InteractionVideoComponent,
     InteractionFindOnImageComponent,
+    RibbonBarComponent,
+    InteractionPolygonButtonsComponent,
     RibbonBarComponent,
     OpeningImageComponent
   ],
