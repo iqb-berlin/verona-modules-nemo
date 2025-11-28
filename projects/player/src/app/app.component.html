@@ -1,10 +1,16 @@
 <div class="interaction-body" [style.background-color]="unitService.backgroundColor()" data-cy="interaction-body">
+
+  <!-- menu for standalone mode -->
   @if (isStandalone) {
     <stars-standalone-menu></stars-standalone-menu>
   }
+
+  <!-- audio controller -->
   @if (unitService.mainAudio()?.audioSource) {
-    <stars-main-audio [mainAudio]="unitService.mainAudio()" playerId="mainAudio"></stars-main-audio>
+    <stars-audio [audio]="unitService.mainAudio()" [firstAudioOptions]="unitService.firstAudioOptions()"></stars-audio>
   }
+
+  <!-- Continue Button -->
   @if (unitService.continueButton() === "ALWAYS" ||
       (unitService.continueButton() === "ON_MAIN_AUDIO_COMPLETE" && responsesService.mainAudioComplete()) ||
       (unitService.continueButton() === "ON_AUDIO_AND_RESPONSE" && responsesService.mainAudioComplete() &&
@@ -17,42 +23,50 @@
     <stars-continue-button
       (navigate)="veronaPostService.sendVopUnitNavigationRequestedNotification('next')"></stars-continue-button>
   }
+
+  <!-- disable interaction until complete via overlay -->
   @if (unitService.disableInteractionUntilComplete() && !responsesService.mainAudioComplete() ) {
     <div class="interaction-disabled-overlay" (click)="disabledOverlay($event)" data-cy="interaction-disabled-overlay"></div>
   }
-    @if (hasRibbonBars()) {
-      <stars-ribbon-bar></stars-ribbon-bar>
-    }
-    @if (unitService.interaction() === 'BUTTONS') {
-      <stars-interaction-buttons class="interaction"
+
+  <!-- show ribbons when in practice mode -->
+  @if (hasRibbonBars()) {
+    <stars-ribbon-bar></stars-ribbon-bar>
+  }
+
+  <!-- interaction elements -->
+  @if (unitService.interaction() === 'BUTTONS') {
+    <stars-interaction-buttons class="interaction"
+    [parameters]="getParametersWithFormerState()"
+    (responses)="responsesService.newResponses($event)"></stars-interaction-buttons>
+  } @else if (unitService.interaction() === 'DROP') {
+    <stars-interaction-drop class="interaction"
       [parameters]="getParametersWithFormerState()"
-      (responses)="responsesService.newResponses($event)"></stars-interaction-buttons>
-    } @else if (unitService.interaction() === 'DROP') {
-      <stars-interaction-drop class="interaction"
-        [parameters]="getParametersWithFormerState()"
-        (responses)="responsesService.newResponses($event)"></stars-interaction-drop>
-    } @else if (unitService.interaction() === 'WRITE') {
-      <stars-interaction-write class="interaction"
-        [parameters]="getParametersWithFormerState()"
-        (responses)="responsesService.newResponses($event)"></stars-interaction-write>
-    } @else if (unitService.interaction() === 'IMAGE_ONLY') {
-      <stars-interaction-image-only class="interaction"
-        [parameters]="unitService.parameters()"
-        (responses)="responsesService.newResponses($event)"></stars-interaction-image-only>
-    } @else if (unitService.interaction() === 'VIDEO') {
-      <stars-interaction-video class="interaction"
-        [parameters]="unitService.parameters()"
-        (responses)="responsesService.newResponses($event)"></stars-interaction-video>
-    } @else if (unitService.interaction() === 'FIND_ON_IMAGE') {
-      <stars-interaction-find-on-image class="interaction"
-        [parameters]="getParametersWithFormerState()"
-        (responses)="responsesService.newResponses($event)"></stars-interaction-find-on-image>
-    } @else if (unitService.interaction() === 'COUNT') {
-      <stars-interaction-count class="interaction"
-        [parameters]="getParametersWithFormerState()"
-        (responses)="responsesService.newResponses($event)"></stars-interaction-count>
-    }
-    @if (hasRibbonBars()) {
-      <stars-ribbon-bar></stars-ribbon-bar>
-    }
+      (responses)="responsesService.newResponses($event)"></stars-interaction-drop>
+  } @else if (unitService.interaction() === 'WRITE') {
+    <stars-interaction-write class="interaction"
+      [parameters]="getParametersWithFormerState()"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-write>
+  } @else if (unitService.interaction() === 'IMAGE_ONLY') {
+    <stars-interaction-image-only class="interaction"
+      [parameters]="unitService.parameters()"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-image-only>
+  } @else if (unitService.interaction() === 'VIDEO') {
+    <stars-interaction-video class="interaction"
+      [parameters]="unitService.parameters()"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-video>
+  } @else if (unitService.interaction() === 'FIND_ON_IMAGE') {
+    <stars-interaction-find-on-image class="interaction"
+      [parameters]="getParametersWithFormerState()"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-find-on-image>
+  } @else if (unitService.interaction() === 'POLYGON_BUTTONS') {
+    <stars-interaction-polygon-buttons class="interaction"
+      [parameters]="getParametersWithFormerState()"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-polygon-buttons>
+  }
+
+  <!-- lower ribbons -->
+  @if (hasRibbonBars()) {
+    <stars-ribbon-bar></stars-ribbon-bar>
+  }
 </div>
