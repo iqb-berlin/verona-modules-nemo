@@ -5,22 +5,27 @@ import { AudioFeedback } from './feedback';
 // eslint-disable-next-line max-len
 export type ContinueButtonEnum = 'ALWAYS' | 'NO' | 'ON_ANY_RESPONSE' | 'ON_RESPONSES_COMPLETE' |
 'ON_MAIN_AUDIO_COMPLETE' | 'ON_VIDEO_COMPLETE' | 'ON_AUDIO_AND_RESPONSE';
-export type InteractionEnum = 'BUTTONS' | 'DROP' | 'WRITE' | 'FIND_ON_IMAGE' | 'VIDEO' | 'IMAGE_ONLY' | 'NONE';
+export type InteractionEnum = 'BUTTONS' | 'POLYGON_BUTTONS' | 'DROP' | 'WRITE' |
+'FIND_ON_IMAGE' | 'VIDEO' | 'IMAGE_ONLY';
 export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED' | 'CLAP_HANDS' | 'SMILEY_1' | 'SMILEY_2' |
 'SMILEY_3' | 'SMILEY_4' | 'SMILEY_5';
 export type ButtonTypeEnum = 'MEDIUM_SQUARE' | 'BIG_SQUARE' | 'SMALL_SQUARE' | 'TEXT' | 'CIRCLE' |
-'EXTRA_LARGE_SQUARE' | 'LONG_RECTANGLE';
+'EXTRA_LARGE_SQUARE' | 'LONG_RECTANGLE' | 'TALL_RECTANGLE';
 export type ImagePositionEnum = 'TOP' | 'LEFT' | 'BOTTOM';
 export type TargetSizeEnum = 'MEDIUM' | 'LARGE' | 'SMALL';
+export type ButtonAlignmentEnum = 'AUTO' | 'ROW_BOTTOM';
 
 export interface UnitDefinition {
   id: string;
   version?: string;
   backgroundColor?: string;
   ribbonBars?: boolean;
+  firstAudioOptions?: FirstAudioOptionsParams;
   continueButtonShow?: ContinueButtonEnum;
+  openingImage?: OpeningImageParams;
   mainAudio?: MainAudio;
   interactionType: InteractionEnum;
+  interactionMaxTimeMS: number
   interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams |
   InteractionImageOnlyParams | InteractionFindOnImageParams;
   variableInfo: VariableInfo[] | undefined;
@@ -30,7 +35,10 @@ export interface UnitDefinition {
 export interface SelectionOption {
   text?: string;
   imageSource?: string;
+  audioSource?: string;
+  label?: string;
   icon?: IconButtonTypeEnum;
+  points?: string;
 }
 
 export interface RepeatButtonConfig {
@@ -44,68 +52,90 @@ export interface InteractionOptions {
 }
 
 export interface InteractionButtonParams {
-  variableId: string;
+  variableId?: string;
   options: InteractionOptions;
-  imageSource: string;
-  imagePosition: ImagePositionEnum;
-  imageMaxWidthPx?: number;
-  imageMaxHeightPx?: number;
+  imageSource?: string;
+  imagePosition?: ImagePositionEnum;
   imageUseFullArea?: boolean;
   text?: string;
+  buttonAlignment?: ButtonAlignmentEnum;
   multiSelect?: boolean;
   numberOfRows?: number;
-  buttonType: ButtonTypeEnum;
+  buttonType?: ButtonTypeEnum;
   triggerNavigationOnSelect?: boolean;
   formerState?: Response[];
 }
 
 export interface InteractionDropParams {
-  variableId: string;
+  variableId?: string;
   options: SelectionOption[];
-  imageSource: string;
+  imageSource?: string;
   imagePosition?: ImagePositionEnum;
   imageLandingXY?: string;
-  text: string;
+  text?: string;
   formerState?: Response[];
 }
 
 export interface InteractionWriteParams {
-  variableId: string;
-  imageSource: string;
-  text: string;
-  addBackspaceKey: boolean;
-  addUmlautKeys: boolean;
-  keyboardMode: 'CHARACTERS' | 'NUMBERS_LINE' | 'NUMBERS_BLOCK';
-  keysToAdd: string[];
-  maxInputLength: number;
+  variableId?: string;
+  imageSource?: string;
+  text?: string;
+  addBackspaceKey?: boolean;
+  addUmlautKeys?: boolean;
+  keyboardMode?: 'CHARACTERS' | 'NUMBERS_LINE' | 'NUMBERS_BLOCK';
+  keysToAdd?: string[];
+  maxInputLength?: number;
   formerState?: Response[];
 }
 
 export interface InteractionImageOnlyParams {
-  variableId: string;
+  variableId?: string;
   imageSource: string;
 }
 
 export interface InteractionFindOnImageParams {
-  variableId: string;
+  variableId?: string;
   imageSource: string;
-  text: string;
-  showArea: string;
-  size: TargetSizeEnum;
+  text?: string;
+  showArea?: string;
+  size?: TargetSizeEnum;
   formerState?: Response[];
 }
 
 export interface InteractionVideoParams {
-  variableId: string;
+  variableId?: string;
   videoSource: string;
-  imageSource: string;
-  text: string;
+  imageSource?: string;
+  text?: string;
+}
+
+export interface InteractionPolygonButtonsParams {
+  variableId?: string;
+  options: SelectionOption[];
+  multiSelect?: boolean;
+  formerState?: Response[];
 }
 
 export interface MainAudio {
   audioSource: string;
+  maxPlay?: number;
+  firstClickLayer?: boolean; // TODO: deprecated, use firstAudioOptions.firstClickLayer
+  animateButton?: boolean; // TODO: deprecated, use firstAudioOptions.animateButton
+  disableInteractionUntilComplete?: boolean;
+}
+
+export interface FirstAudioOptionsParams {
   firstClickLayer?: boolean;
   animateButton?: boolean;
-  maxPlay?: number;
-  disableInteractionUntilComplete?: boolean;
+}
+
+export interface OpeningImageParams {
+  audioSource?: string;
+  imageSource: string;
+  presentationDurationMS?: number;
+}
+
+export interface AudioOptions extends MainAudio {
+  audioId: string;
+  value?: string;
 }

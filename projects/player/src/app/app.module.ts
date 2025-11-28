@@ -5,20 +5,20 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { provideLottieOptions } from 'ngx-lottie';
 import player from 'lottie-web';
 
-import { AppComponent } from './app.component';
-import { InteractionButtonsComponent } from './components/interaction-buttons/interaction-buttons.component';
 import { ResponsesService } from './services/responses.service';
 import { UnitService } from './services/unit.service';
 import { VeronaPostService } from './services/verona-post.service';
 import { VeronaSubscriptionService } from './services/verona-subscription.service';
 import { MetadataService } from './services/metadata.service';
-import { ContinueButtonComponent } from './components/continue-button/continue-button.component';
-import { StandaloneMenuComponent } from './components/standalone-menu/standalone-menu.component';
-import { MainAudioComponent } from './components/main-audio/main-audio.component';
+import { AudioService } from './services/audio.service';
 import { SafeResourceUrlPipe } from './pipes/safe-resource-url.pipe';
 import { LinebreaksHtmlPipe } from './pipes/linebreaks-html.pipe';
-import { ClickLayerComponent } from './components/main-audio/click-layer.component';
-import { MediaPlayerComponent } from './components/main-audio/media-player.component';
+import { AppComponent } from './app.component';
+import { InteractionButtonsComponent } from './components/interaction-buttons/interaction-buttons.component';
+import { ContinueButtonComponent } from './components/continue-button/continue-button.component';
+import { StandaloneMenuComponent } from './components/standalone-menu/standalone-menu.component';
+import { AudioComponent } from './components/audio/audio.component';
+import { ClickLayerComponent } from './components/audio/click-layer.component';
 import { StandardButtonComponent } from './shared/standard-button/standard-button.component';
 import { InteractionWriteComponent } from './components/interaction-write/interaction-write.component';
 import { InteractionDropComponent } from './components/interaction-drop/interaction-drop.component';
@@ -40,10 +40,8 @@ import { RibbonBarComponent } from './components/ribbon-bar/ribbon-bar.component
     StandaloneMenuComponent,
     SafeResourceUrlPipe,
     LinebreaksHtmlPipe,
-    MainAudioComponent,
+    AudioComponent,
     ClickLayerComponent,
-    MediaPlayerComponent,
-    MainAudioComponent,
     InteractionButtonsComponent,
     ContinueButtonComponent,
     StandardButtonComponent,
@@ -58,6 +56,7 @@ import { RibbonBarComponent } from './components/ribbon-bar/ribbon-bar.component
     provideZonelessChangeDetection(),
     UnitService,
     ResponsesService,
+    AudioService,
     VeronaPostService,
     VeronaSubscriptionService,
     MetadataService,
