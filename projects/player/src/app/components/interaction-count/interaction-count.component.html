@@ -2,7 +2,6 @@
   <div class="count-text">{{ localParameters?.text }}</div>
 
   <div
-    #countContainer
     class="image-panel"
     data-cy="image-panel"
   >
@@ -57,12 +56,14 @@
          [cdkDropListConnectedTo]="[imageTensList]"
          [cdkDropListEnterPredicate]="tensEnterPredicate"
          (cdkDropListDropped)="handleDrop($event)"
+         [class.disabled]="allCapsReached()"
     >
       @for (tens of tensSourceSignal(); track tens.id) {
         <div class="icon-item tens"
              cdkDrag
              [cdkDragStartDelay]="0"
              [cdkDragData]="tens"
+             [cdkDragDisabled]="allCapsReached()"
              (cdkDragStarted)="onDragStarted()"
              (cdkDragEnded)="onDragEnded($event, tens, 'tens')"
              (click)="onItemClick(tens, 'tens')">
@@ -79,11 +80,13 @@
       [cdkDropListConnectedTo]="[imageOnesList]"
       [cdkDropListEnterPredicate]="onesEnterPredicate"
       (cdkDropListDropped)="handleDrop($event)"
+      [class.disabled]="allCapsReached()"
     >
       @for (ones of onesSourceSignal(); track ones.id) {
         <div class="icon-item ones"
              cdkDrag [cdkDragStartDelay]="0"
              [cdkDragData]="ones"
+             [cdkDragDisabled]="allCapsReached()"
              (cdkDragStarted)="onDragStarted()"
              (cdkDragEnded)="onDragEnded($event, ones, 'ones')"
              (click)="onItemClick(ones, 'ones')"

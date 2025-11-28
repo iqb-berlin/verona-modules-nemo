@@ -1,7 +1,8 @@
 import {
   Component,
   effect,
-  signal
+  signal,
+  computed
 } from '@angular/core';
 import {
   DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem, CdkDropList, CdkDrag
@@ -22,10 +23,6 @@ export class InteractionCountComponent extends InteractionComponentDirective {
 
   // expose options as a signal for template
   readonly optionsSignal = signal<SelectionOption[]>([]);
-
-  // For the required layout: two columns
-  // readonly tensItems = computed(() => this.expandIcon('TENS'));
-  // readonly onesItems = computed(() => this.expandIcon('ONES'));
 
   // Drag & drop data sources
   private idCounter = 0;
@@ -67,9 +64,10 @@ export class InteractionCountComponent extends InteractionComponentDirective {
         this.localParameters.options = parameters.options || [];
         this.optionsSignal.set(this.localParameters.options);
 
-        // Initialize drag sources based on options
-        const tens = this.expandIcon('TENS').map(() => this.makeItem('TENS'));
-        const ones = this.expandIcon('ONES').map(() => this.makeItem('ONES'));
+        const hasTens = !!this.optionsSignal().find(o => o.icon === 'TENS');
+        const hasOnes = !!this.optionsSignal().find(o => o.icon === 'ONES');
+        const tens = hasTens ? Array.from({ length: 50 }, () => this.makeItem('TENS')) : [];
+        const ones = hasOnes ? Array.from({ length: 50 }, () => this.makeItem('ONES')) : [];
         this.tensSourceSignal.set(tens);
         this.onesSourceSignal.set(ones);
         this.imageTensSignal.set([]);
@@ -84,13 +82,62 @@ export class InteractionCountComponent extends InteractionComponentDirective {
         }]);
       }
     });
+
+    // Emit VALUE_CHANGED whenever the image-panel counts change
+    effect(() => {
+      const tens = this.imageTensCount();
+      const ones = this.imageOnesCount();
+      this.responses.emit([{
+        id: this.localParameters?.variableId || 'COUNT',
+        status: 'VALUE_CHANGED',
+        value: `TENS=${tens};ONES=${ones}`,
+        relevantForResponsesProgress: true
+      }]);
+    });
   }
 
-  /** Expand an icon into an array based on its repeat count */
-  private expandIcon(icon: IconButtonTypeEnum) {
-    const opt = this.optionsSignal().find(o => o.icon === icon);
-    const repeat = opt?.repeat ?? 0;
-    return Array.from({ length: repeat }, () => ({ icon } as const satisfies SelectionOption));
+  /** Helper: get counts and signals by icon */
+  private getContextByIcon(icon: IconButtonTypeEnum): {
+    sourceSig: { (): CountItem[]; set: (v: CountItem[]) => void };
+    imageSig: { (): CountItem[]; set: (v: CountItem[]) => void };
+  } {
+    if (icon === 'TENS') {
+      return { sourceSig: this.tensSourceSignal, imageSig: this.imageTensSignal };
+    }
+    return { sourceSig: this.onesSourceSignal, imageSig: this.imageOnesSignal };
+  }
+
+  /** Image-panel counts for TENS and ONES (derived) */
+  readonly imageTensCount = computed(() => this.imageTensSignal().length);
+  readonly imageOnesCount = computed(() => this.imageOnesSignal().length);
+
+  // Caps for maximum allowed items in the image panel
+  private static readonly MAX_TENS = 3;
+  private static readonly MAX_ONES = 20;
+
+  readonly tensCapReached = computed(() => this.imageTensCount() >= InteractionCountComponent.MAX_TENS);
+  readonly onesCapReached = computed(() => this.imageOnesCount() >= InteractionCountComponent.MAX_ONES);
+  readonly allCapsReached = computed(() => this.tensCapReached() && this.onesCapReached());
+
+  private canAdd(icon: IconButtonTypeEnum): boolean {
+    if (this.allCapsReached()) return false;
+    if (icon === 'TENS') return !this.tensCapReached();
+    return !this.onesCapReached();
+  }
+
+  /**
+   * Never remove the very last item from the wrapper (at least 1 stays)
+   * Always clone a new item into image panel (wrappers are infinite sources)
+   */
+  private addFromWrapperToImage(item: CountItem): void {
+    const icon = item.icon;
+    if (!this.canAdd(icon)) return;
+    const { imageSig } = this.getContextByIcon(icon);
+
+    // Always clone into image (create a new item)
+    const newImage = imageSig().slice();
+    newImage.push(this.makeItem(icon));
+    imageSig.set(newImage);
   }
 
   /** Create a CountItem with a unique ID */
@@ -102,11 +149,30 @@ export class InteractionCountComponent extends InteractionComponentDirective {
   /** Handle drag-and-drop events */
   // eslint-disable-next-line class-methods-use-this
   handleDrop(event: CdkDragDrop<CountItem[]>) {
-    console.log('HANDLE DROP, event is', event);
     this.dropOccurred = true;
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
+      // Determine if this is a wrapper => image move for TENS or ONES
+      const prevData = event.previousContainer.data;
+      const currData = event.container.data;
+
+      const isPrevTensWrapper = prevData === this.tensSourceSignal();
+      const isPrevOnesWrapper = prevData === this.onesSourceSignal();
+      const isCurrTensImage = currData === this.imageTensSignal();
+      const isCurrOnesImage = currData === this.imageOnesSignal();
+
+      const movingWrapperToImage =
+        (isPrevTensWrapper && isCurrTensImage) ||
+        (isPrevOnesWrapper && isCurrOnesImage);
+
+      if (movingWrapperToImage) {
+        const item = event.item.data as CountItem;
+        this.addFromWrapperToImage(item);
+        return;
+      }
+
+      // Otherwise, perform the normal transfer
       transferArrayItem(
         event.previousContainer.data,
         event.container.data,
@@ -143,14 +209,14 @@ export class InteractionCountComponent extends InteractionComponentDirective {
 
     if (!item || !context) return;
 
-    // If dragged from wrappers and released => move to image panel half
+    // If dragged from wrappers and released => add to image panel half
     // If dragged from image panel and released => move back to its wrapper
     if (context === 'tens') {
-      if (item.icon === 'TENS') this.moveItemBetween(this.tensSourceSignal, this.imageTensSignal, item);
+      if (item.icon === 'TENS') this.addFromWrapperToImage(item);
       return;
     }
     if (context === 'ones') {
-      if (item.icon === 'ONES') this.moveItemBetween(this.onesSourceSignal, this.imageOnesSignal, item);
+      if (item.icon === 'ONES') this.addFromWrapperToImage(item);
       return;
     }
     if (context === 'imageTens') {
@@ -168,8 +234,8 @@ export class InteractionCountComponent extends InteractionComponentDirective {
 
     if (item.icon === 'TENS') {
       if (context === 'tens') {
-        // move from tensSource => imageTens
-        this.moveItemBetween(this.tensSourceSignal, this.imageTensSignal, item);
+        // add from tensSource => imageTens (respect min-one-in-wrapper & repeat)
+        this.addFromWrapperToImage(item);
       } else if (context === 'imageTens') {
         // move back from imageTens => tensSource
         this.moveItemBetween(this.imageTensSignal, this.tensSourceSignal, item);
@@ -179,8 +245,8 @@ export class InteractionCountComponent extends InteractionComponentDirective {
 
     if (item.icon === 'ONES') {
       if (context === 'ones') {
-        // move from onesSource => imageOnes
-        this.moveItemBetween(this.onesSourceSignal, this.imageOnesSignal, item);
+        // add from onesSource => imageOnes (respect min-one-in-wrapper & repeat)
+        this.addFromWrapperToImage(item);
       } else if (context === 'imageOnes') {
         // move back from imageOnes => onesSource
         this.moveItemBetween(this.imageOnesSignal, this.onesSourceSignal, item);
@@ -197,7 +263,9 @@ export class InteractionCountComponent extends InteractionComponentDirective {
     const index = from.findIndex(i => i.id === item.id);
     if (index === -1) return;
     const newFrom = from.slice();
-    const [removed] = newFrom.splice(index, 1);
+    const removed = newFrom[index];
+    if (!removed) return;
+    newFrom.splice(index, 1);
     const newTo = toSig().slice();
     newTo.push(removed);
     fromSig.set(newFrom);
