@@ -26,23 +26,14 @@ export class UnitService {
   /** Opening flow is active: interactions and main audio hidden */
   private _openingFlowActive = signal<boolean>(false);
   openingFlowActive = this._openingFlowActive.asReadonly();
-  /** Whether the opening image is currently presented */
-  private _showOpeningImage = signal<boolean>(false);
-  showOpeningImage = this._showOpeningImage.asReadonly();
 
   // Public helpers for OpeningImageComponent
   startOpeningFlow(params: OpeningImageParams) {
     this.openingImageParams.set(params);
     this._openingFlowActive.set(true);
-    this._showOpeningImage.set(false);
-  }
-
-  showOpeningImageNow() {
-    this._showOpeningImage.set(true);
   }
 
   finishOpeningFlow() {
-    this._showOpeningImage.set(false);
     this._openingFlowActive.set(false);
   }
 
@@ -58,7 +49,6 @@ export class UnitService {
     this.disableInteractionUntilComplete.set(false);
     this.openingImageParams.set(null);
     this._openingFlowActive.set(false);
-    this._showOpeningImage.set(false);
   }
 
   setNewData(unitDefinition: unknown) {

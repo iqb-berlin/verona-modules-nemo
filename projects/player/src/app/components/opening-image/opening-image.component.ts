@@ -20,6 +20,8 @@ export class OpeningImageComponent implements OnDestroy {
 
   // local audio options to drive <stars-audio> for the opening sequence
   openingAudio = signal<AudioOptions | undefined>(undefined);
+  // local flag to show the image during the opening sequence
+  showImage = signal<boolean>(false);
   private imageTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
@@ -28,7 +30,7 @@ export class OpeningImageComponent implements OnDestroy {
       const params = this.unitService.openingImageParams();
       if (!params) return;
 
-      if (this.unitService.showOpeningImage()) return;
+      if (this.showImage()) return;
 
       if (params.audioSource) {
         // Set up opening audio and wait for it to finish
@@ -62,7 +64,7 @@ export class OpeningImageComponent implements OnDestroy {
     // stop rendering audio
     this.openingAudio.set(undefined);
     // show image and plan finish according to duration
-    this.unitService.showOpeningImageNow();
+    this.showImage.set(true);
     const duration = Number(this.unitService.openingImageParams()?.presentationDurationMS || 0);
     if (this.imageTimer) {
       clearTimeout(this.imageTimer);
