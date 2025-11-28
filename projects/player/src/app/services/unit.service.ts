@@ -1,6 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, effect } from '@angular/core';
 
-import { Subscription } from 'rxjs';
 import {
   AudioOptions,
   ContinueButtonEnum,
@@ -15,7 +14,19 @@ import { AudioService } from './audio.service';
 })
 
 export class UnitService {
-  constructor(private audioService: AudioService) {}
+  constructor(private audioService: AudioService) {
+    effect(() => {
+      if (!this._openingFlowActive() || !this.openingAudio()) return;
+
+      const currentAudioId = this.audioService.audioId();
+      const isPlaying = this.audioService.isPlaying();
+      const playCount = this.audioService.playCount();
+
+      if (currentAudioId === 'openingAudio' && !isPlaying && playCount >= 1) {
+        this.audioEnded('openingAudio');
+      }
+    });
+  }
 
   firstAudioOptions = signal<FirstAudioOptionsParams | undefined>(undefined);
   mainAudio = signal<AudioOptions | undefined>(undefined);
@@ -35,10 +46,6 @@ export class UnitService {
   /** Whether the opening image is currently presented */
   private _showOpeningImage = signal<boolean>(false);
   showOpeningImage = this._showOpeningImage.asReadonly();
-  /** Prevent double-start of opening audio */
-  private openingAudioStarted = false;
-  /** Subscription for tracking the shared audio service to detect end of opening audio */
-  private openingAudioSub?: Subscription;
 
   reset() {
     this.mainAudio.set(undefined);
@@ -54,8 +61,6 @@ export class UnitService {
     this.openingAudio.set(undefined);
     this._openingFlowActive.set(false);
     this._showOpeningImage.set(false);
-    this.openingAudioStarted = false;
-    this.teardownOpeningAudioWatcher();
   }
 
   setNewData(unitDefinition: unknown) {
@@ -64,17 +69,19 @@ export class UnitService {
     const firstAudioOptions: FirstAudioOptionsParams = {};
     this.firstAudioOptions.set(def.firstAudioOptions || firstAudioOptions);
     this.hasInteraction.set(def.interactionType !== undefined || def.interactionParameters !== undefined);
-    // add audioId to mainAudio object to be able to use it in audioService.setAudioSrc()
-    if (def.mainAudio) this.mainAudio.set({ ...def.mainAudio, audioId: 'mainAudio' } as AudioOptions);
+    // Prepare main audio
+    const realMainAudio: AudioOptions | undefined = def.mainAudio ?
+      ({ ...def.mainAudio, audioId: 'mainAudio' } as AudioOptions) :
+      undefined;
     // Backward compatibility for animateButton and firstClickLayer
-    if (this.mainAudio()?.animateButton) {
+    if (realMainAudio?.animateButton) {
       if (!this.firstAudioOptions()?.animateButton) {
-        this.firstAudioOptions.set({ ...this.firstAudioOptions(), animateButton: this.mainAudio().animateButton });
+        this.firstAudioOptions.set({ ...this.firstAudioOptions(), animateButton: realMainAudio.animateButton });
       }
     }
-    if (this.mainAudio()?.firstClickLayer) {
+    if (realMainAudio?.firstClickLayer) {
       if (!this.firstAudioOptions()?.firstClickLayer) {
-        this.firstAudioOptions.set({ ...this.firstAudioOptions(), firstClickLayer: this.mainAudio().firstClickLayer });
+        this.firstAudioOptions.set({ ...this.firstAudioOptions(), firstClickLayer: realMainAudio.firstClickLayer });
       }
     }
     const pattern = /^#([a-f0-9]{3}|[a-f0-9]{6})$/i;
@@ -96,7 +103,6 @@ export class UnitService {
       // start opening flow. If audio exists, wait for click; else show image directly
       this._openingFlowActive.set(true);
       this._showOpeningImage.set(false);
-      this.openingAudioStarted = false;
       if (!def.openingImage.audioSource) {
         // no opening audio, show image immediately then finish
         this.showImageThenFinish();
@@ -110,12 +116,16 @@ export class UnitService {
           animateButton: false,
           disableInteractionUntilComplete: false
         } as AudioOptions);
-        this.startOpeningAudioWatcher();
       }
+    } else {
+      // No opening image
     }
+
+    // Set the main audio (always available outside the opening flow)
+    if (realMainAudio) this.mainAudio.set(realMainAudio);
   }
 
-  audioEnded(playerId: string) {
+  private audioEnded(playerId: string) {
     if (playerId === 'openingAudio') {
       this.showImageThenFinish();
     }
@@ -126,9 +136,8 @@ export class UnitService {
     const duration = Number.isFinite(openingImageParameters?.presentationDurationMS as number) &&
     (openingImageParameters?.presentationDurationMS as number) > 0 ?
       (openingImageParameters?.presentationDurationMS as number) : 0;
-    // Stop rendering opening audio and stop watching
+    // Stop rendering opening audio
     this.openingAudio.set(undefined);
-    this.teardownOpeningAudioWatcher();
     this._showOpeningImage.set(true);
     if (duration === 0) {
       // no delay: immediately finish
@@ -140,24 +149,5 @@ export class UnitService {
       this._showOpeningImage.set(false);
       this._openingFlowActive.set(false);
     }, duration);
-  }
-
-  /** Start watching the shared audio player to detect the end of opening audio playback */
-  private startOpeningAudioWatcher() {
-    this.teardownOpeningAudioWatcher();
-    this.openingAudioSub = this.audioService.getPlayerStatus().subscribe(status => {
-      if (!this.openingFlowActive() || !this.openingAudio()) return;
-      if (this.audioService.audioId() !== 'openingAudio') return;
-      if (status !== 'playing' && this.audioService.playCount() >= 1) {
-        this.audioEnded('openingAudio');
-      }
-    });
-  }
-
-  private teardownOpeningAudioWatcher() {
-    if (this.openingAudioSub) {
-      this.openingAudioSub.unsubscribe();
-      this.openingAudioSub = undefined;
-    }
   }
 }

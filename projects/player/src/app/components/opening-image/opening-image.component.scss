@@ -17,23 +17,3 @@
     object-fit: contain;
   }
 }
-
-.opening-placeholder {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.start-button {
-  @include variables.text;
-  font-size: 24px;
-  padding: 12px 24px;
-  border-radius: 12px;
-  border: none;
-  background: #0d6efd;
-  color: #fff;
-  cursor: pointer;
-}

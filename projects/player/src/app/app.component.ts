@@ -1,7 +1,6 @@
 import {
   Component, computed, HostListener, OnInit
 } from '@angular/core';
-import { Subject } from 'rxjs';
 
 import { VeronaPostService } from './services/verona-post.service';
 import { VeronaSubscriptionService } from './services/verona-subscription.service';
@@ -19,13 +18,8 @@ import { VopStartCommand } from './models/verona';
 
 export class AppComponent implements OnInit {
   isStandalone: boolean | undefined;
-  private ngUnsubscribe = new Subject<void>();
   hasRibbonBars(): boolean {
     return this.unitService.ribbonBars();
-  }
-
-  hasOpeningImage(): boolean {
-    return !!this.unitService.openingImageParams();
   }
 
   getParametersWithFormerState = computed(() => {
