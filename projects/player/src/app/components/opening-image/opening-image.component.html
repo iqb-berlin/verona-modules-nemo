@@ -1,5 +1,8 @@
 @if (unitService.openingFlowActive()) {
   <div class="opening-image-wrapper" data-cy="opening-image">
+    @if (!unitService.showOpeningImage() && openingAudio()) {
+      <stars-audio [audio]="openingAudio()!"></stars-audio>
+    }
     @if (unitService.showOpeningImage()) {
       <img [src]="unitService.openingImageParams()?.imageSource" alt="Image" />
     }

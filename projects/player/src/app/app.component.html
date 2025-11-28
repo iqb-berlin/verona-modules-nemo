@@ -5,14 +5,9 @@
     <stars-standalone-menu></stars-standalone-menu>
   }
 
-  <!-- Opening audio via stars-audio during opening flow -->
-  @if (unitService.openingFlowActive() && !unitService.showOpeningImage() && unitService.openingAudio()) {
-    <stars-audio [audio]="unitService.openingAudio()"></stars-audio>
-  }
-
   <!-- Main audio controller (hidden during opening flow) -->
   @if (!unitService.openingFlowActive() && unitService.mainAudio()?.audioSource) {
-    <stars-audio [audio]="unitService.mainAudio()" [firstAudioOptions]="unitService.firstAudioOptions()"></stars-audio>
+    <stars-audio [audio]="unitService.mainAudio()!" [firstAudioOptions]="unitService.firstAudioOptions()"></stars-audio>
   }
 
   <!-- Continue Button (hidden during opening flow) -->
