@@ -38,7 +38,7 @@ export interface SelectionOption {
   audioSource?: string;
   label?: string;
   icon?: IconButtonTypeEnum;
-  points?: string;
+  svgPath?: string;
 }
 
 export interface RepeatButtonConfig {
