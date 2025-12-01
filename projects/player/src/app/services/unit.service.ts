@@ -57,19 +57,19 @@ export class UnitService {
     const firstAudioOptions: FirstAudioOptionsParams = {};
     this.firstAudioOptions.set(def.firstAudioOptions || firstAudioOptions);
     this.hasInteraction.set(def.interactionType !== undefined || def.interactionParameters !== undefined);
-    // Prepare main audio
-    const realMainAudio: AudioOptions | undefined = def.mainAudio ?
+    // add audioId to the mainAudio object to be able to use it in audioService.setAudioSrc()
+    const mainAudio: AudioOptions | undefined = def.mainAudio ?
       ({ ...def.mainAudio, audioId: 'mainAudio' } as AudioOptions) :
       undefined;
     // Backward compatibility for animateButton and firstClickLayer
-    if (realMainAudio?.animateButton) {
+    if (mainAudio?.animateButton) {
       if (!this.firstAudioOptions()?.animateButton) {
-        this.firstAudioOptions.set({ ...this.firstAudioOptions(), animateButton: realMainAudio.animateButton });
+        this.firstAudioOptions.set({ ...this.firstAudioOptions(), animateButton: mainAudio.animateButton });
       }
     }
-    if (realMainAudio?.firstClickLayer) {
+    if (mainAudio?.firstClickLayer) {
       if (!this.firstAudioOptions()?.firstClickLayer) {
-        this.firstAudioOptions.set({ ...this.firstAudioOptions(), firstClickLayer: realMainAudio.firstClickLayer });
+        this.firstAudioOptions.set({ ...this.firstAudioOptions(), firstClickLayer: mainAudio.firstClickLayer });
       }
     }
     const pattern = /^#([a-f0-9]{3}|[a-f0-9]{6})$/i;
@@ -91,6 +91,6 @@ export class UnitService {
     }
 
     // Set the main audio (always available outside the opening flow)
-    if (realMainAudio) this.mainAudio.set(realMainAudio);
+    if (mainAudio) this.mainAudio.set(mainAudio);
   }
 }

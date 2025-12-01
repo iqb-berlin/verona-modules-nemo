@@ -1,7 +1,6 @@
 import {
-  Component, effect, inject, OnDestroy, signal
+  Component, effect, inject, signal
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { UnitService } from '../../services/unit.service';
 import { AudioService } from '../../services/audio.service';
 import { AudioOptions } from '../../models/unit-definition';
@@ -12,9 +11,9 @@ import { AudioComponent } from '../audio/audio.component';
   templateUrl: './opening-image.component.html',
   styleUrls: ['./opening-image.component.scss'],
   standalone: true,
-  imports: [CommonModule, AudioComponent]
+  imports: [AudioComponent]
 })
-export class OpeningImageComponent implements OnDestroy {
+export class OpeningImageComponent {
   unitService = inject(UnitService);
   audioService = inject(AudioService);
 
@@ -22,7 +21,6 @@ export class OpeningImageComponent implements OnDestroy {
   openingAudio = signal<AudioOptions | undefined>(undefined);
   // local flag to show the image during the opening sequence
   showImage = signal<boolean>(false);
-  private imageTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
     effect(() => {
@@ -61,28 +59,15 @@ export class OpeningImageComponent implements OnDestroy {
   }
 
   private transitionToImage() {
-    // stop rendering audio
-    this.openingAudio.set(undefined);
     // show image and plan finish according to duration
     this.showImage.set(true);
     const duration = Number(this.unitService.openingImageParams()?.presentationDurationMS || 0);
-    if (this.imageTimer) {
-      clearTimeout(this.imageTimer);
-      this.imageTimer = null;
-    }
     if (!Number.isFinite(duration) || duration <= 0) {
       this.unitService.finishOpeningFlow();
       return;
     }
-    this.imageTimer = setTimeout(() => {
+    setTimeout(() => {
       this.unitService.finishOpeningFlow();
     }, duration);
-  }
-
-  ngOnDestroy() {
-    if (this.imageTimer) {
-      clearTimeout(this.imageTimer);
-      this.imageTimer = null;
-    }
   }
 }
