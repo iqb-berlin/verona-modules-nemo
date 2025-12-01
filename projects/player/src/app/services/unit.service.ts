@@ -4,7 +4,7 @@ import {
   AudioOptions,
   ContinueButtonEnum,
   FirstAudioOptionsParams,
-  InteractionEnum,
+  InteractionEnum, OpeningImageParams,
   UnitDefinition
 } from '../models/unit-definition';
 
@@ -22,6 +22,20 @@ export class UnitService {
   hasInteraction = signal(false);
   ribbonBars = signal<boolean>(false);
   disableInteractionUntilComplete = signal(false);
+  openingImageParams = signal<OpeningImageParams | null>(null);
+  /** Opening flow is active: interactions and main audio hidden */
+  private _openingFlowActive = signal<boolean>(false);
+  openingFlowActive = this._openingFlowActive.asReadonly();
+
+  // Public helpers for OpeningImageComponent
+  startOpeningFlow(params: OpeningImageParams) {
+    this.openingImageParams.set(params);
+    this._openingFlowActive.set(true);
+  }
+
+  finishOpeningFlow() {
+    this._openingFlowActive.set(false);
+  }
 
   reset() {
     this.mainAudio.set(undefined);
@@ -33,6 +47,8 @@ export class UnitService {
     this.hasInteraction.set(false);
     this.ribbonBars.set(false);
     this.disableInteractionUntilComplete.set(false);
+    this.openingImageParams.set(null);
+    this._openingFlowActive.set(false);
   }
 
   setNewData(unitDefinition: unknown) {
@@ -41,17 +57,19 @@ export class UnitService {
     const firstAudioOptions: FirstAudioOptionsParams = {};
     this.firstAudioOptions.set(def.firstAudioOptions || firstAudioOptions);
     this.hasInteraction.set(def.interactionType !== undefined || def.interactionParameters !== undefined);
-    // add audioId to mainAudio object to be able to use it in audioService.setAudioSrc()
-    if (def.mainAudio) this.mainAudio.set({ ...def.mainAudio, audioId: 'mainAudio' } as AudioOptions);
+    // add audioId to the mainAudio object to be able to use it in audioService.setAudioSrc()
+    const mainAudio: AudioOptions | undefined = def.mainAudio ?
+      ({ ...def.mainAudio, audioId: 'mainAudio' } as AudioOptions) :
+      undefined;
     // Backward compatibility for animateButton and firstClickLayer
-    if (this.mainAudio()?.animateButton) {
+    if (mainAudio?.animateButton) {
       if (!this.firstAudioOptions()?.animateButton) {
-        this.firstAudioOptions.set({ ...this.firstAudioOptions(), animateButton: this.mainAudio().animateButton });
+        this.firstAudioOptions.set({ ...this.firstAudioOptions(), animateButton: mainAudio.animateButton });
       }
     }
-    if (this.mainAudio()?.firstClickLayer) {
+    if (mainAudio?.firstClickLayer) {
       if (!this.firstAudioOptions()?.firstClickLayer) {
-        this.firstAudioOptions.set({ ...this.firstAudioOptions(), firstClickLayer: this.mainAudio().firstClickLayer });
+        this.firstAudioOptions.set({ ...this.firstAudioOptions(), firstClickLayer: mainAudio.firstClickLayer });
       }
     }
     const pattern = /^#([a-f0-9]{3}|[a-f0-9]{6})$/i;
@@ -67,5 +85,12 @@ export class UnitService {
     if (def.mainAudio?.disableInteractionUntilComplete) {
       this.disableInteractionUntilComplete.set(def.mainAudio.disableInteractionUntilComplete);
     }
+
+    if (def.openingImage && def.openingImage.imageSource) {
+      this.startOpeningFlow(def.openingImage);
+    }
+
+    // Set the main audio (always available outside the opening flow)
+    if (mainAudio) this.mainAudio.set(mainAudio);
   }
 }
