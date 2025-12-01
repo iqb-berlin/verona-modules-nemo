@@ -69,20 +69,6 @@
               {{ button }}
             </button>
           }
-        } @else if (localParameters.keyboardMode === 'NUMBERS_BLOCK') {
-          @for (buttonList of numbersListBlock; track $index) {
-            @for (button of buttonList; track $index) {
-              <button type="button"
-                      class="keyboard-button"
-                      [attr.aria-label]="currentText.length === 0 ? button : button"
-                      (click)="addChar(button)"
-                      [disabled]="isDisabled"
-                      [attr.data-cy]="'numbers-button-' + button"
-              >
-                {{ button }}
-              </button>
-            }
-          }
         }
       </div>
 

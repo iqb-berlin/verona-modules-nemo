@@ -27,6 +27,7 @@ export class InteractionWriteComponent extends InteractionComponentDirective {
     ['7', '8', '9'],
     ['0']
   ];
+
   /** Small array of additional characters (German umlauts). */
   umlautListChars = [...'äöü'];
   /** Boolean to track if the former state has been restored from response. */

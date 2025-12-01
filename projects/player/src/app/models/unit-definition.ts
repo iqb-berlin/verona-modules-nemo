@@ -82,7 +82,7 @@ export interface InteractionWriteParams {
   text?: string;
   addBackspaceKey?: boolean;
   addUmlautKeys?: boolean;
-  keyboardMode?: 'CHARACTERS' | 'NUMBERS_LINE' | 'NUMBERS_BLOCK';
+  keyboardMode?: 'CHARACTERS' | 'NUMBERS_LINE';
   keysToAdd?: string[];
   maxInputLength?: number;
   formerState?: Response[];
