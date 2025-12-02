@@ -18,11 +18,13 @@
 .image-panel {
   @include variables.default-box-shadow;
   width: 665px;
-  height: 320px;
+  height: 400px;
   box-sizing: border-box;
   border: 3px solid lightgrey;
   border-radius: variables.$border-radius;
   margin-bottom: variables.$small-gap-margin;
+  position: relative;
+  z-index: 2;
 
   img {
     @include variables.responsive-image;
@@ -30,7 +32,6 @@
 
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .image-half {
@@ -41,6 +42,25 @@
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
+}
+
+/* Upper half should stack TENS items vertically */
+.image-half.upper {
+  flex-direction: column;
+  flex: 2 1 60%; // Take 60% of the space for TENS
+}
+
+/* Lower half should stack ONES items horizontally */
+.image-half.lower {
+  flex-direction: row;
+  flex: 1 1 40%;
+}
+
+.image-half .icon-item {
+  transform-origin: center center;
+  position: static;
+  margin-right: 8px;
+  margin-bottom: 8px;
 }
 
 .icons-wrapper {
@@ -64,30 +84,41 @@
   background-color: rgba(0, 0, 0, 0.02);
   flex-shrink: 0; // Do not allow flexbox to shrink these areas
   position: relative; // allow stacking
+  z-index: 1;
 }
 
 .tens-wrapper {
   min-width: 665px;
   height: 70px;
   margin-right: 12px;
-  overflow: hidden;
 }
 .ones-wrapper {
   min-width: 70px;
   height: 70px;
-  overflow: hidden;
 }
 
 .icon-item.tens {
   width: 652px;
   height: 58px;
+  transform-origin: center center;
   transition: transform 1s ease-in-out;
 }
 
 .icon-item.ones {
   width: 55px;
   height: 55px;
+  transform-origin: center center;
   transition: transform 1s ease-in-out;
+}
+
+.icon-item.no-transition {
+  transition: none !important;
+}
+
+/* Ensure animating items appear above all other elements */
+.icon-item.animating {
+  z-index: 9999 !important;
+  position: relative !important;
 }
 
 /* Stack all wrapper icons on top of each other so they appear as a single item */
@@ -96,6 +127,7 @@
   position: absolute;
   top: 8px;
   left: 8px;
+  transform-origin: center center;
 }
 
 /* Only the last stacked item should be interactive */

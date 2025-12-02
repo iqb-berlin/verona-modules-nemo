@@ -4,10 +4,12 @@
   <div
     class="image-panel"
     data-cy="image-panel"
+    #imagePanel
   >
     <div class="image-half upper"
          cdkDropList
          #imageTensList="cdkDropList"
+         #imageUpperHalf
          [cdkDropListData]="imageTensSignal()"
          [cdkDropListConnectedTo]="[tensList]"
          [cdkDropListEnterPredicate]="tensEnterPredicate"
@@ -15,11 +17,15 @@
          data-cy="image-panel-upper">
       @for (item of imageTensSignal(); track item.id) {
         <div class="icon-item tens"
+             [class.no-transition]="!isAnimating(item.id)"
+             [class.animating]="isAnimating(item.id)"
              cdkDrag
              [cdkDragStartDelay]="0"
              [cdkDragData]="item"
+             [style.transform]="itemTransforms[item.id] || null"
+             [style.pointerEvents]="isAnimating(item.id) ? 'none' : null"
              (cdkDragStarted)="onDragStarted()"
-             (cdkDragEnded)="onDragEnded($event, item, 'imageTens')"
+             (cdkDragEnded)="onDragEnded(item, 'imageTens')"
              (click)="onItemClick(item, 'imageTens')">
           <stars-standard-icon [icon]="item.icon"></stars-standard-icon>
         </div>
@@ -28,6 +34,7 @@
     <div class="image-half lower"
          cdkDropList
          #imageOnesList="cdkDropList"
+         #imageLowerHalf
          [cdkDropListData]="imageOnesSignal()"
          [cdkDropListConnectedTo]="[onesList]"
          [cdkDropListEnterPredicate]="onesEnterPredicate"
@@ -35,11 +42,15 @@
          data-cy="image-panel-lower">
       @for (item of imageOnesSignal(); track item.id) {
         <div class="icon-item ones"
+             [class.no-transition]="!isAnimating(item.id)"
+             [class.animating]="isAnimating(item.id)"
              cdkDrag
              [cdkDragStartDelay]="0"
              [cdkDragData]="item"
+             [style.transform]="itemTransforms[item.id] || null"
+             [style.pointerEvents]="isAnimating(item.id) ? 'none' : null"
              (cdkDragStarted)="onDragStarted()"
-             (cdkDragEnded)="onDragEnded($event, item, 'imageOnes')"
+             (cdkDragEnded)="onDragEnded(item, 'imageOnes')"
              (click)="onItemClick(item, 'imageOnes')">
           <stars-standard-icon [icon]="item.icon"></stars-standard-icon>
         </div>
@@ -52,6 +63,7 @@
          data-cy="tens-wrapper"
          cdkDropList
          #tensList="cdkDropList"
+         #tensWrapper
          [cdkDropListData]="tensSourceSignal()"
          [cdkDropListConnectedTo]="[imageTensList]"
          [cdkDropListEnterPredicate]="tensEnterPredicate"
@@ -60,13 +72,18 @@
     >
       @for (tens of tensSourceSignal(); track tens.id) {
         <div class="icon-item tens"
+             [class.no-transition]="!isAnimating(tens.id)"
+             [class.animating]="isAnimating(tens.id)"
              cdkDrag
              [cdkDragStartDelay]="0"
              [cdkDragData]="tens"
-             [cdkDragDisabled]="allCapsReached()"
+             [cdkDragDisabled]="allCapsReached() || isAnimating(tens.id)"
+             [style.transform]="itemTransforms[tens.id] || null"
+             [style.pointerEvents]="isAnimating(tens.id) ? 'none' : null"
              (cdkDragStarted)="onDragStarted()"
-             (cdkDragEnded)="onDragEnded($event, tens, 'tens')"
-             (click)="onItemClick(tens, 'tens')">
+             (cdkDragEnded)="onDragEnded(tens, 'tens')"
+             (click)="onItemClick(tens, 'tens')"
+             #tensEl>
           <stars-standard-icon icon="TENS"></stars-standard-icon>
         </div>
       }
@@ -76,6 +93,7 @@
       data-cy="ones-wrapper"
       cdkDropList
       #onesList="cdkDropList"
+      #onesWrapper
       [cdkDropListData]="onesSourceSignal()"
       [cdkDropListConnectedTo]="[imageOnesList]"
       [cdkDropListEnterPredicate]="onesEnterPredicate"
@@ -84,12 +102,17 @@
     >
       @for (ones of onesSourceSignal(); track ones.id) {
         <div class="icon-item ones"
+             [class.no-transition]="!isAnimating(ones.id)"
+             [class.animating]="isAnimating(ones.id)"
              cdkDrag [cdkDragStartDelay]="0"
              [cdkDragData]="ones"
-             [cdkDragDisabled]="allCapsReached()"
+             [cdkDragDisabled]="allCapsReached() || isAnimating(ones.id)"
+             [style.transform]="itemTransforms[ones.id] || null"
+             [style.pointerEvents]="isAnimating(ones.id) ? 'none' : null"
              (cdkDragStarted)="onDragStarted()"
-             (cdkDragEnded)="onDragEnded($event, ones, 'ones')"
+             (cdkDragEnded)="onDragEnded(ones, 'ones')"
              (click)="onItemClick(ones, 'ones')"
+             #onesEl
         >
           <stars-standard-icon icon="ONES"></stars-standard-icon>
         </div>
