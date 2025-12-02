@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, provideZonelessChangeDetection } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { provideLottieOptions } from 'ngx-lottie';
 import player from 'lottie-web';
@@ -28,6 +27,7 @@ import { InteractionFindOnImageComponent } from './components/interaction-find-o
 import { RibbonBarComponent } from './components/ribbon-bar/ribbon-bar.component';
 import { InteractionPolygonButtonsComponent }
   from './components/interaction-polygon-buttons/interaction-polygon-buttons.component';
+import { AudioButtonComponent } from './shared/audio-button/audio-button.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +35,6 @@ import { InteractionPolygonButtonsComponent }
   ],
   imports: [
     BrowserModule,
-    BrowserAnimationsModule,
     CommonModule,
     NgOptimizedImage,
     ContinueButtonComponent,
@@ -43,6 +42,7 @@ import { InteractionPolygonButtonsComponent }
     SafeResourceUrlPipe,
     LinebreaksHtmlPipe,
     AudioComponent,
+    AudioButtonComponent,
     ClickLayerComponent,
     InteractionButtonsComponent,
     ContinueButtonComponent,

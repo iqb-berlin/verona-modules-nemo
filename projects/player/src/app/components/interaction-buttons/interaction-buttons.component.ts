@@ -7,16 +7,19 @@ import { StarsResponse } from '../../services/responses.service';
 import { VeronaPostService } from '../../services/verona-post.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import {
+  AudioOptions,
   InteractionButtonParams,
   SelectionOption
 } from '../../models/unit-definition';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
+import { AudioButtonComponent } from '../../shared/audio-button/audio-button.component';
 
 @Component({
   selector: 'stars-interaction-buttons',
   templateUrl: './interaction-buttons.component.html',
   imports: [
-    StandardButtonComponent
+    StandardButtonComponent,
+    AudioButtonComponent
   ],
   styleUrls: ['./interaction-buttons.component.scss']
 })
@@ -165,6 +168,14 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     }
 
     return options;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  createAudioOptions(button: RowOption): AudioOptions {
+    return {
+      audioSource: button.option.audioSource || '',
+      audioId: `${button.id + button.index}_audio`
+    };
   }
 
   getRowsOptions():Array<Array<RowOption>> {
