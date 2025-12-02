@@ -28,6 +28,7 @@ import { InteractionFindOnImageComponent } from './components/interaction-find-o
 import { RibbonBarComponent } from './components/ribbon-bar/ribbon-bar.component';
 import { InteractionPolygonButtonsComponent }
   from './components/interaction-polygon-buttons/interaction-polygon-buttons.component';
+import { OpeningImageComponent } from './components/opening-image/opening-image.component';
 import { InteractionCountComponent } from './components/interaction-count/interaction-count.component';
 
 @NgModule({
@@ -55,6 +56,7 @@ import { InteractionCountComponent } from './components/interaction-count/intera
     InteractionFindOnImageComponent,
     RibbonBarComponent,
     InteractionPolygonButtonsComponent,
+    OpeningImageComponent,
     InteractionCountComponent
   ],
   providers: [
