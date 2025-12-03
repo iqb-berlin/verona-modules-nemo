@@ -29,9 +29,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   /** Options sorted by rows. */
   optionRows: Array<Array<RowOption>> = [];
   /** Array of all options aka Buttons to be shown. */
-  allOptions: Array<SelectionOption> = [];
-  /** imagePosition for stimulus image if available. */
-  imagePosition: string = 'TOP';
+  layoutMode: 'STIMULUS_TOP' | 'STIMULUS_LEFT' | 'NO_STIMULUS' | 'STIMULUS_ONLY' = 'STIMULUS_LEFT';
   /** Boolean to track if the former the state has been restored from response. */
   private hasRestoredFromFormerState = false;
   /** Flag to mark images useFullArea: true. */
@@ -55,6 +53,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     effect(() => {
       const parameters = this.parameters() as InteractionButtonParams;
       this.localParameters = this.createDefaultParameters();
+      this.layoutMode = 'STIMULUS_LEFT';
       this.hasRestoredFromFormerState = false;
 
       if (parameters) {
@@ -73,8 +72,14 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         } else {
           this.localParameters.imagePosition = 'TOP';
         }
-        this.allOptions = this.createOptions();
         this.optionRows = this.getRowsOptions();
+        if (this.optionRows.length > 0) {
+          if (this.localParameters.imageSource || this.localParameters.text) {
+            this.layoutMode = this.localParameters.imagePosition === 'TOP' ? 'STIMULUS_TOP' : 'STIMULUS_LEFT';
+          }
+        } else {
+          this.layoutMode = 'STIMULUS_ONLY';
+        }
 
         // Only restore from former state once, on initial load
         if (!this.hasRestoredFromFormerState) {
@@ -157,13 +162,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     } else {
       options = this.localParameters.options?.buttons || [];
     }
-
-    if (this.localParameters.imageSource) {
-      this.imagePosition = this.localParameters.imagePosition ? this.localParameters.imagePosition : 'LEFT';
-    } else {
-      this.imagePosition = 'TOP';
-    }
-
     return options;
   }
 
@@ -173,7 +171,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     const numberOfRows = this.localParameters.numberOfRows || 1;
     const rows: Array<Array<RowOption>> = [];
 
-    const options = this.allOptions;
+    const options = this.createOptions();
     const baseId = this.localParameters.variableId;
     const totalOptions = options.length;
 
