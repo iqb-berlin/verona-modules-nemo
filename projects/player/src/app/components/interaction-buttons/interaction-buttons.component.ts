@@ -195,10 +195,10 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         return; // continue to next iteration
       }
 
-      const singleRowOptionsIndexed: RowOption[] = options
+      const singleRowOptionsIndexed = options
         .slice(currentIndex, currentIndex + actualOptionsForRow)
-        .map((option, i) => ({
-          option,
+        .map((option, i) => (<RowOption>{
+          option: option,
           index: currentIndex + i,
           id: this.localParameters.multiSelect ? `${baseId}_${currentIndex + i}` : baseId
         }));
@@ -243,16 +243,15 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         const forFirstRow = Math.ceil(remaining / 2);
         const forSecondRow = remaining - forFirstRow;
         return [forFirstRow, forSecondRow, forLastRow];
-      } else {
-        const baseAmount = Math.floor(totalOptions / numberOfRows);
-        const remainder = totalOptions % numberOfRows;
-
-        const result: number[] = [];
-        for (let i = 0; i < numberOfRows; i++) {
-          result.push(baseAmount + (i < remainder ? 1 : 0));
-        }
-        return result;
       }
+      const baseAmount = Math.floor(totalOptions / numberOfRows);
+      const remainder = totalOptions % numberOfRows;
+
+      const result: number[] = [];
+      for (let i = 0; i < numberOfRows; i++) {
+        result.push(baseAmount + (i < remainder ? 1 : 0));
+      }
+      return result;
     }
 
     // For more than 3 rows
@@ -362,7 +361,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       this.selectedValues().map(item => (item ? 1 : 0)).join('') :
       (this.selectedValues().findIndex(item => item) + 1).toString();
 
-    const response: StarsResponse = {
+    const response = <StarsResponse>{
       id: this.localParameters.variableId,
       status: status,
       value: value,
