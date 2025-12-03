@@ -24,8 +24,9 @@
              [cdkDragData]="item"
              [style.transform]="itemTransforms[item.id] || null"
              [style.pointerEvents]="isAnimating(item.id) ? 'none' : null"
-             (cdkDragStarted)="onDragStarted()"
-             (cdkDragEnded)="onDragEnded(item, 'imageTens')"
+             (cdkDragStarted)="onDragStarted(item)"
+             (cdkDragReleased)="onDragReleased(item)"
+             (cdkDragEnded)="onDragEnded($event, item, 'imageTens')"
              (click)="onItemClick(item, 'imageTens')">
           <stars-standard-icon [icon]="item.icon"></stars-standard-icon>
         </div>
@@ -49,8 +50,9 @@
              [cdkDragData]="item"
              [style.transform]="itemTransforms[item.id] || null"
              [style.pointerEvents]="isAnimating(item.id) ? 'none' : null"
-             (cdkDragStarted)="onDragStarted()"
-             (cdkDragEnded)="onDragEnded(item, 'imageOnes')"
+             (cdkDragStarted)="onDragStarted(item)"
+             (cdkDragReleased)="onDragReleased(item)"
+             (cdkDragEnded)="onDragEnded($event, item, 'imageOnes')"
              (click)="onItemClick(item, 'imageOnes')">
           <stars-standard-icon [icon]="item.icon"></stars-standard-icon>
         </div>
@@ -80,8 +82,9 @@
              [cdkDragDisabled]="allCapsReached() || isAnimating(tens.id)"
              [style.transform]="itemTransforms[tens.id] || null"
              [style.pointerEvents]="isAnimating(tens.id) ? 'none' : null"
-             (cdkDragStarted)="onDragStarted()"
-             (cdkDragEnded)="onDragEnded(tens, 'tens')"
+             (cdkDragStarted)="onDragStarted(tens)"
+             (cdkDragReleased)="onDragReleased(tens)"
+             (cdkDragEnded)="onDragEnded($event, tens, 'tens')"
              (click)="onItemClick(tens, 'tens')"
              #tensEl>
           <stars-standard-icon icon="TENS"></stars-standard-icon>
@@ -104,13 +107,15 @@
         <div class="icon-item ones"
              [class.no-transition]="!isAnimating(ones.id)"
              [class.animating]="isAnimating(ones.id)"
-             cdkDrag [cdkDragStartDelay]="0"
+             cdkDrag
+             [cdkDragStartDelay]="0"
              [cdkDragData]="ones"
              [cdkDragDisabled]="allCapsReached() || isAnimating(ones.id)"
              [style.transform]="itemTransforms[ones.id] || null"
              [style.pointerEvents]="isAnimating(ones.id) ? 'none' : null"
-             (cdkDragStarted)="onDragStarted()"
-             (cdkDragEnded)="onDragEnded(ones, 'ones')"
+             (cdkDragStarted)="onDragStarted(ones)"
+             (cdkDragReleased)="onDragReleased(ones)"
+             (cdkDragEnded)="onDragEnded($event, ones, 'ones')"
              (click)="onItemClick(ones, 'ones')"
              #onesEl
         >

@@ -9,7 +9,7 @@ import {
   OnDestroy
 } from '@angular/core';
 import {
-  DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem, CdkDrag
+  DragDropModule, CdkDragDrop, CdkDragEnd, moveItemInArray, transferArrayItem, CdkDrag
 } from '@angular/cdk/drag-drop';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
@@ -40,6 +40,8 @@ export class InteractionCountComponent extends InteractionComponentDirective imp
   private suppressClick = false;
   /** Tracks whether the current drag sequence ended with a valid CDK drop */
   private dropOccurred = false;
+  /** Tracks items whose wrapper→image animation was initiated in handleDrop to avoid double-handling in onDragEnded */
+  private readonly dropAnimatingIds = new Set<number>();
 
   /** Image panel and wrappers element refs */
   @ViewChild('imagePanel', { static: false }) imagePanelRef?: ElementRef<HTMLElement>;
@@ -57,8 +59,8 @@ export class InteractionCountComponent extends InteractionComponentDirective imp
   private onesLandingTransforms: string[] = [];
   private onesLandingTargets: { x: number; y: number }[] = [];
 
-  /** Animation control for click-to-move UX (so only one visual element is seen moving) */
-  private readonly animatingIds = new Set<number>();
+  /** Animation control for click/drag animations: reactive map of animating item ids */
+  private readonly animatingFlags = signal<Record<number, true>>({});
   /** keep in sync with CSS/inline transition (interaction-drop uses 1s ease-in-out) */
   private static readonly CLICK_ANIMATION_MS = 1000;
 
@@ -164,7 +166,7 @@ export class InteractionCountComponent extends InteractionComponentDirective imp
     try { window.addEventListener('resize', this.windowResizeHandler); } catch { /* noop */ }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.resizeObserver) {
       try {
         this.resizeObserver.disconnect();
@@ -314,6 +316,10 @@ export class InteractionCountComponent extends InteractionComponentDirective imp
   // eslint-disable-next-line class-methods-use-this
   handleDrop(event: CdkDragDrop<CountItem[]>) {
     this.dropOccurred = true;
+    console.log('[handleDrop] drop detected', {
+      prevLen: event.previousContainer.data?.length,
+      currLen: event.container.data?.length
+    });
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
@@ -331,8 +337,23 @@ export class InteractionCountComponent extends InteractionComponentDirective imp
         (isPrevOnesWrapper && isCurrOnesImage);
 
       if (movingWrapperToImage) {
-        const item = event.item.data as CountItem;
-        this.addFromWrapperToImage(item);
+        // Start smooth animation immediately here (CDK event ordering may fire dragEnd before dropped)
+        const draggedItem = event.item?.data as CountItem | undefined;
+        if (!draggedItem) {
+          console.warn('[handleDrop] movingWrapperToImage but no dragged item data');
+          return;
+        }
+        const freePos = (event.item as unknown as CdkDrag)?.getFreeDragPosition?.() ?? { x: 0, y: 0 };
+        const dragPosition = { x: freePos.x ?? 0, y: freePos.y ?? 0 };
+        console.log('[handleDrop] wrapper→image animation start', draggedItem, 'from', dragPosition);
+        this.dropAnimatingIds.add(draggedItem.id);
+        this.animateDragToImagePanelSmooth(draggedItem, draggedItem.icon, dragPosition);
+        // Clear the helper flag after the animation window
+        setTimeout(() => {
+          this.dropAnimatingIds.delete(draggedItem.id);
+        }, InteractionCountComponent.CLICK_ANIMATION_MS + 50);
+        // Do not transfer items here – image panel receives a clone after animation
+        this.dropOccurred = false; // consumed
         return;
       }
 
@@ -347,38 +368,82 @@ export class InteractionCountComponent extends InteractionComponentDirective imp
   }
 
   /** Mark that a drag has started to suppress immediate click */
-  // eslint-disable-next-line class-methods-use-this
-  onDragStarted(): void {
+  onDragStarted(item: CountItem): void {
+    console.log('onDragStarted for item:', item.id, 'currently animating:', this.isAnimating(item.id));
     this.suppressClick = true;
     this.dropOccurred = false;
+    // Ensure item is not in animatingIds during drag (enables no-transition class)
+    this.setAnimating(item.id, false);
+  }
+
+  /** Re-enable transitions when drag is released */
+  // eslint-disable-next-line class-methods-use-this
+  onDragReleased(item: CountItem): void {
+    console.log('onDragReleased for item:', item.id, 'currently animating:', this.isAnimating(item.id));
+    // Remove from animatingIds to prepare for animation - do I need this?
   }
 
   /** Clear click suppression shortly after drag end */
-  // eslint-disable-next-line class-methods-use-this
-  onDragEnded(item?: CountItem, context?: 'tens' | 'ones' | 'imageTens' | 'imageOnes'): void {
+  onDragEnded(event: CdkDragEnd, item?: CountItem, context?: 'tens' | 'ones' | 'imageTens' | 'imageOnes'): void {
+    console.log('onDragEnded, this.dropOccurred is', this.dropOccurred);
     // Use a timeout so the click from the drag end does not fire
     setTimeout(() => { this.suppressClick = false; }, 0);
 
-    if (this.dropOccurred) return;
-
     if (!item || !context) return;
 
-    // If dragged from wrappers and released => add to image panel half
-    // If dragged from image panel and released => move back to its wrapper
+    // If handleDrop already initiated an animation for this item, bail out to avoid double-handling
+    if (this.dropAnimatingIds.has(item.id)) {
+      console.log('onDragEnded ignored because animation is running from handleDrop for item', item.id);
+      this.dropOccurred = false;
+      return;
+    }
+
+    // Get the actual free drag position
+    const freePos = (event?.source as CdkDrag)?.getFreeDragPosition?.() ?? { x: 0, y: 0 };
+    const dragPosition = { x: freePos.x ?? 0, y: freePos.y ?? 0 };
+
+    // Check if this was a valid drop or just a drag-and-release
+    if (this.dropOccurred) {
+      // this.dropOccurred is always false so it doesnt render beloe lines
+      // FIX THIS!
+      console.log('onDragEnded, valid drop occurred FOR TENS, context:', context, 'item:', item.id, 'currently animating:', this.isAnimating(item.id));
+      // For wrapper -> image valid drops, run smooth animation instead of instant jump
+      if (context === 'tens' && item.icon === 'TENS') {
+        this.animateDragToImagePanelSmooth(item, 'TENS', dragPosition);
+        this.dropOccurred = false;
+        return;
+      }
+      if (context === 'ones' && item.icon === 'ONES') {
+        console.log('onDragEnded, valid drop occurred FOR ONES, context:', context, 'item:', item.id, 'currently animating:', this.isAnimating(item.id));
+        this.animateDragToImagePanelSmooth(item, 'ONES', dragPosition);
+        this.dropOccurred = false;
+        return;
+      }
+      console.log('onDragEnded, no valid drop occurred, context:', context, 'item:', item.id, 'currently animating:', this.isAnimating(item.id));
+      this.dropOccurred = false;
+      return;
+    }
+
+    // If item was dragged and released without a valid drop, animate to target
     if (context === 'tens') {
-      if (item.icon === 'TENS') this.addFromWrapperToImage(item);
+      if (item.icon === 'TENS') this.animateDragToImagePanelSmooth(item, 'TENS', dragPosition);
       return;
     }
     if (context === 'ones') {
-      if (item.icon === 'ONES') this.addFromWrapperToImage(item);
+      if (item.icon === 'ONES') this.animateDragToImagePanelSmooth(item, 'ONES', dragPosition);
       return;
     }
+    // If dragged from image panel and released => animate back to wrapper
     if (context === 'imageTens') {
-      if (item.icon === 'TENS') this.moveItemBetween(this.imageTensSignal, this.tensSourceSignal, item);
+      if (item.icon === 'TENS') {
+        this.animateItemBackToWrapperSmooth(item, 'TENS', this.imageTensSignal, this.tensSourceSignal, dragPosition);
+      }
       return;
     }
     if (context === 'imageOnes') {
-      if (item.icon === 'ONES') this.moveItemBetween(this.imageOnesSignal, this.onesSourceSignal, item);
+      if (item.icon === 'ONES') {
+        this.animateItemBackToWrapperSmooth(item, 'ONES', this.imageOnesSignal, this.onesSourceSignal, dragPosition);
+      }
     }
   }
 
@@ -404,8 +469,10 @@ export class InteractionCountComponent extends InteractionComponentDirective imp
         const target = this.tensLandingTargets[idx];
         if (!landing || !target) return;
 
+        console.log('ONCLICK. transform for tens, transform value is', landing, 'transformed item is', item, 'currently animating?', this.isAnimating(item.id));
+
         // Set animating state and apply transform immediately
-        this.animatingIds.add(item.id);
+        this.setAnimating(item.id, true);
         this.itemTransforms[item.id] = landing;
 
         // After animation completes, add a new image item and snap it to the same landing position
@@ -421,7 +488,7 @@ export class InteractionCountComponent extends InteractionComponentDirective imp
 
           // Reset wrapper visuals
           delete this.itemTransforms[item.id];
-          this.animatingIds.delete(item.id);
+          this.setAnimating(item.id, false);
         }, InteractionCountComponent.CLICK_ANIMATION_MS);
       } else if (context === 'imageTens') {
         // Animate back from imageTens => tensSource
@@ -445,9 +512,9 @@ export class InteractionCountComponent extends InteractionComponentDirective imp
         const landing = this.onesLandingTransforms[idx];
         const target = this.onesLandingTargets[idx];
         if (!landing || !target) return;
-
+        console.log('ONCLICK. transform for ONEs', landing, 'transformed item is', item, 'currently animating?', this.isAnimating(item.id));
         // Set animating state and apply transform immediately
-        this.animatingIds.add(item.id);
+        this.setAnimating(item.id, true);
         this.itemTransforms[item.id] = landing;
 
         setTimeout(() => {
@@ -460,7 +527,7 @@ export class InteractionCountComponent extends InteractionComponentDirective imp
           this.snapNewImageItemToLanding(newItem.id);
 
           delete this.itemTransforms[item.id];
-          this.animatingIds.delete(item.id);
+          this.setAnimating(item.id, false);
         }, InteractionCountComponent.CLICK_ANIMATION_MS);
       } else if (context === 'imageOnes') {
         // Animate back from imageOnes => onesSource
@@ -485,15 +552,129 @@ export class InteractionCountComponent extends InteractionComponentDirective imp
     }
 
     // Start animation
-    this.animatingIds.add(item.id);
+    this.setAnimating(item.id, true);
     this.itemTransforms[item.id] = reverseTransform;
 
     // After animation completes, move item and clean up
     setTimeout(() => {
       this.moveItemBetween(fromSig, toSig, item);
       delete this.itemTransforms[item.id];
-      this.animatingIds.delete(item.id);
+      this.setAnimating(item.id, false);
     }, InteractionCountComponent.CLICK_ANIMATION_MS);
+  }
+
+  /** Animate item smoothly from drag position to image panel target */
+  private animateDragToImagePanelSmooth(
+    item: CountItem,
+    icon: IconButtonTypeEnum,
+    dragDistance: { x: number; y: number }
+  ): void {
+    // Check capacity before starting animation
+    if (!this.canAdd(icon)) return;
+
+    // Get the next available index for positioning
+    const idx = icon === 'TENS' ? this.nextTensIndex : this.imageOnesCount();
+    const transforms = icon === 'TENS' ? this.tensLandingTransforms : this.onesLandingTransforms;
+    const targets = icon === 'TENS' ? this.tensLandingTargets : this.onesLandingTargets;
+
+    if (!transforms[idx] || !targets[idx]) {
+      this.calculateLandingTransforms();
+      setTimeout(() => this.animateDragToImagePanelSmooth(item, icon, dragDistance), 10);
+      return;
+    }
+
+    const targetTransform = transforms[idx];
+    const targetPosition = targets[idx];
+    if (!targetTransform || !targetPosition) {
+      this.addFromWrapperToImage(item);
+      return;
+    }
+
+    console.log('animateDragToImagePanelSmooth=================, target transform is', targetTransform, 'target position is', targetPosition, 'transformed item is', item, 'currently animating?', this.isAnimating(item.id));
+    // If there was drag distance, calculate the remaining distance from current dragged position to target
+    if (dragDistance.x !== 0 || dragDistance.y !== 0) {
+      console.log('animateDRagToIMagePanelSmooth, there was drag distance, start from the dropped position and animate smoothly to target:', targetTransform, 'animated item is', item, 'currently animating?', this.isAnimating(item.id));
+      // Set the current dropped position first (without transition - not in animatingIds yet)
+      this.itemTransforms[item.id] = `translate(${dragDistance.x}px, ${dragDistance.y}px)`;
+
+      // Use double requestAnimationFrame to ensure:
+      //  1) The dropped position without transition is painted
+      //  2) The animating class is applied and recognized by the browser
+      //  3) Then apply the target transform to trigger CSS transition
+      requestAnimationFrame(() => {
+        console.log('inside request animation frame=============');
+        this.setAnimating(item.id, true);
+        requestAnimationFrame(() => {
+          this.itemTransforms[item.id] = targetTransform;
+
+          // After animation completes, add new item to image panel and clean up
+          setTimeout(() => {
+            this.addFromWrapperToImage(item);
+            delete this.itemTransforms[item.id];
+            this.setAnimating(item.id, false);
+          }, InteractionCountComponent.CLICK_ANIMATION_MS);
+        });
+      });
+    } else {
+      console.log('animateDRagToIMagePanelSmooth, no drag distance, animate directly to target:', targetTransform, 'animated item is', item, 'currently animating?', this.isAnimating(item.id));
+      // No drag distance, animate directly to target
+      this.setAnimating(item.id, true);
+      this.itemTransforms[item.id] = targetTransform;
+
+      setTimeout(() => {
+        this.addFromWrapperToImage(item);
+        delete this.itemTransforms[item.id];
+        this.setAnimating(item.id, false);
+      }, InteractionCountComponent.CLICK_ANIMATION_MS);
+    }
+  }
+
+  /** Animate item smoothly back to wrapper from drag position */
+  private animateItemBackToWrapperSmooth(
+    item: CountItem,
+    icon: IconButtonTypeEnum,
+    fromSig: { (): CountItem[]; set: (v: CountItem[]) => void },
+    toSig: { (): CountItem[]; set: (v: CountItem[]) => void },
+    dragDistance: { x: number; y: number }
+  ): void {
+    // Calculate reverse transform from current image panel position to wrapper position
+    const reverseTransform = this.calculateReverseTransform(item, icon);
+    if (!reverseTransform) {
+      this.moveItemBetween(fromSig, toSig, item);
+      return;
+    }
+
+    // If there was drag distance, calculate the remaining distance from current dragged position to wrapper
+    if (dragDistance.x !== 0 || dragDistance.y !== 0) {
+      console.log('animateItemBackToWrapperSmooth, there was drag distance:', dragDistance, 'target:', reverseTransform, 'currently animating#?', this.isAnimating(item.id));
+      // Set the current dropped position first (without transition - not in animatingIds yet)
+      this.itemTransforms[item.id] = `translate(${dragDistance.x}px, ${dragDistance.y}px)`;
+
+      // Use requestAnimationFrame to ensure the dropped position is rendered before animating
+      requestAnimationFrame(() => {
+        console.log('inside request animation frame=============');
+        // Now enable transition and apply target transform (matching interaction-drop pattern)
+        this.setAnimating(item.id, true);
+        this.itemTransforms[item.id] = reverseTransform;
+
+        // After animation completes, move item and clean up
+        setTimeout(() => {
+          this.moveItemBetween(fromSig, toSig, item);
+          delete this.itemTransforms[item.id];
+          this.setAnimating(item.id, false);
+        }, InteractionCountComponent.CLICK_ANIMATION_MS);
+      });
+    } else {
+      // No drag distance, animate directly to wrapper
+      this.setAnimating(item.id, true);
+      this.itemTransforms[item.id] = reverseTransform;
+
+      setTimeout(() => {
+        this.moveItemBetween(fromSig, toSig, item);
+        delete this.itemTransforms[item.id];
+        this.setAnimating(item.id, false);
+      }, InteractionCountComponent.CLICK_ANIMATION_MS);
+    }
   }
 
   /** Calculate reverse transform from image panel item to wrapper position */
@@ -534,48 +715,63 @@ export class InteractionCountComponent extends InteractionComponentDirective imp
 
       const dx = wrapperCenterX - currentX;
       const dy = wrapperCenterY - currentY;
-
-      return `translate(${dx}px, ${dy}px)`;
-    } else {
-      // ONES items logic
-      const imageItems = this.imageOnesSignal();
-      const itemIndex = imageItems.findIndex(imageItem => imageItem.id === item.id);
-
-      if (itemIndex === -1) return null;
-
-      const lower = this.imageLowerHalfRef?.nativeElement;
-      if (!lower) return null;
-
-      const lowerRect = lower.getBoundingClientRect();
-      const wrapperOffsetX = 8;
-      const wrapperOffsetY = 8;
-      const itemSpacing = 8;
-      const itemW = 55;
-      const itemH = 55;
-
-      const availableWidth = lowerRect.width - wrapperOffsetX * 2;
-      const itemsPerRow = Math.floor(availableWidth / (itemW + itemSpacing));
-      const row = Math.floor(itemIndex / itemsPerRow);
-      const col = itemIndex % itemsPerRow;
-
-      const colOffset = col * (itemW + itemSpacing);
-      const rowOffset = row * (itemH + itemSpacing);
-      const currentX = lowerRect.left + wrapperOffsetX + colOffset + (itemW / 2);
-      const currentY = lowerRect.top + wrapperOffsetY + rowOffset + (itemH / 2);
-
-      const wrapperCenterX = wrapperRect.left + wrapperRect.width / 2;
-      const wrapperCenterY = wrapperRect.top + wrapperRect.height / 2;
-
-      const dx = wrapperCenterX - currentX;
-      const dy = wrapperCenterY - currentY;
-
+      console.log('REVERSE TRANSFORM for TENS, item is', item, 'transform is', `translate(${dx}px, ${dy}px)`);
       return `translate(${dx}px, ${dy}px)`;
     }
+
+    // ONES items logic
+    const imageItems = this.imageOnesSignal();
+    const itemIndex = imageItems.findIndex(imageItem => imageItem.id === item.id);
+
+    if (itemIndex === -1) return null;
+
+    const lower = this.imageLowerHalfRef?.nativeElement;
+    if (!lower) return null;
+
+    const lowerRect = lower.getBoundingClientRect();
+    const wrapperOffsetX = 8;
+    const wrapperOffsetY = 8;
+    const itemSpacing = 8;
+    const itemW = 55;
+    const itemH = 55;
+
+    const availableWidth = lowerRect.width - wrapperOffsetX * 2;
+    const itemsPerRow = Math.floor(availableWidth / (itemW + itemSpacing));
+    const row = Math.floor(itemIndex / itemsPerRow);
+    const col = itemIndex % itemsPerRow;
+
+    const colOffset = col * (itemW + itemSpacing);
+    const rowOffset = row * (itemH + itemSpacing);
+    const currentX = lowerRect.left + wrapperOffsetX + colOffset + (itemW / 2);
+    const currentY = lowerRect.top + wrapperOffsetY + rowOffset + (itemH / 2);
+
+    const wrapperCenterX = wrapperRect.left + wrapperRect.width / 2;
+    const wrapperCenterY = wrapperRect.top + wrapperRect.height / 2;
+
+    const dx = wrapperCenterX - currentX;
+    const dy = wrapperCenterY - currentY;
+
+    console.log('REVERSE TRANSFORM for ONES, item is', item, 'transform is', `translate(${dx}px, ${dy}px)`, 'currecntly animating?', this.isAnimating(item.id));
+    return `translate(${dx}px, ${dy}px)`;
   }
 
   // Template helper for animation state
-  public isAnimating(id: number): boolean {
-    return this.animatingIds.has(id);
+  isAnimating(id: number): boolean {
+    return !!this.animatingFlags()[id];
+  }
+
+  /** Reactive helper to set/clear animating state */
+  private setAnimating(id: number, on: boolean): void {
+    const curr = this.animatingFlags();
+    if (on) {
+      if (curr[id]) return; // no change
+      this.animatingFlags.set({ ...curr, [id]: true });
+    } else {
+      if (!curr[id]) return; // no change
+      const next = { ...curr };
+      delete next[id];
+      this.animatingFlags.set(next);
+    }
   }
 
   /** Utility to move a specific item between two signal arrays */
