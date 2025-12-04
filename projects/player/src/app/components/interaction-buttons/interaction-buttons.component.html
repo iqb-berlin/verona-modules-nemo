@@ -1,19 +1,19 @@
 <div class="buttons-container" data-cy="buttons-container"
      [style.flex-direction]="layoutMode === 'STIMULUS_LEFT' ? 'row' : 'column'">
+  @if (localParameters.imageSource) {
     <div class="image-wrapper"
          [style.margin-top.px]="useFullArea ? 0 : offsetTopPx()">
-      @if (localParameters.imageSource) {
         <img #imageElement
              [src]="localParameters.imageSource"
              [alt]=""
              data-cy="stimulus-image">
-      }
-      @if (localParameters.text) {
-        <div class="text-wrapper">
-          <div data-cy="instruction-text">{{localParameters.text}}</div>
-        </div>
-      }
     </div>
+  }
+  @if (localParameters.text) {
+    <div class="text-wrapper">
+      <div data-cy="instruction-text">{{localParameters.text}}</div>
+    </div>
+  }
 
 
   @if (optionRows.length > 0) {
