@@ -8,7 +8,18 @@
   justify-content: center;
   align-items: center;
 }
-
+.stimulus-wrapper {
+  width: 100%;
+  max-width: 100%;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 10px;
+}
 .image-wrapper {
   width: 100%;
   max-width: 100%;
@@ -29,6 +40,8 @@
 }
 
 .buttons-wrapper {
+  box-sizing: border-box;
+  padding: 5px;
   flex-grow: 0;
   flex-shrink: 0;
 
@@ -74,7 +87,7 @@
 }
 
 .text-wrapper {
-  width: 200px;
+  max-width: 500px;
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;

@@ -66,6 +66,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         this.localParameters.buttonType = parameters.buttonType || 'MEDIUM_SQUARE';
         this.localParameters.text = parameters.text || '';
         this.localParameters.imageUseFullArea = parameters.imageUseFullArea || false;
+        this.useFullArea = this.localParameters.imageUseFullArea;
 
         if (this.localParameters.imageSource) {
           this.localParameters.imagePosition = parameters.imagePosition || 'LEFT';
@@ -270,20 +271,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     }
 
     return distribution;
-  }
-
-  /**
-   * Called when the stimulus image has loaded to determine if it needs extra styling
-   * @returns {void}
-   * */
-  onImageLoad(): void {
-    const img = this.imageRef?.nativeElement as HTMLImageElement | undefined;
-
-    if (!img || !img.naturalWidth || !img.naturalHeight) {
-      return;
-    }
-
-    this.useFullArea = !!this.localParameters.imageUseFullArea;
   }
 
   onButtonClick(index: number): void {
