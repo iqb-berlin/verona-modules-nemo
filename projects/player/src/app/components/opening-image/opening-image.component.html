@@ -1,7 +1,4 @@
 <div class="opening-image-wrapper" data-cy="opening-image">
-  @if (!showImage() && openingAudio()) {
-    <stars-audio [audio]="openingAudio()!"></stars-audio>
-  }
   @if (showImage()) {
     <img [src]="unitService.openingImageParams()?.imageSource" alt="Image" />
   }

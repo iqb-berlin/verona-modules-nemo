@@ -5,9 +5,9 @@
     <stars-standalone-menu></stars-standalone-menu>
   }
 
-  <!-- Main audio controller (hidden during opening flow) -->
-  @if (!unitService.openingFlowActive() && unitService.mainAudio()?.audioSource) {
-    <stars-audio [audio]="unitService.mainAudio()!" [firstAudioOptions]="unitService.firstAudioOptions()"></stars-audio>
+  <!-- audio component (show if player is not hidden) -->
+  @if (unitService.playerButtonStatus() !== 'HIDE') {
+    <stars-audio></stars-audio>
   }
 
   <!-- Continue Button (hidden during opening flow) -->
@@ -64,8 +64,8 @@
       (responses)="responsesService.newResponses($event)"></stars-interaction-find-on-image>
   } @else if (unitService.interaction() === 'POLYGON_BUTTONS') {
     <stars-interaction-polygon-buttons class="interaction"
-                                       [parameters]="getParametersWithFormerState()"
-                                       (responses)="responsesService.newResponses($event)"></stars-interaction-polygon-buttons>
+      [parameters]="getParametersWithFormerState()"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-polygon-buttons>
   }
 
   <!-- lower ribbons -->

@@ -6,7 +6,6 @@ import { provideLottieOptions } from 'ngx-lottie';
 import player from 'lottie-web';
 
 import { ResponsesService } from './services/responses.service';
-import { UnitService } from './services/unit.service';
 import { VeronaPostService } from './services/verona-post.service';
 import { VeronaSubscriptionService } from './services/verona-subscription.service';
 import { MetadataService } from './services/metadata.service';
@@ -60,7 +59,6 @@ import { OpeningImageComponent } from './components/opening-image/opening-image.
   ],
   providers: [
     provideZonelessChangeDetection(),
-    UnitService,
     ResponsesService,
     AudioService,
     VeronaPostService,
