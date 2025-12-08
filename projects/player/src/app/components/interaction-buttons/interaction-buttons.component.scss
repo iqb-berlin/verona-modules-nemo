@@ -69,6 +69,10 @@
       flex-direction: column;
       row-gap: variables.$gap-between-two-extra-large-buttons-in-a-row;
     }
+
+    &.tall-rectangle-buttons {
+      column-gap: 0;
+    }
   }
 
   &.flex-row {
@@ -83,41 +87,6 @@
 
       img {
         @include variables.responsive-image;
-      }
-    }
-
-    &:has(.row-buttons-wrapper.with-tall-rectangle-buttons) {
-      display: grid;
-      grid-template-columns: 35% 1fr;
-      column-gap: variables.$small-gap-margin;
-      justify-content: start;
-      align-content: center;
-      align-items: end;
-      .stimulus-wrapper.left-position {
-        flex: initial;
-        max-width: 100%;
-        width: 100%;
-        height: auto;
-
-        img {
-          width: 100%;
-          height: auto;
-          max-height: 100%;
-          object-fit: contain;
-          display: block;
-        }
-      }
-
-      .row-buttons-wrapper.with-tall-rectangle-buttons {
-        flex: initial;
-        max-width: 100%;
-        width: 100%;
-        justify-content: flex-start;
-        align-items: flex-start;
-
-        .button-row {
-          justify-content: flex-start;
-        }
       }
     }
   }

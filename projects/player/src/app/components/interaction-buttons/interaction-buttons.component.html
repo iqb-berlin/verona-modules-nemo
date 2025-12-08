@@ -1,9 +1,11 @@
 @if(interactionType() === 'BUTTONS') {
   <div class="buttons-container" data-cy="buttons-container"
-       [style.flex-direction]="localParameters.layout === 'LEFT_CENTER' ? 'row' : 'column'"
+       [style.flex-direction]="localParameters.layout !== 'TOP_CENTER' ? 'row' : 'column'"
        [style.overflow]="localParameters.layout === 'TOP_CENTER' && !hasSmileyIcon() ? 'hidden' : 'visible'"
        [style.margin-top.px]="useFullArea ? 0 : offsetTopPx()"
-       [style.margin-bottom.px]="useFullArea ? 0 : offsetBottomPx()">
+       [style.margin-bottom.px]="useFullArea ? 0 : offsetBottomPx()"
+       [style.align-items]="localParameters.buttonType === 'TALL_RECTANGLE' ? 'baseline' : 'center'"
+  >
     @if (localParameters.imageSource || localParameters.text) {
       <div class="stimulus-wrapper"
            [style.margin-bottom.px]="(localParameters.layout !== 'LEFT_CENTER' && localParameters.layout !== 'LEFT_BOTTOM' && optionRows.length > 0) ? 10 : 0"
@@ -27,13 +29,16 @@
 
     @if (optionRows.length > 0) {
       <div class="buttons-wrapper"
+           [class.with-tall-rectangle-buttons]="localParameters.buttonType === 'TALL_RECTANGLE'"
            [style.padding-right]="localParameters.layout === 'LEFT_CENTER' && localParameters.imageSource !== '' ? '72px' : '5px'"
+           data-cy="buttons-wrapper"
       >
         @for (row of optionRows; track $index) {
           <div class="row"
                [class.two-buttons]="optionRows.length === 1 && row.length === 2 && localParameters.buttonType !== 'LONG_RECTANGLE' && localParameters.buttonType !== 'EXTRA_LARGE_SQUARE'"
                [class.two-extra-large-buttons]="localParameters.buttonType === 'EXTRA_LARGE_SQUARE' && optionRows.length === 1 && row.length === 2"
                [class.long-rectangle-buttons]="localParameters.buttonType === 'LONG_RECTANGLE'"
+               [class.tall-rectangle-buttons]="localParameters.buttonType === 'TALL_RECTANGLE'"
                [attr.data-cy]="'button-row-' + $index">
             @for (button of row; track $index) {
               <stars-standard-button
