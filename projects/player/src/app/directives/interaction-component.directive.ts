@@ -7,5 +7,7 @@ import { StarsResponse } from '../services/responses.service';
 
 export abstract class InteractionComponentDirective {
   parameters = input.required<unknown>();
+  offsetTopPx = input.required<number>();
+  offsetBottomPx = input.required<number>();
   responses = output<StarsResponse[]>();
 }
