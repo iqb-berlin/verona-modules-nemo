@@ -1,51 +1,61 @@
-<div class="buttons-container" data-cy="buttons-container"
-     [style.flex-direction]="layoutMode === 'STIMULUS_LEFT' ? 'row' : 'column'"
-     [style.margin-top.px]="useFullArea ? 0 : offsetTopPx()"
-     [style.margin-bottom.px]="useFullArea ? 0 : offsetBottomPx()">
-  @if (localParameters.imageSource || localParameters.text) {
-    <div class="stimulus-wrapper"
-         [style.margin-bottom.px]="(layoutMode !== 'STIMULUS_LEFT' && optionRows.length > 0) ? 10 : 0"
-         [style.margin-right.px]="(layoutMode === 'STIMULUS_LEFT' && optionRows.length > 0) ? 10 : 0">
-      @if (localParameters.imageSource) {
-        <div class="image-wrapper">
-          <img #imageElement
-               [src]="localParameters.imageSource"
-               [alt]=""
-               data-cy="stimulus-image">
-        </div>
-      }
-      @if (localParameters.text) {
-        <div class="text-wrapper">
-          <div data-cy="instruction-text">{{localParameters.text}}</div>
-        </div>
-      }
-    </div>
-  }
+@if(interactionType() === 'BUTTONS') {
+  <div class="buttons-container" data-cy="buttons-container"
+       [style.flex-direction]="localParameters.layout === 'LEFT_CENTER' ? 'row' : 'column'"
+       [style.overflow]="localParameters.layout === 'TOP_CENTER' && !hasSmileyIcon() ? 'hidden' : 'visible'"
+       [style.margin-top.px]="useFullArea ? 0 : offsetTopPx()"
+       [style.margin-bottom.px]="useFullArea ? 0 : offsetBottomPx()">
+    @if (localParameters.imageSource || localParameters.text) {
+      <div class="stimulus-wrapper"
+           [style.margin-bottom.px]="(localParameters.layout !== 'LEFT_CENTER' && localParameters.layout !== 'LEFT_BOTTOM' && optionRows.length > 0) ? 10 : 0"
+           [style.margin-right.px]="(localParameters.layout === 'LEFT_CENTER' && optionRows.length > 0) ? 10 : 0">
+        @if (localParameters.imageSource) {
+          <div class="image-wrapper">
+            <img #imageElement
+                 [src]="localParameters.imageSource"
+                 [alt]=""
+                 data-cy="stimulus-image">
+          </div>
+        }
+        @if (localParameters.text) {
+          <div class="text-wrapper">
+            <div data-cy="instruction-text">{{localParameters.text}}</div>
+          </div>
+        }
+      </div>
+    }
 
 
-  @if (optionRows.length > 0) {
-    <div class="buttons-wrapper">
-    @for (row of optionRows; track $index) {
-        <div class="row" [class.two-buttons]="optionRows.length === 1 && row.length === 2 && localParameters.buttonType !== 'LONG_RECTANGLE' && localParameters.buttonType !== 'EXTRA_LARGE_SQUARE'"
-             [class.two-extra-large-buttons]="localParameters.buttonType === 'EXTRA_LARGE_SQUARE' && optionRows.length === 1 && row.length === 2"
-             [class.long-rectangle-buttons]="localParameters.buttonType === 'LONG_RECTANGLE'"
-             [attr.data-cy]="'button-row-' + $index">
-          @for (button of row; track $index) {
-            <stars-standard-button
-              [id]="button.id"
-              [value]="button.index"
-              [inputType]="localParameters.multiSelect ? 'checkbox' : 'radio'"
-              [text]="button.option.text"
-              [image]="button.option.imageSource"
-              [icon]="button.option.icon"
-              [selected]="selectedValues()[button.index]"
-              [type]="localParameters.buttonType"
-              [attr.data-cy]="'button-' + button.index"
-              (buttonClick)="onButtonClick(button.index)">
-            </stars-standard-button>
-          }
-        </div>
-      }
-    </div>
-  }
-</div>
+    @if (optionRows.length > 0) {
+      <div class="buttons-wrapper"
+           [style.padding-right]="localParameters.layout === 'LEFT_CENTER' && localParameters.imageSource !== '' ? '72px' : '5px'"
+      >
+        @for (row of optionRows; track $index) {
+          <div class="row"
+               [class.two-buttons]="optionRows.length === 1 && row.length === 2 && localParameters.buttonType !== 'LONG_RECTANGLE' && localParameters.buttonType !== 'EXTRA_LARGE_SQUARE'"
+               [class.two-extra-large-buttons]="localParameters.buttonType === 'EXTRA_LARGE_SQUARE' && optionRows.length === 1 && row.length === 2"
+               [class.long-rectangle-buttons]="localParameters.buttonType === 'LONG_RECTANGLE'"
+               [attr.data-cy]="'button-row-' + $index">
+            @for (button of row; track $index) {
+              <stars-standard-button
+                [id]="button.id"
+                [value]="button.index"
+                [inputType]="localParameters.multiSelect ? 'checkbox' : 'radio'"
+                [text]="button.option.text"
+                [image]="button.option.imageSource"
+                [icon]="button.option.icon"
+                [selected]="selectedValues()[button.index]"
+                [type]="localParameters.buttonType"
+                [attr.data-cy]="'button-' + button.index"
+                (buttonClick)="onButtonClick(button.index)">
+              </stars-standard-button>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+} @else if (interactionType() === 'IMAGE_ONLY') {
+  <div class="image-only-container" data-cy="image-only-container">
+    <img [src]="localParameters.imageSource" [alt]="">
+  </div>
+}

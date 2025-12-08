@@ -2,12 +2,14 @@
 @use 'variables';
 
 .buttons-container {
+  box-sizing: border-box;
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .stimulus-wrapper {
   width: 100%;
   max-width: 100%;
@@ -41,7 +43,7 @@
 
 .buttons-wrapper {
   box-sizing: border-box;
-  padding: 5px;
+  padding: 5px 0 5px 5px;
   flex-grow: 0;
   flex-shrink: 0;
 

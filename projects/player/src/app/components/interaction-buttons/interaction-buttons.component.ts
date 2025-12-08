@@ -1,5 +1,5 @@
 import {
-  Component, signal, effect, inject, ViewChild, ElementRef
+  Component, signal, effect, inject, ViewChild, ElementRef, computed
 } from '@angular/core';
 
 import { Response } from '@iqbspecs/response/response.interface';
@@ -11,6 +11,7 @@ import {
   SelectionOption
 } from '../../models/unit-definition';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
+import { UnitService } from '../../services/unit.service';
 
 @Component({
   selector: 'stars-interaction-buttons',
@@ -28,21 +29,30 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   selectedValues = signal<boolean[]>([]);
   /** Options sorted by rows. */
   optionRows: Array<Array<RowOption>> = [];
-  /** Array of all options aka Buttons to be shown. */
-  layoutMode: 'STIMULUS_TOP' | 'STIMULUS_LEFT' | 'NO_STIMULUS' | 'STIMULUS_ONLY' = 'STIMULUS_LEFT';
   /** Boolean to track if the former the state has been restored from response. */
   private hasRestoredFromFormerState = false;
   /** Flag to mark images useFullArea: true. */
   useFullArea = false;
-  /** Signal to control stimulus-wrapper height for image TOP. */
-  imgWrapperHeight = signal<number>(330);
-  imgWrapperMaxHeight = signal<number>(500);
-  /** Signal to control distance from bottom for buttons-wrapper. */
-  distanceFromBottom = signal<number>(100);
-  /** Signal to control distance from top for stimulus-wrapper. */
-  distanceFromTop = signal<number>(125);
 
   veronaPostService = inject(VeronaPostService);
+  unitService = inject(UnitService);
+
+  interactionType = computed(() => this.unitService.interaction() ?? 'BUTTONS');
+  /** Check if any button icon starts with SMILEY */
+  hasSmileyIcon = computed(() => {
+    const p = this.parameters() as InteractionButtonParams | undefined;
+    if (!p || !p.options) return false;
+
+    // buttons case
+    const buttons = p.options.buttons ?? [];
+    if (buttons.some(b => (b.icon ?? '').toString().startsWith('SMILEY'))) return true;
+
+    // repeatButton case
+    const rb = p.options.repeatButton;
+    if (rb && (rb.option?.icon ?? '').toString().startsWith('SMILEY')) return true;
+
+    return false;
+  });
 
   /** Reference to the image element for aspect ratio detection. */
   @ViewChild('imageElement', { static: false }) imageRef!: ElementRef<HTMLImageElement>;
@@ -53,7 +63,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     effect(() => {
       const parameters = this.parameters() as InteractionButtonParams;
       this.localParameters = this.createDefaultParameters();
-      this.layoutMode = 'STIMULUS_LEFT';
       this.hasRestoredFromFormerState = false;
 
       if (parameters) {
@@ -64,6 +73,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         this.localParameters.multiSelect = parameters.multiSelect || false;
         this.localParameters.triggerNavigationOnSelect = parameters.triggerNavigationOnSelect || false;
         this.localParameters.buttonType = parameters.buttonType || 'MEDIUM_SQUARE';
+        this.localParameters.layout = parameters.layout || 'LEFT_CENTER';
         this.localParameters.text = parameters.text || '';
         this.localParameters.imageUseFullArea = parameters.imageUseFullArea || false;
         this.useFullArea = this.localParameters.imageUseFullArea;
@@ -74,13 +84,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
           this.localParameters.imagePosition = 'TOP';
         }
         this.optionRows = this.getRowsOptions();
-        if (this.optionRows.length > 0) {
-          if (this.localParameters.imageSource || this.localParameters.text) {
-            this.layoutMode = this.localParameters.imagePosition === 'TOP' ? 'STIMULUS_TOP' : 'STIMULUS_LEFT';
-          }
-        } else {
-          this.layoutMode = 'STIMULUS_ONLY';
-        }
 
         // Only restore from former state once, on initial load
         if (!this.hasRestoredFromFormerState) {
@@ -110,20 +113,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         }
       }
     });
-  }
-
-  /**
-   * Helper: Returns true when image is on TOP, there is exactly one row configured,
-   * and an imageSource is provided (non-empty).
-   * This replaces repeated checks like: `imagePosition === 'TOP' && localParameters.numberOfRows === 1`.
-   */
-  isTopSingleRowWithImage(): boolean {
-    const params = this.localParameters;
-    return (
-      !!params?.imageSource &&
-      (params?.imagePosition || 'TOP') === 'TOP' &&
-      (params?.numberOfRows || 0) === 1
-    );
   }
 
   private resetSelection(): void {
@@ -363,6 +352,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       options: {},
       imageSource: '',
       imagePosition: 'TOP',
+      layout: 'LEFT_CENTER',
       imageUseFullArea: false,
       text: '',
       multiSelect: false,
