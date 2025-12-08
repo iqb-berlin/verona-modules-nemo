@@ -1,14 +1,12 @@
-# Release Note 0.6.19 #
+# Release Note 0.6.20 #
 
 ## Neu
 
-+ AudioService inkl. rewrite AudioComponent
-+ POLYGON_BUTTONS Interaktionstyp
-+ NUMBERS_LINE für WRITE Interaktionstyp
-+ openingImage Funktionalität
++ Änderungen an BUTTONS mit Bildern
 
 ## stars-unit-definiton
-+ Umsetzung unit-definition@1.7
++ Umsetzung unit-definition@1.8 für Interaktionstyp BUTTONS
 + Änderung der Struktur für die Parameter:
   + firstClickLayer
   + animateButton
+  + layout
