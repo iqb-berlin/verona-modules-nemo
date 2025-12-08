@@ -7,6 +7,7 @@ import { FileService } from '../../services/file.service';
 import { UnitService } from '../../services/unit.service';
 import { ResponsesService } from '../../services/responses.service';
 import { ResponsesDialogComponent } from './responses-dialog.component';
+import {EditUnitDialog} from "../edit-unit-dialog/edit-unit.dialog";
 
 @Component({
   selector: 'stars-standalone-menu',
@@ -25,7 +26,7 @@ import { ResponsesDialogComponent } from './responses-dialog.component';
       <ng-template #file>
         <div class="menu" cdkMenu>
           <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="load()">from file</button>
-          <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="handleDummy()">edit</button>
+          <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="openDialog()">edit</button>
           <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="showResponses()">view responses</button>
         </div>
       </ng-template>
@@ -36,6 +37,7 @@ import { ResponsesDialogComponent } from './responses-dialog.component';
 
 export class StandaloneMenuComponent {
   dialog = inject(Dialog);
+  unitDefinitionAsString = '';
 
   constructor(
     public unitService: UnitService,
@@ -44,9 +46,28 @@ export class StandaloneMenuComponent {
 
   async load(): Promise<void> {
     await FileService.loadFile(['.json', '.voud']).then(fileObject => {
-      const unitDefinition = JSON.parse(fileObject.content);
-      this.unitService.setNewData(unitDefinition);
-      this.responsesService.setNewData(unitDefinition);
+      this.unitDefinitionAsString = fileObject.content;
+      this.setNewUnitDefinition();
+    });
+  }
+
+  private setNewUnitDefinition() {
+    const unitDefinition = JSON.parse(this.unitDefinitionAsString);
+    this.unitService.setNewData(unitDefinition);
+    this.responsesService.setNewData(unitDefinition);
+  }
+
+  openDialog() {
+    const dialogRef = this.dialog.open(EditUnitDialog, {
+      width: '800px',
+      height: '600px',
+      data: this.unitDefinitionAsString
+    });
+    dialogRef.closed.subscribe(result => {
+      if (result) {
+        this.unitDefinitionAsString = result as string;
+        this.setNewUnitDefinition();
+      }
     });
   }
 
@@ -55,10 +76,5 @@ export class StandaloneMenuComponent {
       width: '800px',
       data: this.responsesService.allResponses
     });
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  handleDummy() {
-    alert('Dummy');
   }
 }

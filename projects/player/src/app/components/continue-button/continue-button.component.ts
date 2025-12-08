@@ -1,32 +1,28 @@
 import {
-  Component, ElementRef, EventEmitter, inject, Output, signal, ViewChild
+  Component, EventEmitter, inject, Output, signal
 } from '@angular/core';
 
 import { ResponsesService } from '../../services/responses.service';
-import { SafeResourceUrlPipe } from '../../pipes/safe-resource-url.pipe';
+import { AudioService } from '../../services/audio.service';
 
 @Component({
   selector: 'stars-continue-button',
   standalone: true,
   templateUrl: 'continue-button.component.html',
-  imports: [
-    SafeResourceUrlPipe
-  ],
   styleUrls: ['./continue-button.component.scss']
 })
 
 export class ContinueButtonComponent {
   @Output() navigate = new EventEmitter();
   responseService = inject(ResponsesService);
-  clicked = signal(false);
-  audioSource = signal('');
-  isPlaying = signal(false);
+  audioService = inject(AudioService);
 
-  @ViewChild('buttonAudio', { static: false }) audioElementRef!: ElementRef<HTMLAudioElement>;
+  clicked = signal(false);
+
   lastAudioSource = '';
 
   handleClick() {
-    if (this.isPlaying()) return;
+    if (this.audioService.isPlaying()) return;
     this.clicked.set(true);
 
     setTimeout(() => {
@@ -36,12 +32,14 @@ export class ContinueButtonComponent {
     if (this.responseService.pendingAudioFeedback()) {
       const newAudioSource = this.responseService.getAudioFeedback(true);
       if (newAudioSource !== this.lastAudioSource) {
-        this.audioSource.set(newAudioSource);
-
-        setTimeout(() => {
-          this.audioElementRef.nativeElement.play();
-        }, 200);
-
+        this.audioService.setAudioSrc({
+          audioSource: newAudioSource,
+          audioId: 'AudioFeedback'
+        }).then(() => {
+          this.audioService.getPlayFinished('AudioFeedback').then(() => {
+            // TODO function when audio finished
+          });
+        });
         this.lastAudioSource = newAudioSource;
       } else {
         setTimeout(() => {
@@ -53,13 +51,5 @@ export class ContinueButtonComponent {
         this.navigate.emit();
       }, 200);
     }
-  }
-
-  onPlay() {
-    this.isPlaying.set(true);
-  }
-
-  onPause() {
-    this.isPlaying.set(false);
   }
 }
