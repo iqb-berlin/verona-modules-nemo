@@ -46,7 +46,6 @@
       [offsetTopPx]="interactionAreaOffsetTopPx"
       [offsetBottomPx]="interactionAreaOffsetBottomPx"
       (responses)="responsesService.newResponses($event)">
-      [interactionType]="unit.interactionType"
     </stars-interaction-buttons>
   } @else if (!unitService.openingFlowActive() && unitService.interaction() === 'DROP') {
     <stars-interaction-drop class="interaction"

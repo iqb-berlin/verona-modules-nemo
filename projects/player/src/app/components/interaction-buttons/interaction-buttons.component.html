@@ -1,7 +1,8 @@
 @if(interactionType() === 'BUTTONS') {
   <div class="buttons-container" data-cy="buttons-container"
        [style.flex-direction]="localParameters.layout === 'LEFT_CENTER' ? 'row' : 'column'"
-       [style.overflow]="localParameters.layout === 'TOP_CENTER' && !hasSmileyIcon() ? 'hidden' : 'visible'"
+       [style.overflow]="localParameters.layout === 'TOP_CENTER' ? 'hidden' : 'visible'"
+       [style.padding-bottom]="localParameters.layout === 'TOP_CENTER' ? '12px' : 'unset'"
        [style.margin-top.px]="useFullArea ? 0 : offsetTopPx()"
        [style.margin-bottom.px]="useFullArea ? 0 : offsetBottomPx()">
     @if (localParameters.imageSource || localParameters.text) {
