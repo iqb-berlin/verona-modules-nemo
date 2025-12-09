@@ -1,6 +1,6 @@
 {
   "name": "verona-modules-stars",
-  "version": "0.6.19",
+  "version": "0.6.20",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   "dependencies": {
     "@angular/animations": "^20.3.15",
     "@angular/cdk": "^20.2.14",
+    "@angular/common": "^20.3.15",
     "@angular/compiler": "^20.3.15",
     "@angular/core": "^20.3.15",
     "@angular/platform-browser": "^20.3.15",

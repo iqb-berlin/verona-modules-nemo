@@ -67,4 +67,6 @@ export class AppComponent implements OnInit {
   onFocus(): void {
     this.veronaPostService.sendVopWindowFocusChangedNotification(true);
   }
+
+  protected readonly UnitService = UnitService;
 }

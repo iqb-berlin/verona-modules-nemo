@@ -13,6 +13,7 @@ export type ButtonTypeEnum = 'MEDIUM_SQUARE' | 'BIG_SQUARE' | 'SMALL_SQUARE' | '
 export type ImagePositionEnum = 'TOP' | 'LEFT' | 'BOTTOM';
 export type TargetSizeEnum = 'MEDIUM' | 'LARGE' | 'SMALL';
 export type ButtonAlignmentEnum = 'AUTO' | 'ROW_BOTTOM';
+export type LayoutEnum = 'LEFT_CENTER' | 'TOP_CENTER' | 'LEFT_BOTTOM';
 
 export interface UnitDefinition {
   id: string;
@@ -26,7 +27,7 @@ export interface UnitDefinition {
   interactionType: InteractionEnum;
   interactionMaxTimeMS: number
   interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams |
-  InteractionImageOnlyParams | InteractionFindOnImageParams;
+  InteractionVideoParams | InteractionFindOnImageParams | InteractionPolygonButtonsParams;
   variableInfo: VariableInfo[] | undefined;
   audioFeedback: AudioFeedback | undefined;
 }
@@ -57,6 +58,7 @@ export interface InteractionButtonParams {
   options: InteractionOptions;
   imageSource?: string;
   imagePosition?: ImagePositionEnum;
+  layout?: LayoutEnum;
   imageUseFullArea?: boolean;
   text?: string;
   buttonAlignment?: ButtonAlignmentEnum;
@@ -95,11 +97,6 @@ export interface InteractionWriteParams {
   keysToAdd?: string[];
   maxInputLength?: number;
   formerState?: Response[];
-}
-
-export interface InteractionImageOnlyParams {
-  variableId?: string;
-  imageSource: string;
 }
 
 export interface InteractionFindOnImageParams {
