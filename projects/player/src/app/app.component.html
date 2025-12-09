@@ -81,6 +81,8 @@
   } @else if (unitService.interaction() === 'COUNT') {
     <stars-interaction-count class="interaction"
       [parameters]="getParametersWithFormerState()"
+      [offsetTopPx]="interactionAreaOffsetTopPx"
+      [offsetBottomPx]="interactionAreaOffsetBottomPx"
       (responses)="responsesService.newResponses($event)"></stars-interaction-count>
   }
 
