@@ -36,7 +36,10 @@
   }
 
   @if (unitService.openingFlowActive()) {
-    <stars-opening-image></stars-opening-image>
+    <stars-opening-image
+      [offsetTopPx]="interactionAreaOffsetTopPx"
+      [offsetBottomPx]="interactionAreaOffsetBottomPx"
+    ></stars-opening-image>
   }
 
   <!-- interaction elements -->

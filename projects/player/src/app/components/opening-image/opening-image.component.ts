@@ -3,6 +3,8 @@ import {
 } from '@angular/core';
 import { UnitService } from '../../services/unit.service';
 import { AudioService } from '../../services/audio.service';
+import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
+import { OpeningImageParams } from '../../models/unit-definition';
 
 @Component({
   selector: 'stars-opening-image',
@@ -11,23 +13,37 @@ import { AudioService } from '../../services/audio.service';
   standalone: true,
   imports: []
 })
-export class OpeningImageComponent {
-  unitService = inject(UnitService);
-  audioService = inject(AudioService);
+export class OpeningImageComponent extends InteractionComponentDirective {
+  /** Local copy of the component parameters with defaults applied. */
+  localParameters!: OpeningImageParams;
 
   /** local flag to show the image during the opening sequence */
   showImage = signal<boolean>(false);
+  /** Flag to mark images useFullArea: true. */
+  useFullArea = false;
+
+  unitService = inject(UnitService);
+  audioService = inject(AudioService);
 
   constructor() {
+    super();
     // When opening flow starts
     effect(() => {
       if (!this.unitService.openingFlowActive()) return;
       const params = this.unitService.openingImageParams();
-      if (!params) return;
-      // If there is no opening audio, show image immediately and schedule finish based on duration
-      if (!params.audioSource) {
-        if (!this.showImage()) this.showImage.set(true);
-        this.scheduleFinishAfterDuration();
+      this.localParameters = this.createDefaultParameters();
+      if (params) {
+        this.localParameters.audioSource = params.audioSource || '';
+        this.localParameters.imageSource = params.imageSource || '';
+        this.localParameters.presentationDurationMS = params.presentationDurationMS || 0;
+        this.localParameters.imageUseFullArea = params.imageUseFullArea || false;
+        this.useFullArea = this.localParameters.imageUseFullArea;
+
+        // If there is no opening audio, show image immediately and schedule finish based on duration
+        if (params.audioSource === '') {
+          if (!this.showImage()) this.showImage.set(true);
+          this.scheduleFinishAfterDuration();
+        }
       }
     });
 
@@ -81,5 +97,15 @@ export class OpeningImageComponent {
         console.error('Failed to load main audio after opening image', err);
       });
     }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private createDefaultParameters(): OpeningImageParams {
+    return {
+      audioSource: '',
+      imageSource: '',
+      presentationDurationMS: 0,
+      imageUseFullArea: false
+    };
   }
 }
