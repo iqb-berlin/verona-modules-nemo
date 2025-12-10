@@ -5,9 +5,9 @@
     <stars-standalone-menu></stars-standalone-menu>
   }
 
-  <!-- Main audio controller (hidden during opening flow) -->
-  @if (!unitService.openingFlowActive() && unitService.mainAudio()?.audioSource) {
-    <stars-audio [audio]="unitService.mainAudio()!" [firstAudioOptions]="unitService.firstAudioOptions()"></stars-audio>
+  <!-- audio component (show if player is not hidden) -->
+  @if (unitService.playerButtonStatus() !== 'HIDE') {
+    <stars-audio></stars-audio>
   }
 
   <!-- Continue Button (hidden during opening flow) -->
@@ -36,7 +36,11 @@
   }
 
   @if (unitService.openingFlowActive()) {
-    <stars-opening-image></stars-opening-image>
+    <stars-opening-image
+      [parameters]="unitService.openingImageParams()"
+      [offsetTopPx]="interactionAreaOffsetTopPx"
+      [offsetBottomPx]="interactionAreaOffsetBottomPx"
+    ></stars-opening-image>
   }
 
   <!-- interaction elements -->
@@ -46,7 +50,6 @@
       [offsetTopPx]="interactionAreaOffsetTopPx"
       [offsetBottomPx]="interactionAreaOffsetBottomPx"
       (responses)="responsesService.newResponses($event)">
-      [interactionType]="unit.interactionType"
     </stars-interaction-buttons>
   } @else if (!unitService.openingFlowActive() && unitService.interaction() === 'DROP') {
     <stars-interaction-drop class="interaction"
