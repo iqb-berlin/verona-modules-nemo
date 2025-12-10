@@ -1,5 +1,5 @@
 import {
-  Component, signal, effect, inject, ViewChild, ElementRef, computed
+  Component, signal, effect, inject, ViewChild, ElementRef
 } from '@angular/core';
 
 import { Response } from '@iqbspecs/response/response.interface';
@@ -11,7 +11,6 @@ import {
   SelectionOption
 } from '../../models/unit-definition';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
-import { UnitService } from '../../services/unit.service';
 
 @Component({
   selector: 'stars-interaction-buttons',
@@ -35,24 +34,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
   useFullArea = false;
 
   veronaPostService = inject(VeronaPostService);
-  unitService = inject(UnitService);
-
-  interactionType = computed(() => this.unitService.interaction() ?? 'BUTTONS');
-  /** Check if any button icon starts with SMILEY */
-  hasSmileyIcon = computed(() => {
-    const p = this.parameters() as InteractionButtonParams | undefined;
-    if (!p || !p.options) return false;
-
-    // buttons case
-    const buttons = p.options.buttons ?? [];
-    if (buttons.some(b => (b.icon ?? '').toString().startsWith('SMILEY'))) return true;
-
-    // repeatButton case
-    const rb = p.options.repeatButton;
-    if (rb && (rb.option?.icon ?? '').toString().startsWith('SMILEY')) return true;
-
-    return false;
-  });
 
   /** Reference to the image element for aspect ratio detection. */
   @ViewChild('imageElement', { static: false }) imageRef!: ElementRef<HTMLImageElement>;
@@ -73,15 +54,29 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         this.localParameters.multiSelect = parameters.multiSelect || false;
         this.localParameters.triggerNavigationOnSelect = parameters.triggerNavigationOnSelect || false;
         this.localParameters.buttonType = parameters.buttonType || 'MEDIUM_SQUARE';
-        this.localParameters.layout = parameters.layout || 'LEFT_CENTER';
         this.localParameters.text = parameters.text || '';
         this.localParameters.imageUseFullArea = parameters.imageUseFullArea || false;
         this.useFullArea = this.localParameters.imageUseFullArea;
 
+        // Determine imagePosition first
         if (this.localParameters.imageSource) {
           this.localParameters.imagePosition = parameters.imagePosition || 'LEFT';
         } else {
           this.localParameters.imagePosition = 'TOP';
+        }
+
+        // If layout is not provided, create it from imagePosition
+        if (parameters.layout) {
+          this.localParameters.layout = parameters.layout;
+        } else {
+          const pos = this.localParameters.imagePosition;
+          if (pos === 'TOP') {
+            this.localParameters.layout = 'TOP_CENTER';
+          } else if (pos === 'LEFT') {
+            this.localParameters.layout = 'LEFT_CENTER';
+          } else {
+            this.localParameters.layout = 'LEFT_BOTTOM';
+          }
         }
         this.optionRows = this.getRowsOptions();
 

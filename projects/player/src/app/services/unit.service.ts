@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { AudioService } from './audio.service';
 
 import {
   AudioOptions,
@@ -7,6 +8,14 @@ import {
   InteractionEnum, OpeningImageParams,
   UnitDefinition
 } from '../models/unit-definition';
+
+export enum MainPlayerStatus {
+  PAUSED = 'PAUSED',
+  PLAYING = 'PLAYING', // audio waves can be shown
+  ENDED = 'ENDED',
+  READY = 'READY',
+  HIDE = 'HIDE'
+}
 
 @Injectable({
   providedIn: 'root'
@@ -27,8 +36,14 @@ export class UnitService {
   private _openingFlowActive = signal<boolean>(false);
   openingFlowActive = this._openingFlowActive.asReadonly();
 
+  /** Player button status: ready, paused, playing, ended, hide */
+  playerButtonStatus = signal<MainPlayerStatus>(MainPlayerStatus.HIDE);
+
+  constructor(private audioService: AudioService) {
+  }
+
   // Public helpers for OpeningImageComponent
-  startOpeningFlow(params: OpeningImageParams) {
+  startOpeningFlow(params: OpeningImageParams = {} as OpeningImageParams) {
     this.openingImageParams.set(params);
     this._openingFlowActive.set(true);
   }
@@ -49,6 +64,7 @@ export class UnitService {
     this.disableInteractionUntilComplete.set(false);
     this.openingImageParams.set(null);
     this._openingFlowActive.set(false);
+    this.playerButtonStatus.set(MainPlayerStatus.HIDE);
   }
 
   setNewData(unitDefinition: unknown) {
@@ -90,7 +106,33 @@ export class UnitService {
       this.startOpeningFlow(def.openingImage);
     }
 
-    // Set the main audio (always available outside the opening flow)
     if (mainAudio) this.mainAudio.set(mainAudio);
+
+    const openingAudioSource = def.openingImage?.audioSource?.trim();
+    const openingParams = def.openingImage;
+    if (openingAudioSource && openingParams) {
+      this.audioService
+        .setAudioSrc({ audioId: 'openingAudio', audioSource: openingAudioSource } as AudioOptions)
+        // eslint-disable-next-line consistent-return
+        .then(() => {
+          this.openingImageParams.set(openingParams);
+          this.playerButtonStatus.set(MainPlayerStatus.READY);
+        })
+        .catch(err => {
+          // eslint-disable-next-line no-console
+          console.error('AudioService.setAudioSrc failed for openingAudio:', err);
+        });
+    } else if (mainAudio?.audioSource) {
+      this.audioService
+        .setAudioSrc(mainAudio)
+        // eslint-disable-next-line consistent-return
+        .then(() => {
+          this.playerButtonStatus.set(MainPlayerStatus.READY);
+        })
+        .catch(err => {
+          // eslint-disable-next-line no-console
+          console.error('AudioService.setAudioSrc failed for mainAudio:', err);
+        });
+    }
   }
 }
