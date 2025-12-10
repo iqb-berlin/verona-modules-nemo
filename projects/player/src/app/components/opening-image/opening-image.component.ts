@@ -30,7 +30,7 @@ export class OpeningImageComponent extends InteractionComponentDirective {
     // When opening flow starts
     effect(() => {
       if (!this.unitService.openingFlowActive()) return;
-      const params = this.unitService.openingImageParams();
+      const params = this.parameters() as OpeningImageParams;
       this.localParameters = this.createDefaultParameters();
       if (params) {
         this.localParameters.audioSource = params.audioSource || '';

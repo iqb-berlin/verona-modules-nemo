@@ -37,6 +37,7 @@
 
   @if (unitService.openingFlowActive()) {
     <stars-opening-image
+      [parameters]="unitService.openingImageParams()"
       [offsetTopPx]="interactionAreaOffsetTopPx"
       [offsetBottomPx]="interactionAreaOffsetBottomPx"
     ></stars-opening-image>
