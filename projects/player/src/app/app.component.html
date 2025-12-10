@@ -81,12 +81,12 @@
       [offsetTopPx]="interactionAreaOffsetTopPx"
       [offsetBottomPx]="interactionAreaOffsetBottomPx"
       (responses)="responsesService.newResponses($event)"></stars-interaction-polygon-buttons>
-  } @else if (unitService.interaction() === 'COUNT') {
-    <stars-interaction-count class="interaction"
+  } @else if (unitService.interaction() === 'PLACE_VALUE') {
+    <stars-interaction-place-value class="interaction"
       [parameters]="getParametersWithFormerState()"
       [offsetTopPx]="interactionAreaOffsetTopPx"
       [offsetBottomPx]="interactionAreaOffsetBottomPx"
-      (responses)="responsesService.newResponses($event)"></stars-interaction-count>
+      (responses)="responsesService.newResponses($event)"></stars-interaction-place-value>
   }
 
   <!-- lower ribbons -->

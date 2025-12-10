@@ -1,6 +1,6 @@
 {
   "id": "stars-unit-definition",
-  "version": "1.6",
+  "version": "1.9",
   "backgroundColor": "#E1E9FF",
   "ribbonBars": false,
   "firstAudioOptions": {
@@ -13,11 +13,11 @@
     "maxPlay": 3,
     "disableInteractionUntilComplete": false
   },
-  "interactionType": "COUNT",
+  "interactionType": "PLACE_VALUE",
   "interactionParameters": {
-    "variableId": "COUNT",
-    "text": "24",
-    "imagePosition": "TOP",
+    "variableId": "PLACE_VALUE",
+    "value": 24,
+    "numberOfRows": 5,
     "options": [
       {
         "icon": "TENS"

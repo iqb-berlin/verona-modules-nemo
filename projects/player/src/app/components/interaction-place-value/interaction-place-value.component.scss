@@ -1,7 +1,7 @@
 @use 'colors';
 @use 'variables';
 
-.count-container {
+.place-value-container {
   @include variables.flex-center;
   flex-direction: column;
   width: 100%;
@@ -9,58 +9,23 @@
   row-gap: variables.$big-gap-margin;
 }
 
-.count-text {
+.place-value {
   text-align: center;
   font-size: 54px;
   font-weight: 600;
 }
 
-.image-panel {
+.icons-upper-panel {
   @include variables.default-box-shadow;
   width: 665px;
-  height: 400px;
   box-sizing: border-box;
   border: 3px solid lightgrey;
   border-radius: variables.$border-radius;
   margin-bottom: variables.$small-gap-margin;
   position: relative;
   z-index: 2;
-
-  img {
-    @include variables.responsive-image;
-  }
-
   display: flex;
   flex-direction: column;
-}
-
-.image-half {
-  flex: 1 1 50%;
-  position: relative;
-  padding: 8px;
-  box-sizing: border-box;
-  display: flex;
-  flex-wrap: wrap;
-  align-content: flex-start;
-}
-
-/* Upper half should stack TENS items vertically */
-.image-half.upper {
-  flex-direction: column;
-  flex: 2 1 60%; // Take 60% of the space for TENS
-}
-
-/* Lower half should stack ONES items horizontally */
-.image-half.lower {
-  flex-direction: row;
-  flex: 1 1 40%;
-}
-
-.image-half .icon-item {
-  transform-origin: center center;
-  position: static;
-  margin-right: 8px;
-  margin-bottom: 8px;
 }
 
 .icons-wrapper {
@@ -141,22 +106,4 @@
 .tens-wrapper.disabled,
 .ones-wrapper.disabled {
   opacity: 0.5;
-}
-
-.icons-wrapper .cdk-drag-placeholder {
-  visibility: hidden !important;
-  pointer-events: none;
-}
-
-.image-panel .cdk-drag-placeholder {
-  visibility: hidden !important;
-  pointer-events: none;
-}
-
-.icon-item.cdk-drag-dragging {
-  transition: none !important;
-}
-
-::ng-deep .cdk-drag-preview {
-  transition: none !important;
 }

@@ -5,7 +5,15 @@ import { AudioFeedback } from './feedback';
 // eslint-disable-next-line max-len
 export type ContinueButtonEnum = 'ALWAYS' | 'NO' | 'ON_ANY_RESPONSE' | 'ON_RESPONSES_COMPLETE' |
 'ON_MAIN_AUDIO_COMPLETE' | 'ON_VIDEO_COMPLETE' | 'ON_AUDIO_AND_RESPONSE';
-export type InteractionEnum = 'BUTTONS' | 'POLYGON_BUTTONS' | 'DROP' | 'WRITE' | 'FIND_ON_IMAGE' | 'VIDEO' | 'IMAGE_ONLY' | 'COUNT' | 'NONE';
+export type InteractionEnum = 'BUTTONS' |
+'POLYGON_BUTTONS' |
+'DROP' |
+'WRITE' |
+'FIND_ON_IMAGE' |
+'VIDEO' |
+'IMAGE_ONLY' |
+'PLACE_VALUE' |
+'NONE';
 export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED' | 'CLAP_HANDS' | 'SMILEY_1' | 'SMILEY_2' |
 'SMILEY_3' | 'SMILEY_4' | 'SMILEY_5' | 'ONES' | 'TENS';
 export type ButtonTypeEnum = 'MEDIUM_SQUARE' | 'BIG_SQUARE' | 'SMALL_SQUARE' | 'TEXT' | 'CIRCLE' |
@@ -27,7 +35,7 @@ export interface UnitDefinition {
   interactionType: InteractionEnum;
   interactionMaxTimeMS: number
   interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams |
-  InteractionVideoParams | InteractionFindOnImageParams | InteractionPolygonButtonsParams;
+  InteractionVideoParams | InteractionFindOnImageParams | InteractionPolygonButtonsParams | InteractionPlaceValueParams;
   variableInfo: VariableInfo[] | undefined;
   audioFeedback: AudioFeedback | undefined;
 }
@@ -79,12 +87,12 @@ export interface InteractionDropParams {
   formerState?: Response[];
 }
 
-export interface InteractionCountParams {
-  variableId: string;
-  options: SelectionOption[];
-  imageSource?: string;
-  imagePosition?: ImagePositionEnum;
-  text: string;
+export interface InteractionPlaceValueParams {
+  variableId?: string;
+  value: number;
+  numberOfRows?: number;
+  maxTens?: number;
+  maxOnes?: number;
 }
 
 export interface InteractionWriteParams {
