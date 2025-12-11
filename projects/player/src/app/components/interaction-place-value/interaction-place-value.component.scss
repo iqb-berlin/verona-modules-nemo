@@ -80,30 +80,57 @@
   transition: none !important;
 }
 
-/* Ensure animating items appear above all other elements */
 .icon-item.animating {
   z-index: 9999 !important;
   position: relative !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Stack all wrapper icons on top of each other so they appear as a single item */
+/* Wrapper items should be positioned normally and all be interactive */
 .tens-wrapper .icon-item,
 .ones-wrapper .icon-item {
-  position: absolute;
-  top: 8px;
-  left: 8px;
+  position: relative;
   transform-origin: center center;
+  margin-bottom: 4px;
 }
 
-
-
-/* Only the last stacked item should be interactive */
-.tens-wrapper .icon-item:not(:last-child),
-.ones-wrapper .icon-item:not(:last-child) {
-  pointer-events: none;
+/* Show only the first item in each wrapper, hide the rest */
+.tens-wrapper .icon-item:not(:first-child),
+.ones-wrapper .icon-item:not(:first-child) {
+  display: none;
 }
 
 .tens-wrapper.disabled,
 .ones-wrapper.disabled {
   opacity: 0.5;
+  pointer-events: none;
 }
+
+/* Upper panel icon styles */
+.upper-panel-icon {
+  position: absolute;
+  z-index: 10;
+  transform-origin: center center;
+  transition: transform 1s ease-in-out;
+}
+
+.upper-panel-icon.tens-upper {
+  width: 652px;
+  height: 58px;
+  top: 8px;
+  left: 8px;
+}
+
+.upper-panel-icon.ones-upper {
+  width: 58px;
+  height: 58px;
+  top: 8px;
+  left: 8px;
+}
+
+/* Upper panel items when animating */
+.upper-panel-icon.animating {
+  z-index: 9999 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
