@@ -23,7 +23,6 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
 
   // Ones icon and Tens icon dimensions
   private readonly tensItemHeight = 58;
-  private readonly tensItemWidth = 58;
   private readonly onesItemHeight = 58;
   private readonly onesItemWidth = 58;
   private readonly padding = 5;
@@ -199,7 +198,7 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
 
     // Position ONES items - they arrange in rows, below all TENS items
     const tensStackHeight = tensItems.length > 0 ?
-      tensItems.length * (this.tensItemHeight + this.padding) + this.padding : 0; // Height of tens stack + extra this.padding
+      tensItems.length * (this.tensItemHeight + this.padding) + this.padding : 0;
 
     // Calculate how many ones can fit per row
     const availableWidth = this.panelWidth - (2 * this.padding); // Subtract panel this.padding
@@ -235,7 +234,7 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
     }
 
     // Calculate remaining height for tens
-    const availableHeightForTens = panelHeight - (2 * 8) - onesHeight; // Subtract panel this.padding and ones height
+    const availableHeightForTens = panelHeight - (2 * this.padding) - onesHeight;
     return Math.max(0, Math.floor(availableHeightForTens / (this.tensItemHeight + this.padding)));
   });
 
@@ -247,10 +246,10 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
     const tensHeight = currentTens * (this.onesItemWidth + this.padding);
 
     // Calculate remaining height for ones
-    const availableHeightForOnes = this.getUpperPanelHeight() - (2 * 8) - tensHeight;
+    const availableHeightForOnes = this.getUpperPanelHeight() - (2 * this.padding) - tensHeight;
 
     // Calculate how many ones can fit horizontally per row
-    const availableWidth = this.panelWidth - (2 * 8); // Subtract panel padding
+    const availableWidth = this.panelWidth - (2 * this.padding);
     const onesPerRow = Math.floor(availableWidth / (this.onesItemWidth + this.padding));
 
     // Calculate how many rows of ones can fit
@@ -285,8 +284,6 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
 
   /** Click handler to move items from wrappers to upper panel and vice versa */
   onItemClick(item: CountItem, context: 'tens' | 'ones' | 'imageTens' | 'imageOnes'): void {
-
-    console.log('UPPER PANEL HEIGHT:', this.getUpperPanelHeight());
     // Prevent double-scheduling while an item is animating
     if (this.isAnimating(item.id)) return;
 
@@ -307,6 +304,8 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
 
         // Animate the wrapper item to the upper panel position
         this.itemTransforms[item.id] = this.tensToUpperTransforms[idx];
+
+        console.log('ITEM TRANSFORMS================', this.itemTransforms);
 
         // After animation completes, create the upper panel item and reset wrapper
         setTimeout(() => {
@@ -381,6 +380,17 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
 
     // Calculate reverse transform to animate item away
     const reverseTransform = this.calculateReverseTransformFromCurrentPosition(item, icon, currentTransform);
+    if (!reverseTransform) {
+      // Fallback to immediate removal if transform calculation fails
+      const from = fromSig();
+      const index = from.findIndex(i => i.id === item.id);
+      if (index !== -1) {
+        const newFrom = from.slice();
+        newFrom.splice(index, 1);
+        fromSig.set(newFrom);
+      }
+      return;
+    }
 
     // Start animation
     this.setAnimating(item.id, true);
@@ -388,6 +398,15 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
 
     // After animation completes, remove item and clean up
     setTimeout(() => {
+      // Remove item from the signal
+      const from = fromSig();
+      const index = from.findIndex(i => i.id === item.id);
+      if (index !== -1) {
+        const newFrom = from.slice();
+        newFrom.splice(index, 1);
+        fromSig.set(newFrom);
+      }
+
       delete this.itemTransforms[item.id];
       this.setAnimating(item.id, false);
       // Recalculate positions for remaining items
@@ -407,8 +426,8 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
 
     // Parse current transform to get current visual offset
     const transformMatch = currentTransform.match(/translate\((-?\d+(?:\.\d+)?)px,\s*(-?\d+(?:\.\d+)?)px\)/);
-    const currentX = transformMatch ? parseFloat(transformMatch[1]) : 0;
-    const currentY = transformMatch ? parseFloat(transformMatch[2]) : 0;
+    const currentX = transformMatch ? parseFloat(transformMatch[1] || '0') : 0;
+    const currentY = transformMatch ? parseFloat(transformMatch[2] || '0') : 0;
 
     const upperPanel = this.iconsUpperPanel.nativeElement;
     const upperRect = upperPanel.getBoundingClientRect();
@@ -418,12 +437,12 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
       const tensRect = tensWrapper.getBoundingClientRect();
 
       // Calculate current visual position (base position + current transform)
-      const currentVisualX = upperRect.left + 8 + currentX;
-      const currentVisualY = upperRect.top + 8 + currentY;
+      const currentVisualX = upperRect.left + this.padding + currentX;
+      const currentVisualY = upperRect.top + this.padding + currentY;
 
       // Calculate target wrapper position
-      const targetX = tensRect.left + 8;
-      const targetY = tensRect.top + 8;
+      const targetX = tensRect.left + this.padding;
+      const targetY = tensRect.top + this.padding;
 
       // Calculate delta from current visual position to wrapper
       const deltaX = targetX - currentVisualX;
@@ -437,12 +456,12 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
       const onesRect = onesWrapper.getBoundingClientRect();
 
       // Calculate current visual position (base position + current transform)
-      const currentVisualX = upperRect.left + 8 + currentX;
-      const currentVisualY = upperRect.top + 8 + currentY;
+      const currentVisualX = upperRect.left + this.padding + currentX;
+      const currentVisualY = upperRect.top + this.padding + currentY;
 
       // Calculate target wrapper position
-      const targetX = onesRect.left + 8;
-      const targetY = onesRect.top + 8;
+      const targetX = onesRect.left + this.padding;
+      const targetY = onesRect.top + this.padding;
 
       // Calculate delta from current visual position to wrapper
       const deltaX = targetX - currentVisualX;
@@ -472,20 +491,6 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
       this.animatingFlags.set(next);
     }
   }
-
-  /** Utility to remove a specific item from a signal array */
-  // eslint-disable-next-line class-methods-use-this
-  // private removeItemFromSignal(
-  //   fromSig: { (): CountItem[]; set: (v: CountItem[]) => void },
-  //   item: CountItem
-  // ): void {
-  //   const from = fromSig();
-  //   const index = from.findIndex(i => i.id === item.id);
-  //   if (index === -1) return;
-  //   const newFrom = from.slice();
-  //   newFrom.splice(index, 1);
-  //   fromSig.set(newFrom);
-  // }
 
   ngOnDestroy(): void {
     // Clean up pre-calculated transform arrays

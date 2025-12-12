@@ -94,12 +94,6 @@
   margin-bottom: 4px;
 }
 
-/* Show only the first item in each wrapper, hide the rest */
-.tens-wrapper .icon-item:not(:first-child),
-.ones-wrapper .icon-item:not(:first-child) {
-  display: none;
-}
-
 .tens-wrapper.disabled,
 .ones-wrapper.disabled {
   opacity: 0.5;
@@ -126,11 +120,5 @@
   height: 58px;
   top: 8px;
   left: 8px;
-}
-
-/* Upper panel items when animating */
-.upper-panel-icon.animating {
-  z-index: 9999 !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
