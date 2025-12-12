@@ -5,21 +5,20 @@
     <stars-standalone-menu></stars-standalone-menu>
   }
 
-  <!-- audio controller -->
-  @if (unitService.mainAudio()?.audioSource) {
-    <stars-audio [audio]="unitService.mainAudio()" [firstAudioOptions]="unitService.firstAudioOptions()"></stars-audio>
+  <!-- audio component (show if player is not hidden) -->
+  @if (unitService.playerButtonStatus() !== 'HIDE') {
+    <stars-audio></stars-audio>
   }
 
-  <!-- Continue Button -->
-  @if (unitService.continueButton() === "ALWAYS" ||
+  <!-- Continue Button (hidden during opening flow) -->
+  @if (!unitService.openingFlowActive() && (unitService.continueButton() === "ALWAYS" ||
       (unitService.continueButton() === "ON_MAIN_AUDIO_COMPLETE" && responsesService.mainAudioComplete()) ||
       (unitService.continueButton() === "ON_AUDIO_AND_RESPONSE" && responsesService.mainAudioComplete() &&
       (responsesService.responseProgress() === "complete" || responsesService.responseProgress() === "some")) ||
       (unitService.continueButton() === "ON_VIDEO_COMPLETE" && responsesService.videoComplete()) ||
       (unitService.continueButton() === "ON_ANY_RESPONSE" &&
         (responsesService.responseProgress() === "some" || responsesService.responseProgress() === "complete")) ||
-      (unitService.continueButton() === "ON_RESPONSES_COMPLETE" && responsesService.responseProgress() === "complete")
-    ) {
+      (unitService.continueButton() === "ON_RESPONSES_COMPLETE" && responsesService.responseProgress() === "complete"))) {
     <stars-continue-button
       (navigate)="veronaPostService.sendVopUnitNavigationRequestedNotification('next')"></stars-continue-button>
   }
@@ -29,40 +28,59 @@
     <div class="interaction-disabled-overlay" (click)="disabledOverlay($event)" data-cy="interaction-disabled-overlay"></div>
   }
 
+  @let interactionAreaOffsetTopPx = hasRibbonBars() ? 95 : 125;
+  @let interactionAreaOffsetBottomPx = hasRibbonBars() ? 95 : 125;
   <!-- show ribbons when in practice mode -->
   @if (hasRibbonBars()) {
     <stars-ribbon-bar></stars-ribbon-bar>
   }
 
+  @if (unitService.openingFlowActive()) {
+    <stars-opening-image
+      [parameters]="unitService.openingImageParams()"
+      [offsetTopPx]="interactionAreaOffsetTopPx"
+      [offsetBottomPx]="interactionAreaOffsetBottomPx"
+    ></stars-opening-image>
+  }
+
   <!-- interaction elements -->
-  @if (unitService.interaction() === 'BUTTONS') {
+  @if (!unitService.openingFlowActive() && unitService.interaction() === 'BUTTONS' || unitService.interaction() === 'IMAGE_ONLY') {
     <stars-interaction-buttons class="interaction"
-    [parameters]="getParametersWithFormerState()"
-    (responses)="responsesService.newResponses($event)"></stars-interaction-buttons>
-  } @else if (unitService.interaction() === 'DROP') {
+      [parameters]="getParametersWithFormerState()"
+      [offsetTopPx]="interactionAreaOffsetTopPx"
+      [offsetBottomPx]="interactionAreaOffsetBottomPx"
+      (responses)="responsesService.newResponses($event)">
+    </stars-interaction-buttons>
+  } @else if (!unitService.openingFlowActive() && unitService.interaction() === 'DROP') {
     <stars-interaction-drop class="interaction"
       [parameters]="getParametersWithFormerState()"
+      [offsetTopPx]="interactionAreaOffsetTopPx"
+      [offsetBottomPx]="interactionAreaOffsetBottomPx"
       (responses)="responsesService.newResponses($event)"></stars-interaction-drop>
-  } @else if (unitService.interaction() === 'WRITE') {
+  } @else if (!unitService.openingFlowActive() && unitService.interaction() === 'WRITE') {
     <stars-interaction-write class="interaction"
       [parameters]="getParametersWithFormerState()"
+      [offsetTopPx]="interactionAreaOffsetTopPx"
+      [offsetBottomPx]="interactionAreaOffsetBottomPx"
       (responses)="responsesService.newResponses($event)"></stars-interaction-write>
-  } @else if (unitService.interaction() === 'IMAGE_ONLY') {
-    <stars-interaction-image-only class="interaction"
-      [parameters]="unitService.parameters()"
-      (responses)="responsesService.newResponses($event)"></stars-interaction-image-only>
-  } @else if (unitService.interaction() === 'VIDEO') {
+  } @else if (!unitService.openingFlowActive() && unitService.interaction() === 'VIDEO') {
     <stars-interaction-video class="interaction"
       [parameters]="unitService.parameters()"
+      [offsetTopPx]="interactionAreaOffsetTopPx"
+      [offsetBottomPx]="interactionAreaOffsetBottomPx"
       (responses)="responsesService.newResponses($event)"></stars-interaction-video>
-  } @else if (unitService.interaction() === 'FIND_ON_IMAGE') {
+  } @else if (!unitService.openingFlowActive() && unitService.interaction() === 'FIND_ON_IMAGE') {
     <stars-interaction-find-on-image class="interaction"
       [parameters]="getParametersWithFormerState()"
+      [offsetTopPx]="interactionAreaOffsetTopPx"
+      [offsetBottomPx]="interactionAreaOffsetBottomPx"
       (responses)="responsesService.newResponses($event)"></stars-interaction-find-on-image>
   } @else if (unitService.interaction() === 'POLYGON_BUTTONS') {
     <stars-interaction-polygon-buttons class="interaction"
-                                       [parameters]="getParametersWithFormerState()"
-                                       (responses)="responsesService.newResponses($event)"></stars-interaction-polygon-buttons>
+      [parameters]="getParametersWithFormerState()"
+      [offsetTopPx]="interactionAreaOffsetTopPx"
+      [offsetBottomPx]="interactionAreaOffsetBottomPx"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-polygon-buttons>
   }
 
   <!-- lower ribbons -->

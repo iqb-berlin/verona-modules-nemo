@@ -1,12 +1,21 @@
 import { Injectable, signal } from '@angular/core';
+import { AudioService } from './audio.service';
 
 import {
   AudioOptions,
   ContinueButtonEnum,
   FirstAudioOptionsParams,
-  InteractionEnum,
+  InteractionEnum, OpeningImageParams,
   UnitDefinition
 } from '../models/unit-definition';
+
+export enum MainPlayerStatus {
+  PAUSED = 'PAUSED',
+  PLAYING = 'PLAYING', // audio waves can be shown
+  ENDED = 'ENDED',
+  READY = 'READY',
+  HIDE = 'HIDE'
+}
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +31,26 @@ export class UnitService {
   hasInteraction = signal(false);
   ribbonBars = signal<boolean>(false);
   disableInteractionUntilComplete = signal(false);
+  openingImageParams = signal<OpeningImageParams | null>(null);
+  /** Opening flow is active: interactions and main audio hidden */
+  private _openingFlowActive = signal<boolean>(false);
+  openingFlowActive = this._openingFlowActive.asReadonly();
+
+  /** Player button status: ready, paused, playing, ended, hide */
+  playerButtonStatus = signal<MainPlayerStatus>(MainPlayerStatus.HIDE);
+
+  constructor(private audioService: AudioService) {
+  }
+
+  // Public helpers for OpeningImageComponent
+  startOpeningFlow(params: OpeningImageParams = {} as OpeningImageParams) {
+    this.openingImageParams.set(params);
+    this._openingFlowActive.set(true);
+  }
+
+  finishOpeningFlow() {
+    this._openingFlowActive.set(false);
+  }
 
   reset() {
     this.mainAudio.set(undefined);
@@ -33,6 +62,9 @@ export class UnitService {
     this.hasInteraction.set(false);
     this.ribbonBars.set(false);
     this.disableInteractionUntilComplete.set(false);
+    this.openingImageParams.set(null);
+    this._openingFlowActive.set(false);
+    this.playerButtonStatus.set(MainPlayerStatus.HIDE);
   }
 
   setNewData(unitDefinition: unknown) {
@@ -41,17 +73,19 @@ export class UnitService {
     const firstAudioOptions: FirstAudioOptionsParams = {};
     this.firstAudioOptions.set(def.firstAudioOptions || firstAudioOptions);
     this.hasInteraction.set(def.interactionType !== undefined || def.interactionParameters !== undefined);
-    // add audioId to mainAudio object to be able to use it in audioService.setAudioSrc()
-    if (def.mainAudio) this.mainAudio.set({ ...def.mainAudio, audioId: 'mainAudio' } as AudioOptions);
+    // add audioId to the mainAudio object to be able to use it in audioService.setAudioSrc()
+    const mainAudio: AudioOptions | undefined = def.mainAudio ?
+      ({ ...def.mainAudio, audioId: 'mainAudio' } as AudioOptions) :
+      undefined;
     // Backward compatibility for animateButton and firstClickLayer
-    if (this.mainAudio()?.animateButton) {
+    if (mainAudio?.animateButton) {
       if (!this.firstAudioOptions()?.animateButton) {
-        this.firstAudioOptions.set({ ...this.firstAudioOptions(), animateButton: this.mainAudio().animateButton });
+        this.firstAudioOptions.set({ ...this.firstAudioOptions(), animateButton: mainAudio.animateButton });
       }
     }
-    if (this.mainAudio()?.firstClickLayer) {
+    if (mainAudio?.firstClickLayer) {
       if (!this.firstAudioOptions()?.firstClickLayer) {
-        this.firstAudioOptions.set({ ...this.firstAudioOptions(), firstClickLayer: this.mainAudio().firstClickLayer });
+        this.firstAudioOptions.set({ ...this.firstAudioOptions(), firstClickLayer: mainAudio.firstClickLayer });
       }
     }
     const pattern = /^#([a-f0-9]{3}|[a-f0-9]{6})$/i;
@@ -66,6 +100,39 @@ export class UnitService {
     if (def.ribbonBars) this.ribbonBars.set(def.ribbonBars);
     if (def.mainAudio?.disableInteractionUntilComplete) {
       this.disableInteractionUntilComplete.set(def.mainAudio.disableInteractionUntilComplete);
+    }
+
+    if (def.openingImage && def.openingImage.imageSource) {
+      this.startOpeningFlow(def.openingImage);
+    }
+
+    if (mainAudio) this.mainAudio.set(mainAudio);
+
+    const openingAudioSource = def.openingImage?.audioSource?.trim();
+    const openingParams = def.openingImage;
+    if (openingAudioSource && openingParams) {
+      this.audioService
+        .setAudioSrc({ audioId: 'openingAudio', audioSource: openingAudioSource } as AudioOptions)
+        // eslint-disable-next-line consistent-return
+        .then(() => {
+          this.openingImageParams.set(openingParams);
+          this.playerButtonStatus.set(MainPlayerStatus.READY);
+        })
+        .catch(err => {
+          // eslint-disable-next-line no-console
+          console.error('AudioService.setAudioSrc failed for openingAudio:', err);
+        });
+    } else if (mainAudio?.audioSource) {
+      this.audioService
+        .setAudioSrc(mainAudio)
+        // eslint-disable-next-line consistent-return
+        .then(() => {
+          this.playerButtonStatus.set(MainPlayerStatus.READY);
+        })
+        .catch(err => {
+          // eslint-disable-next-line no-console
+          console.error('AudioService.setAudioSrc failed for mainAudio:', err);
+        });
     }
   }
 }
