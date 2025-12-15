@@ -1,13 +1,4 @@
-import {
-  Component,
-  effect,
-  signal,
-  computed,
-  ViewChild,
-  ElementRef,
-  AfterViewInit,
-  OnDestroy
-} from '@angular/core';
+import { Component, computed, effect, ElementRef, HostListener, signal, ViewChild } from '@angular/core';
 
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { IconButtonTypeEnum, InteractionPlaceValueParams } from '../../models/unit-definition';
@@ -17,59 +8,111 @@ import { IconButtonTypeEnum, InteractionPlaceValueParams } from '../../models/un
   templateUrl: './interaction-place-value.component.html',
   styleUrls: ['./interaction-place-value.component.scss']
 })
-export class InteractionPlaceValueComponent extends InteractionComponentDirective implements AfterViewInit, OnDestroy {
+export class InteractionPlaceValueComponent extends InteractionComponentDirective {
   localParameters!: InteractionPlaceValueParams;
-  private idCounter = 0;
+  /** global sequence counter to preserve FIFO visual order */
+  private addedSeqCounter = 0;
+  /** map of item id -> sequence number when first added */
+  private readonly addedSequence = new Map<number, number>();
+
+  /**
+   * Stable slot assignment so already placed items never move when new items are added.
+   */
+  private readonly tensSlotIndex = new Map<number, number>();
+  private readonly onesSlotIndex = new Map<number, number>();
+  private nextTensSlot = 0;
+  private nextOnesSlot = 0;
 
   // Ones icon and Tens icon dimensions
-  private readonly tensItemHeight = 58;
-  private readonly onesItemHeight = 58;
-  private readonly onesItemWidth = 58;
-  private readonly padding = 5;
-  private readonly panelWidth = 665 + (2 * this.padding);
+  private readonly tensItemHeight = 50;
+  private readonly onesItemHeight = 50;
+  private readonly onesItemWidth = 50;
+  private readonly padding = 8;
+  private readonly panelWidth = 680 + (2 * this.padding);
   private readonly panelPadding = 2 * this.padding;
 
-  /** Image panel for TENS and ONES */
-  readonly imageTensSignal = signal<CountItem[]>([]);
-  readonly imageOnesSignal = signal<CountItem[]>([]);
+  /** Upper-panel items */
+  readonly tensCountAtTheTopPanel = signal<CountItem[]>([]);
+  readonly onesCountAtTheTopPanel = signal<CountItem[]>([]);
 
   /** Image panel and wrappers element refs */
   @ViewChild('iconsUpperPanel', { static: false }) iconsUpperPanel?: ElementRef<HTMLElement>;
   @ViewChild('tensWrapper', { static: false }) tensWrapper?: ElementRef<HTMLElement>;
   @ViewChild('onesWrapper', { static: false }) onesWrapper?: ElementRef<HTMLElement>;
 
-  /** Pre-calculated transform values */
-  private tensToUpperTransforms: string[] = [];
-  private onesToUpperTransforms: string[] = [];
-  private tensFromUpperTransforms: string[] = [];
-  private onesFromUpperTransforms: string[] = [];
-
-  /** Window resize handler reference for cleanup */
-  private resizeHandler?: (() => void) | undefined;
-
   /** Per-item transform map */
   readonly itemTransforms: Record<number, string> = {};
 
-  /** Track selected items */
-  readonly selectedItems: Set<number> = new Set<number>();
+  /** Transient selection: ids currently in the middle of a user-triggered move/animation */
+  private readonly selectionAnimatingIds: Set<number> = new Set<number>();
 
-  /** Check if an item is selected */
+  /** Check if an item should display the selected (active) SVG */
   isSelected(id: number): boolean {
-    return this.selectedItems.has(id);
+    return this.selectionAnimatingIds.has(id);
   }
 
-  /** Computed arrays for tens and ones icons - always show exactly one clickable item per wrapper */
-  readonly tensArray = computed(() => [{ id: 999000, icon: 'TENS' as IconButtonTypeEnum }]);
+  /**
+   * Whether an item (by id) currently belongs to the upper panel (either tens or ones list).
+   */
+  inUpperPanel(id: number): boolean {
+    return this.tensCountAtTheTopPanel().some(i => i.id === id) ||
+      this.onesCountAtTheTopPanel().some(i => i.id === id);
+  }
 
-  readonly onesArray = computed(() => [{ id: 999001, icon: 'ONES' as IconButtonTypeEnum }]);
+  /**
+   * Wrapper source icons:
+   * Tens wrapper shows exactly maxNumberOfTens + 1 items stacked on top of each other
+   * Ones wrapper shows exactly maxNumberOfOnes + 1 items stacked on top of each other
+   */
+  readonly tensArray = computed(() => {
+    const tCount = (this.maxNumberOfTens ?? 0) + 1;
+    // Tens ids start from 1 and go up to tCount
+    return Array.from({ length: tCount }, (_, i) => ({
+      id: i + 1,
+      icon: 'TENS' as IconButtonTypeEnum
+    }));
+  });
+
+  readonly onesArray = computed(() => {
+    const oCount = (this.maxNumberOfOnes ?? 0) + 1;
+    const tCount = (this.maxNumberOfTens ?? 0) + 1;
+    // Ones ids continue after tens to keep all ids unique, still starting overall from 1
+    return Array.from({ length: oCount }, (_, i) => ({
+      id: tCount + i + 1,
+      icon: 'ONES' as IconButtonTypeEnum
+    }));
+  });
 
   /** Animation control for click/drag animations: reactive map of animating item ids */
   private readonly animatingFlags = signal<Record<number, true>>({});
-  /** keep in sync with CSS/inline transition (interaction-drop uses 1s ease-in-out) */
+  /** keep in sync with CSS transition */
   private static readonly CLICK_ANIMATION_MS = 1000;
 
+  /** requestAnimationFrame batching guard for recalculating transforms */
+  private layoutRafPending = false;
+  /** mark if another layout update was requested while a RAF is pending */
+  private layoutRafDirty = false;
+
+  /**
+   * Check whether a specific item (by id) is currently marked as animating.
+   */
+  isAnimating(id: number): boolean {
+    return this.animatingFlags()[id];
+  }
+
+  // Recompute transforms on window resize so items adapt to new geometry
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    // Recalculate on resize in the next animation frame and animate smoothly
+    this.scheduleLayoutUpdate();
+  }
+
   /** Total number of rows in the upper panel */
+  getUpperPanelHeight = computed(() => (this.tensItemHeight * this.numberOfRows) + (2 * this.padding));
   numberOfRows: number = 5;
+  /** Maximum number of tens and ones  */
+  maxNumberOfTens: number = 3;
+  maxNumberOfOnes: number = 20;
 
   constructor() {
     super();
@@ -78,16 +121,14 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
       const parameters = this.parameters() as InteractionPlaceValueParams;
       this.localParameters = this.createDefaultParameters();
       if (parameters) {
-        this.localParameters.variableId = parameters.variableId || 'COUNT';
+        this.localParameters.variableId = parameters.variableId || 'PLACE_VALUE';
         this.localParameters.value = parameters.value || 0;
         this.localParameters.numberOfRows = parameters.numberOfRows || 5;
         this.numberOfRows = this.localParameters.numberOfRows;
-
-        // Schedule transform calculation after view initialization
-        setTimeout(() => {
-          this.calculateLandingTransforms();
-          this.recalculateStackingPositions();
-        }, 200);
+        this.localParameters.maxNumberOfTens = parameters.maxNumberOfTens || 3;
+        this.maxNumberOfTens = this.localParameters.maxNumberOfTens;
+        this.localParameters.maxNumberOfOnes = parameters.maxNumberOfOnes || 20;
+        this.maxNumberOfOnes = this.localParameters.maxNumberOfOnes;
 
         // Emit displayed response
         this.responses.emit([{
@@ -101,381 +142,237 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
 
     // Emit VALUE_CHANGED whenever the image-panel counts change
     effect(() => {
-      const tens = this.imageTensCount();
-      const ones = this.imageOnesCount();
-      this.responses.emit([{
-        id: this.localParameters?.variableId || 'PLACE_VALUE',
-        status: 'VALUE_CHANGED',
-        value: (tens * 10) + ones,
-        relevantForResponsesProgress: true
-      },
-      {
-        id: 'PLACE_VALUE_TENS',
-        status: 'VALUE_CHANGED',
-        value: tens,
-        relevantForResponsesProgress: true
-      }]);
-    });
-  }
-
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.calculateLandingTransforms(); // pre-calculate landing transforms
-    }, 100);
-
-    // Recalculate transforms on window resize
-    this.resizeHandler = () => {
-      setTimeout(() => this.calculateLandingTransforms(), 100);
-    };
-    window.addEventListener('resize', this.resizeHandler);
-  }
-
-  /** Computed height for icons upper panel based on numberOfRows */
-  getUpperPanelHeight = computed(() => ((this.tensItemHeight + 8) * this.numberOfRows) + (2 * 8));
-
-  /** Compute and cache landing transforms for TENS and ONES up-front */
-  private calculateLandingTransforms(): void {
-    if (!this.iconsUpperPanel || !this.tensWrapper || !this.onesWrapper) {
-      return;
-    }
-
-    const upperPanel = this.iconsUpperPanel.nativeElement;
-    const tensWrapper = this.tensWrapper.nativeElement;
-    const onesWrapper = this.onesWrapper.nativeElement;
-
-    const upperRect = upperPanel.getBoundingClientRect();
-    const tensRect = tensWrapper.getBoundingClientRect();
-    const onesRect = onesWrapper.getBoundingClientRect();
-
-    // Clear previous calculations
-    this.tensToUpperTransforms = [];
-    this.onesToUpperTransforms = [];
-    this.tensFromUpperTransforms = [];
-    this.onesFromUpperTransforms = [];
-
-    const maxItems = Math.max(this.maxTensInUpperPanel(), this.maxOnesInUpperPanel());
-
-    for (let i = 0; i < maxItems; i++) {
-      // Calculate stacking position - tens stack vertically, ones stack horizontally
-      const currentTensCount = this.imageTensCount();
-
-      // TENS: Stack vertically from the top (upper left corner)
-      const tensTargetX = upperRect.left + this.padding;
-      const tensTargetY = upperRect.top + this.padding + (i * (this.onesItemHeight + this.padding));
-      const tensDeltaX = tensTargetX - (tensRect.left + 8);
-      const tensDeltaY = tensTargetY - (tensRect.top + 8);
-      this.tensToUpperTransforms[i] = `translate(${tensDeltaX}px, ${tensDeltaY}px)`;
-      this.tensFromUpperTransforms[i] = `translate(${-tensDeltaX}px, ${-tensDeltaY}px)`;
-
-      // ONES: Arrange in rows below the tens stack
-      const tensStackHeight = currentTensCount > 0 ? currentTensCount * (this.onesItemHeight + this.padding) + this.padding : 0;
-
-      // Calculate position in ones grid
-      const availableWidth = this.panelWidth - (2 * this.padding);
-      const onesPerRow = Math.floor(availableWidth / (this.onesItemHeight + this.padding));
-      const row = Math.floor(i / onesPerRow);
-      const col = i % onesPerRow;
-
-      const onesTargetX = upperRect.left + this.padding + (col * (this.onesItemHeight + this.padding));
-      const onesTargetY = upperRect.top + this.padding + tensStackHeight + (row * (this.onesItemHeight + this.padding));
-      const onesDeltaX = onesTargetX - (onesRect.left + this.padding);
-      const onesDeltaY = onesTargetY - (onesRect.top + this.padding);
-      this.onesToUpperTransforms[i] = `translate(${onesDeltaX}px, ${onesDeltaY}px)`;
-      this.onesFromUpperTransforms[i] = `translate(${-onesDeltaX}px, ${-onesDeltaY}px)`;
-    }
-  }
-
-  /** Recalculate transforms when items are added/removed */
-  private recalculateStackingPositions(): void {
-    const tensItems = this.imageTensSignal();
-    const onesItems = this.imageOnesSignal();
-
-    // Position TENS items - they stack vertically with 8px padding between each
-    tensItems.forEach((item, index) => {
-      const yOffset = index * (this.tensItemHeight + this.padding);
-      this.itemTransforms[item.id] = `translate(0px, ${yOffset}px)`;
+      const tensCount = this.tensCountAtTheTopPanel().length;
+      const onesCount = this.onesCountAtTheTopPanel().length;
+      this.responses.emit([
+        {
+          id: this.localParameters?.variableId || 'PLACE_VALUE',
+          status: 'VALUE_CHANGED',
+          value: (tensCount * 10) + onesCount,
+          relevantForResponsesProgress: true
+        },
+        {
+          id: 'PLACE_VALUE_TENS',
+          status: 'VALUE_CHANGED',
+          value: tensCount,
+          relevantForResponsesProgress: true
+        }
+      ]);
     });
 
-    // Position ONES items - they arrange in rows, below all TENS items
-    const tensStackHeight = tensItems.length > 0 ?
-      tensItems.length * (this.tensItemHeight + this.padding) + this.padding : 0;
-
-    // Calculate how many ones can fit per row
-    const availableWidth = this.panelWidth - (2 * this.padding); // Subtract panel this.padding
-    const onesPerRow = Math.floor(availableWidth / (this.tensItemHeight + this.padding));
-
-    onesItems.forEach((item, index) => {
-      const row = Math.floor(index / onesPerRow);
-      const col = index % onesPerRow;
-      const xOffset = col * (this.tensItemHeight + this.padding);
-      const yOffset = tensStackHeight + (row * (this.tensItemHeight + this.padding));
-      this.itemTransforms[item.id] = `translate(${xOffset}px, ${yOffset}px)`;
+    // Always recalculate transforms when the upper-panel membership changes
+    // (additions or removals of tens/ones).
+    effect(() => {
+      // Read signals to establish dependencies for this effect.
+      // eslint-disable-next-line no-void
+      void this.tensCountAtTheTopPanel();
+      // eslint-disable-next-line no-void
+      void this.onesCountAtTheTopPanel();
+      // Recompute positions for all without marking everything as animating
+      this.scheduleLayoutUpdate();
     });
   }
-
-  /** Image-panel counts for TENS and ONES */
-  readonly imageTensCount = computed(() => this.imageTensSignal().length);
-  readonly imageOnesCount = computed(() => this.imageOnesSignal().length);
-
-  /** Calculate maximum tens items that can fit considering current ones items */
-  readonly maxTensInUpperPanel = computed(() => {
-    const numberOfRows = this.localParameters?.numberOfRows || 5;
-    const panelHeight = (this.tensItemHeight * numberOfRows) + (2 * this.padding); // Total height available
-    const currentOnes = this.imageOnesCount();
-
-    // Calculate height occupied by ones items
-    let onesHeight = 0;
-    if (currentOnes > 0) {
-      // Ones take up space in rows
-      const availableWidth = this.getUpperPanelHeight() - (2 * this.padding); // Subtract panel this.padding
-      const onesPerRow = Math.floor(availableWidth / (this.tensItemHeight + this.padding));
-      const onesRows = Math.ceil(currentOnes / onesPerRow);
-      onesHeight = onesRows * (this.tensItemHeight + this.padding);
-    }
-
-    // Calculate remaining height for tens
-    const availableHeightForTens = panelHeight - (2 * this.padding) - onesHeight;
-    return Math.max(0, Math.floor(availableHeightForTens / (this.tensItemHeight + this.padding)));
-  });
-
-  /** Calculate maximum ones items that can fit considering current tens items and panel dimensions */
-  readonly maxOnesInUpperPanel = computed(() => {
-    const currentTens = this.imageTensCount();
-
-    // Calculate height occupied by tens items
-    const tensHeight = currentTens * (this.onesItemWidth + this.padding);
-
-    // Calculate remaining height for ones
-    const availableHeightForOnes = this.getUpperPanelHeight() - (2 * this.padding) - tensHeight;
-
-    // Calculate how many ones can fit horizontally per row
-    const availableWidth = this.panelWidth - (2 * this.padding);
-    const onesPerRow = Math.floor(availableWidth / (this.onesItemWidth + this.padding));
-
-    // Calculate how many rows of ones can fit
-    const maxOnesRows = Math.max(0, Math.floor(availableHeightForOnes / (this.onesItemWidth + this.padding)));
-
-    // Total ones that can fit = ones per row * number of rows
-    return Math.max(0, onesPerRow * maxOnesRows);
-  });
 
   /** Check if tens wrapper should be disabled */
   readonly tensWrapperDisabled = computed(() => {
-    const currentTens = this.imageTensCount();
-    const maxTens = this.maxTensInUpperPanel();
-    // Disable tens wrapper if the vertical capacity is reached
-    return currentTens >= maxTens;
+    const currentTens = this.tensCountAtTheTopPanel().length;
+    const maxTensInPanel = this.maxNumberOfTens;
+    // Disable tens wrapper if we've reached the upper panel capacity OR absolute maximum
+    return currentTens >= Math.min(this.maxNumberOfTens, maxTensInPanel);
   });
 
   /** Check if ones wrapper should be disabled */
   readonly onesWrapperDisabled = computed(() => {
-    const currentOnes = this.imageOnesCount();
-    const maxOnes = this.maxOnesInUpperPanel();
-
-    // Disable ones wrapper if the capacity is reached
-    return currentOnes >= maxOnes;
+    const currentOnes = this.onesCountAtTheTopPanel().length;
+    const maxOnesInPanel = this.maxNumberOfOnes;
+    // Disable ones wrapper if we've reached the upper panel capacity OR absolute maximum
+    return currentOnes >= Math.min(this.maxNumberOfOnes, maxOnesInPanel);
   });
 
-  /** Create a CountItem with a unique ID */
-  private makeItem(icon: IconButtonTypeEnum): CountItem {
-    this.idCounter += 1;
-    return { icon, id: this.idCounter };
+  onItemClick(source: 'ones' | 'tens', item?: CountItem, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    console.log('onclick, source is', source, 'item is', item);
+    // If no specific item provided, select the next available candidate from the wrapper stack
+    const chosen: CountItem | undefined = item ?? this.pickNextCandidate(source);
+    if (!chosen) return;
+
+    const movedId = chosen.id;
+    if (source === 'tens') {
+      const alreadyInPanel = this.tensCountAtTheTopPanel().some(i => i.id === chosen.id);
+      // Guard adds when disabled; allow removals regardless of disabled state
+      if (!alreadyInPanel && this.tensWrapperDisabled()) return;
+      if (!alreadyInPanel) {
+        // remember insertion order for stable FIFO rendering
+        if (!this.addedSequence.has(chosen.id)) {
+          this.addedSeqCounter += 1;
+          this.addedSequence.set(chosen.id, this.addedSeqCounter);
+        }
+        // Assign a stable vertical slot for tens
+        if (!this.tensSlotIndex.has(chosen.id)) {
+          this.tensSlotIndex.set(chosen.id, this.nextTensSlot);
+          this.nextTensSlot += 1;
+        }
+        this.tensCountAtTheTopPanel.set([...this.tensCountAtTheTopPanel(), chosen]);
+      } else {
+        // Already in panel → remove (return to wrapper)
+        const remaining = this.tensCountAtTheTopPanel().filter(i => i.id !== chosen.id);
+        this.tensCountAtTheTopPanel.set(remaining);
+        delete this.itemTransforms[chosen.id];
+      }
+    } else {
+      const alreadyInPanel = this.onesCountAtTheTopPanel().some(i => i.id === chosen.id);
+      if (!alreadyInPanel && this.onesWrapperDisabled()) return;
+      if (!alreadyInPanel) {
+        if (!this.addedSequence.has(chosen.id)) {
+          this.addedSeqCounter += 1;
+          this.addedSequence.set(chosen.id, this.addedSeqCounter);
+        }
+        if (!this.onesSlotIndex.has(chosen.id)) {
+          this.onesSlotIndex.set(chosen.id, this.nextOnesSlot);
+          this.nextOnesSlot += 1;
+        }
+        this.onesCountAtTheTopPanel.set([...this.onesCountAtTheTopPanel(), chosen]);
+      } else {
+        const remaining = this.onesCountAtTheTopPanel().filter(i => i.id !== chosen.id);
+        this.onesCountAtTheTopPanel.set(remaining);
+        delete this.itemTransforms[chosen.id];
+      }
+    }
+
+    // Recompute layout transforms.
+    this.scheduleLayoutUpdate([movedId]);
   }
 
-  /** Click handler to move items from wrappers to upper panel and vice versa */
-  onItemClick(item: CountItem, context: 'tens' | 'ones' | 'imageTens' | 'imageOnes'): void {
-    // Prevent double-scheduling while an item is animating
-    if (this.isAnimating(item.id)) return;
-
-    if (item.icon === 'TENS') {
-      if (context === 'tens') {
-        const idx = this.imageTensCount();
-
-        // Recalculate transforms to account for current state
-        this.calculateLandingTransforms();
-
-        // Ensure transforms are calculated
-        if (!this.tensToUpperTransforms[idx]) {
-          return;
-        }
-
-        // Set animating state on the wrapper item
-        this.setAnimating(item.id, true);
-
-        // Animate the wrapper item to the upper panel position
-        this.itemTransforms[item.id] = this.tensToUpperTransforms[idx];
-
-        console.log('ITEM TRANSFORMS================', this.itemTransforms);
-
-        // After animation completes, create the upper panel item and reset wrapper
-        setTimeout(() => {
-          // Create the new item in the upper panel
-          const newUpperItem = this.makeItem('TENS');
-          const newImageTens = this.imageTensSignal().slice();
-          newImageTens.push(newUpperItem);
-          this.imageTensSignal.set(newImageTens);
-
-          // Reset the wrapper item transform and animation state
-          delete this.itemTransforms[item.id];
-          this.setAnimating(item.id, false);
-
-          // Position the new upper panel item correctly
-          this.recalculateStackingPositions();
-        }, InteractionPlaceValueComponent.CLICK_ANIMATION_MS);
-      } else if (context === 'imageTens') {
-        // Remove item from upper panel with animation
-        this.animateItemRemoval(item, 'TENS', this.imageTensSignal);
+  /**
+   * Pick the next available stacked icon from a wrapper when the wrapper itself is clicked
+   * (no specific item element was the click target). Respects disabled state and capacity
+   * and never returns an id that is already present in the upper panel.
+   */
+  private pickNextCandidate(source: 'ones' | 'tens'): CountItem | undefined {
+    if (source === 'tens') {
+      if (this.tensWrapperDisabled()) return undefined;
+      const all = this.tensArray();
+      const used = new Set(this.tensCountAtTheTopPanel().map(i => i.id));
+      for (let i = all.length - 1; i >= 0; i -= 1) {
+        const candidate = all[i];
+        if (candidate && !used.has(candidate.id)) return candidate;
       }
-      return;
+      return undefined;
     }
-
-    if (item.icon === 'ONES') {
-      if (context === 'ones') {
-        const idx = this.imageOnesCount();
-
-        // Recalculate transforms to account for current state
-        this.calculateLandingTransforms();
-
-        // Ensure transforms are calculated
-        if (!this.onesToUpperTransforms[idx]) {
-          return;
-        }
-
-        // Set animating state on the wrapper item
-        this.setAnimating(item.id, true);
-
-        // Animate the wrapper item to the upper panel position
-        this.itemTransforms[item.id] = this.onesToUpperTransforms[idx];
-
-        // After animation completes, create the upper panel item and reset wrapper
-        setTimeout(() => {
-          // Create the new item in the upper panel
-          const newUpperItem = this.makeItem('ONES');
-          const newImageOnes = this.imageOnesSignal().slice();
-          newImageOnes.push(newUpperItem);
-          this.imageOnesSignal.set(newImageOnes);
-
-          // Reset the wrapper item transform and animation state
-          delete this.itemTransforms[item.id];
-          this.setAnimating(item.id, false);
-
-          // Position the new upper panel item correctly
-          this.recalculateStackingPositions();
-        }, InteractionPlaceValueComponent.CLICK_ANIMATION_MS);
-      } else if (context === 'imageOnes') {
-        // Remove item from upper panel with animation
-        this.animateItemRemoval(item, 'ONES', this.imageOnesSignal);
-      }
+    // ones
+    if (this.onesWrapperDisabled()) return undefined;
+    const all = this.onesArray();
+    const used = new Set(this.onesCountAtTheTopPanel().map(i => i.id));
+    for (let i = all.length - 1; i >= 0; i -= 1) {
+      const candidate = all[i];
+      if (candidate && !used.has(candidate.id)) return candidate;
     }
+    return undefined;
   }
 
-  /** Animate item removal from upper panel */
-  private animateItemRemoval(
-    item: CountItem,
-    icon: IconButtonTypeEnum,
-    fromSig: { (): CountItem[]; set: (v: CountItem[]) => void }
-  ): void {
-    // Get the item's current transform from its stacked position
-    const currentTransform = this.itemTransforms[item.id] || 'translate(0px, 0px)';
+  /** Calculate and cache current transforms for all items in the upper panel */
+  private recomputeUpperPanelTransforms(): void {
+    const panelEl = this.iconsUpperPanel?.nativeElement;
+    const tensWrapEl = this.tensWrapper?.nativeElement;
+    const onesWrapEl = this.onesWrapper?.nativeElement;
+    if (!panelEl || !tensWrapEl || !onesWrapEl) return;
 
-    // Calculate reverse transform to animate item away
-    const reverseTransform = this.calculateReverseTransformFromCurrentPosition(item, icon, currentTransform);
-    if (!reverseTransform) {
-      // Fallback to immediate removal if transform calculation fails
-      const from = fromSig();
-      const index = from.findIndex(i => i.id === item.id);
-      if (index !== -1) {
-        const newFrom = from.slice();
-        newFrom.splice(index, 1);
-        fromSig.set(newFrom);
-      }
+    const padding = this.padding;
+    const rowH = this.onesItemHeight;
+    const colW = this.onesItemWidth;
+
+    // Measure viewport positions to compute deltas from wrappers to the upper panel
+    const panelRect = panelEl.getBoundingClientRect();
+    const tensRect = tensWrapEl.getBoundingClientRect();
+    const onesRect = onesWrapEl.getBoundingClientRect();
+
+    const deltaXTensToPanel = panelRect.left - tensRect.left;
+    const deltaYTensToPanel = panelRect.top - tensRect.top;
+    const deltaXOnesToPanel = panelRect.left - onesRect.left;
+    const deltaYOnesToPanel = panelRect.top - onesRect.top;
+
+    // Current items in the upper panel
+    // eslint-disable-next-line max-len
+    const tens = [...this.tensCountAtTheTopPanel()].sort((a, b) => (this.addedSequence.get(a.id) ?? 0) - (this.addedSequence.get(b.id) ?? 0)
+    );
+    // eslint-disable-next-line max-len
+    const ones = [...this.onesCountAtTheTopPanel()].sort((a, b) => (this.addedSequence.get(a.id) ?? 0) - (this.addedSequence.get(b.id) ?? 0)
+    );
+
+    // Base translate for the first tens item so it lands at the upper panel's top-left (with padding)
+    const baseXTens = deltaXTensToPanel + padding + (padding + padding / 2); // extra 12px padding for tens X
+    const baseYTens = deltaYTensToPanel + padding;
+    tens.forEach((tensIcon, slot) => {
+      const x = baseXTens;
+      const y = baseYTens + (slot * rowH);
+      // Always (re)calculate transforms to reflect current geometry
+      this.itemTransforms[tensIcon.id] = `translate(${x}px, ${y}px)`;
+    });
+
+    // Ones: align horizontally next to each other — X increases by (icon width + 2*8px padding) per slot,
+    const baseXOnes = deltaXOnesToPanel + padding + (padding + padding / 2); // extra 12px padding for tens X
+    const baseYOnes = deltaYOnesToPanel + padding;
+    const tensRows = tens.length; // ones should be visually under all tens items
+
+    // Each next ones item should advance by icon width + 2*8px padding (16px total) horizontally
+    const onesStepPad = 8; // px, per-spec padding on both sides of a ones icon
+    const stepX = colW + (2 * onesStepPad); // 50 + 16 = 66px per column
+
+    // Calculate how many ones can fit per row without overflowing the panel width
+    const availableWidth = Math.max(0, panelEl.clientWidth - (2 * padding));
+    const onesPerRow = Math.max(1, Math.floor(availableWidth / stepX));
+
+    ones.forEach((oneIcon, slot) => {
+      const row = Math.floor(slot / onesPerRow);
+      const col = slot % onesPerRow;
+      const x = baseXOnes + (col * stepX);
+      const y = baseYOnes + (tensRows * rowH) + (row * rowH);
+      const tr = `translate(${x}px, ${y}px)`;
+      // Always (re)calculate transforms; ones move down when tens grow or wrap when row fills
+      this.itemTransforms[oneIcon.id] = tr;
+    });
+  }
+
+  private scheduleLayoutUpdate(idsToAnimate?: number[]): void {
+    // Coalesce multiple calls: if an update is already pending, mark dirty and exit.
+    if (this.layoutRafPending) {
+      this.layoutRafDirty = true;
       return;
     }
-
-    // Start animation
-    this.setAnimating(item.id, true);
-    this.itemTransforms[item.id] = reverseTransform;
-
-    // After animation completes, remove item and clean up
+    this.layoutRafPending = true;
+    // Use a macrotask deferral to run after the current Angular change detection cycle.
     setTimeout(() => {
-      // Remove item from the signal
-      const from = fromSig();
-      const index = from.findIndex(i => i.id === item.id);
-      if (index !== -1) {
-        const newFrom = from.slice();
-        newFrom.splice(index, 1);
-        fromSig.set(newFrom);
+      // Mark only the explicitly moved ids as animating and selected
+      const ids = Array.isArray(idsToAnimate) ? idsToAnimate : [];
+      if (ids.length > 0) {
+        ids.forEach(id => {
+          this.selectionAnimatingIds.add(id);
+          this.setAnimating(id, true);
+        });
       }
 
-      delete this.itemTransforms[item.id];
-      this.setAnimating(item.id, false);
-      // Recalculate positions for remaining items
-      this.recalculateStackingPositions();
-    }, InteractionPlaceValueComponent.CLICK_ANIMATION_MS);
-  }
+      this.recomputeUpperPanelTransforms();
+      this.layoutRafPending = false;
 
-  /** Calculate reverse transform from item's current visual position accounting for existing transforms */
-  private calculateReverseTransformFromCurrentPosition(
-    item: CountItem,
-    icon: IconButtonTypeEnum,
-    currentTransform: string
-  ): string | null {
-    if (!this.iconsUpperPanel || !this.tensWrapper || !this.onesWrapper) {
-      return null;
-    }
+      if (ids.length > 0) {
+        setTimeout(() => {
+          ids.forEach(id => {
+            this.setAnimating(id, false);
+            this.selectionAnimatingIds.delete(id);
+          });
+        }, InteractionPlaceValueComponent.CLICK_ANIMATION_MS);
+      }
 
-    // Parse current transform to get current visual offset
-    const transformMatch = currentTransform.match(/translate\((-?\d+(?:\.\d+)?)px,\s*(-?\d+(?:\.\d+)?)px\)/);
-    const currentX = transformMatch ? parseFloat(transformMatch[1] || '0') : 0;
-    const currentY = transformMatch ? parseFloat(transformMatch[2] || '0') : 0;
-
-    const upperPanel = this.iconsUpperPanel.nativeElement;
-    const upperRect = upperPanel.getBoundingClientRect();
-
-    if (icon === 'TENS') {
-      const tensWrapper = this.tensWrapper.nativeElement;
-      const tensRect = tensWrapper.getBoundingClientRect();
-
-      // Calculate current visual position (base position + current transform)
-      const currentVisualX = upperRect.left + this.padding + currentX;
-      const currentVisualY = upperRect.top + this.padding + currentY;
-
-      // Calculate target wrapper position
-      const targetX = tensRect.left + this.padding;
-      const targetY = tensRect.top + this.padding;
-
-      // Calculate delta from current visual position to wrapper
-      const deltaX = targetX - currentVisualX;
-      const deltaY = targetY - currentVisualY;
-
-      return `translate(${currentX + deltaX}px, ${currentY + deltaY}px)`;
-    }
-
-    if (icon === 'ONES') {
-      const onesWrapper = this.onesWrapper.nativeElement;
-      const onesRect = onesWrapper.getBoundingClientRect();
-
-      // Calculate current visual position (base position + current transform)
-      const currentVisualX = upperRect.left + this.padding + currentX;
-      const currentVisualY = upperRect.top + this.padding + currentY;
-
-      // Calculate target wrapper position
-      const targetX = onesRect.left + this.padding;
-      const targetY = onesRect.top + this.padding;
-
-      // Calculate delta from current visual position to wrapper
-      const deltaX = targetX - currentVisualX;
-      const deltaY = targetY - currentVisualY;
-
-      return `translate(${currentX + deltaX}px, ${currentY + deltaY}px)`;
-    }
-
-    return null;
-  }
-
-  // Template helper for animation state
-  isAnimating(id: number): boolean {
-    return !!this.animatingFlags()[id];
+      // If another update was requested while we were pending, schedule again
+      if (this.layoutRafDirty) {
+        this.layoutRafDirty = false;
+        // Re-run without extra animating marks to smoothly reposition others
+        this.scheduleLayoutUpdate();
+      }
+    }, 0);
   }
 
   /** Reactive helper to set/clear animating state */
@@ -492,33 +389,14 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
     }
   }
 
-  ngOnDestroy(): void {
-    // Clean up pre-calculated transform arrays
-    this.tensToUpperTransforms = [];
-    this.onesToUpperTransforms = [];
-    this.tensFromUpperTransforms = [];
-    this.onesFromUpperTransforms = [];
-
-    // Clear any remaining item transforms
-    Object.keys(this.itemTransforms).forEach(key => {
-      delete this.itemTransforms[+key];
-    });
-
-    // Remove window resize listener
-    if (this.resizeHandler) {
-      window.removeEventListener('resize', this.resizeHandler);
-      this.resizeHandler = undefined;
-    }
-  }
-
   // eslint-disable-next-line class-methods-use-this
   private createDefaultParameters(): InteractionPlaceValueParams {
     return {
       variableId: 'PLACE_VALUE',
       value: 0,
       numberOfRows: 5,
-      maxTens: 10,
-      maxOnes: 10
+      maxNumberOfTens: 3,
+      maxNumberOfOnes: 20
     };
   }
 }

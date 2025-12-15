@@ -7,65 +7,56 @@
     [style.height]="getUpperPanelHeight()+'px'"
     #iconsUpperPanel
   >
-    <!-- Render TENS items in the upper panel -->
-    @for (imageTens of imageTensSignal(); track imageTens.id) {
-      <div class="upper-panel-icon tens-upper"
-           [class.animating]="isAnimating(imageTens.id)"
-           [style.transform]="itemTransforms[imageTens.id] || null"
-           (click)="onItemClick(imageTens, 'imageTens')">
-        <div>
-          <svg width="652" height="58" viewBox="0 0 652 58" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g filter="url(#filter0_d_1047_978)">
-              <rect width="644" height="50" rx="16" fill="white"/>
-              <rect x="0.5" y="0.5" width="643" height="49" rx="15.5" stroke="#DBDDE7"/>
-            </g>
-            <circle cx="24.5146" cy="25" r="15" fill="#0050E5"/>
-            <circle cx="354.999" cy="25" r="15" fill="#0050E5"/>
-            <circle cx="90.999" cy="25" r="15" fill="#0050E5"/>
-            <circle cx="420.999" cy="25" r="15" fill="#0050E5"/>
-            <circle cx="156.999" cy="25" r="15" fill="#0050E5"/>
-            <circle cx="486.999" cy="25" r="15" fill="#0050E5"/>
-            <circle cx="222.999" cy="25" r="15" fill="#0050E5"/>
-            <circle cx="552.999" cy="25" r="15" fill="#0050E5"/>
-            <circle cx="288.999" cy="25" r="15" fill="#0050E5"/>
-            <circle cx="618.999" cy="25" r="15" fill="#0050E5"/>
-          </svg>
-        </div>
-      </div>
-    }
-
-    <!-- Render ONES items in the upper panel -->
-    @for (imageOnes of imageOnesSignal(); track imageOnes.id) {
-      <div class="upper-panel-icon ones-upper"
-           [class.animating]="isAnimating(imageOnes.id)"
-           [style.transform]="itemTransforms[imageOnes.id] || null"
-           (click)="onItemClick(imageOnes, 'imageOnes')">
-        <div>
-          <svg width="58" height="58" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g filter="url(#filter0_d_1047_1063)">
-            <rect width="50" height="50" rx="16" fill="white"/>
-            <rect x="0.5" y="0.5" width="49" height="49" rx="15.5" stroke="#DBDDE7"/>
-          </g>
-          <circle cx="25" cy="25" r="15" fill="#0050E5"/>
-        </svg></div>
-      </div>
-    }
   </div>
 
   <div class="icons-wrapper" data-cy="icons-wrapper">
+    <div
+      class="ones-wrapper"
+      data-cy="ones-wrapper"
+      [class.disabled]="onesWrapperDisabled()"
+      (click)="onItemClick('ones')"
+      #onesWrapper
+    >
+      @for (ones of onesArray(); track ones.id) {
+        <div class="icon-item ones"
+             [class.animating]="isAnimating(ones.id)"
+             [class.moved]="inUpperPanel(ones.id)"
+             [style.transform]="itemTransforms[ones.id] || null"
+             (click)="onItemClick('ones', ones, $event)"
+         >
+          @if (isSelected(ones.id)) {
+            <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g filter="url(#filter0_dd_1047_1079)">
+                <rect width="50" height="50" rx="16" fill="#DCDCDC"/>
+              </g>
+              <circle cx="25" cy="25" r="15" fill="#0050E5"/>
+            </svg>
+          } @else {
+            <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g filter="url(#filter0_d_1047_1063)">
+                <rect width="50" height="50" rx="16" fill="white"/>
+                <rect x="0.5" y="0.5" width="49" height="49" rx="15.5" stroke="#DBDDE7"/>
+              </g>
+              <circle cx="25" cy="25" r="15" fill="#0050E5"/>
+            </svg>
+          }
+        </div>
+      }
+    </div>
     <div class="tens-wrapper"
          data-cy="tens-wrapper"
          [class.disabled]="tensWrapperDisabled()"
+         (click)="onItemClick('tens')"
          #tensWrapper
     >
       @for (tens of tensArray(); track tens.id) {
         <div class="icon-item tens"
-             [class.no-transition]="!isAnimating(tens.id)"
              [class.animating]="isAnimating(tens.id)"
+             [class.moved]="inUpperPanel(tens.id)"
              [style.transform]="itemTransforms[tens.id] || null"
-             (click)="onItemClick(tens, 'tens')">
+             (click)="onItemClick('tens', tens, $event)">
           @if (isSelected(tens.id)) {
-            <svg width="652" height="58" viewBox="0 0 652 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="652" height="50" viewBox="0 0 652 50" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g filter="url(#filter0_dd_1047_1082)">
                 <rect width="644" height="50" rx="16" fill="#DCDCDC"/>
               </g>
@@ -81,7 +72,7 @@
               <circle cx="619" cy="25" r="15" fill="#0050E5"/>
             </svg>
           } @else {
-            <svg width="652" height="58" viewBox="0 0 652 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="652" height="50" viewBox="0 0 652 50" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g filter="url(#filter0_d_1047_978)">
                 <rect width="644" height="50" rx="16" fill="white"/>
                 <rect x="0.5" y="0.5" width="643" height="49" rx="15.5" stroke="#DBDDE7"/>
@@ -96,38 +87,6 @@
               <circle cx="552.999" cy="25" r="15" fill="#0050E5"/>
               <circle cx="288.999" cy="25" r="15" fill="#0050E5"/>
               <circle cx="618.999" cy="25" r="15" fill="#0050E5"/>
-            </svg>
-          }
-        </div>
-      }
-    </div>
-    <div
-      class="ones-wrapper"
-      data-cy="ones-wrapper"
-      [class.disabled]="onesWrapperDisabled()"
-      #onesWrapper
-    >
-      @for (ones of onesArray(); track ones.id) {
-        <div class="icon-item ones"
-             [class.no-transition]="!isAnimating(ones.id)"
-             [class.animating]="isAnimating(ones.id)"
-             [style.transform]="itemTransforms[ones.id] || null"
-             (click)="onItemClick(ones, 'ones')"
-        >
-          @if (isSelected(ones.id)) {
-            <svg width="58" height="58" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <g filter="url(#filter0_dd_1047_1079)">
-                 <rect width="50" height="50" rx="16" fill="#DCDCDC"/>
-               </g>
-               <circle cx="25" cy="25" r="15" fill="#0050E5"/>
-            </svg>
-          } @else {
-            <svg width="58" height="58" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <g filter="url(#filter0_d_1047_1063)">
-                <rect width="50" height="50" rx="16" fill="white"/>
-                <rect x="0.5" y="0.5" width="49" height="49" rx="15.5" stroke="#DBDDE7"/>
-              </g>
-              <circle cx="25" cy="25" r="15" fill="#0050E5"/>
             </svg>
           }
         </div>

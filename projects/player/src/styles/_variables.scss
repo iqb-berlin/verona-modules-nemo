@@ -5,6 +5,7 @@ $small-gap-margin: 24px;
 $big-gap-margin: 32px;
 $img-border: 6px;
 $border-radius: 20px;
+$icons-border-radius: 40px;
 $font-family: 'IQBprimar', 'Quicksand', sans-serif;
 $font-weight-600: 600;
 $big-text-font-size: 112px;
@@ -46,6 +47,10 @@ $square-image-height: 300px;
 
 @mixin smiley-box-shadow {
   box-shadow: 3px -4px 0 14px rgba(0, 0, 0, 0.2);
+}
+
+@mixin not-moved-tens-and-ones-box-shadow {
+  box-shadow: 12px 10px 8px 5px rgba(0, 0, 0, 0.2);
 }
 
 @mixin extra-large-button-size {

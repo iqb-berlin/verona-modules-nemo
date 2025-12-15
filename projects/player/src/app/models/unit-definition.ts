@@ -91,8 +91,8 @@ export interface InteractionPlaceValueParams {
   variableId?: string;
   value: number;
   numberOfRows?: number;
-  maxTens?: number;
-  maxOnes?: number;
+  maxNumberOfTens?: number;
+  maxNumberOfOnes?: number;
 }
 
 export interface InteractionWriteParams {

@@ -18,13 +18,7 @@
     "variableId": "PLACE_VALUE",
     "value": 24,
     "numberOfRows": 5,
-    "options": [
-      {
-        "icon": "TENS"
-      },
-      {
-        "icon": "ONES"
-      }
-    ]
+    "maxNumberOfTens": 3,
+    "maxNumberOfOnes": 20
   }
 }
