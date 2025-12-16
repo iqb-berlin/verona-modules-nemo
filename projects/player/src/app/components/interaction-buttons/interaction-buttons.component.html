@@ -1,12 +1,15 @@
 <div class="buttons-container" data-cy="buttons-container"
-     [style.flex-direction]="localParameters.layout === 'LEFT_CENTER' ? 'row' : 'column'"
+     [style.flex-direction]="localParameters.layout !== 'TOP_CENTER' ? 'row' : 'column'"
      [style.overflow]="'hidden'"
      [style.margin-top.px]="useFullArea ? 0 : offsetTopPx()"
-     [style.margin-bottom.px]="useFullArea ? 0 : offsetBottomPx()">
+     [style.margin-bottom.px]="useFullArea ? 0 : offsetBottomPx()"
+     [style.align-items]="localParameters.layout === 'LEFT_BOTTOM' ? 'baseline' : 'center'"
+>
   @if (localParameters.imageSource || localParameters.text) {
     <div class="stimulus-wrapper"
          [style.margin-bottom.px]="(localParameters.layout !== 'LEFT_CENTER' && localParameters.layout !== 'LEFT_BOTTOM' && optionRows.length > 0) ? 10 : 0"
-         [style.margin-right.px]="(localParameters.layout === 'LEFT_CENTER' && optionRows.length > 0) ? 10 : 0">
+         [style.margin-right.px]="(localParameters.layout === 'LEFT_CENTER' && optionRows.length > 0) ? 10 : 0"
+    >
       @if (localParameters.imageSource) {
         <div class="image-wrapper">
           <img #imageElement
@@ -25,7 +28,7 @@
   @if (optionRows.length > 0) {
     <div class="buttons-wrapper"
          [style.padding-right]="localParameters.layout === 'LEFT_CENTER' && localParameters.imageSource !== '' ? '72px' : '5px'"
-         [class.with-tall-rectangle-buttons]="localParameters.buttonType === 'TALL_RECTANGLE'"
+         [style.padding]="localParameters.buttonType === 'TALL_RECTANGLE' ? '10px' : '5px 0 24px 5px'"
          data-cy="buttons-wrapper"
     >
       @for (row of optionRows; track $index) {
