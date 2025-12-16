@@ -169,7 +169,7 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
           relevantForResponsesProgress: true
         },
         {
-          id: 'PLACE_VALUE_TENS',
+          id: this.localParameters?.variableId ? `${this.localParameters?.variableId}_TENS` : 'PLACE_VALUE_TENS',
           status: 'VALUE_CHANGED',
           value: tensCount,
           relevantForResponsesProgress: true
@@ -194,16 +194,14 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
   readonly tensWrapperDisabled = computed(() => {
     const currentTens = this.tensCountAtTheTopPanel().length;
     const maxTensInPanel = this.maxNumberOfTens;
-    // Disable tens wrapper if we've reached the upper panel capacity OR absolute maximum
-    return currentTens >= Math.min(this.maxNumberOfTens, maxTensInPanel);
+    return currentTens >= maxTensInPanel;
   });
 
   /** Check if ones wrapper should be disabled */
   readonly onesWrapperDisabled = computed(() => {
     const currentOnes = this.onesCountAtTheTopPanel().length;
     const maxOnesInPanel = this.maxNumberOfOnes;
-    // Disable ones wrapper if we've reached the upper panel capacity OR absolute maximum
-    return currentOnes >= Math.min(this.maxNumberOfOnes, maxOnesInPanel);
+    return currentOnes >= maxOnesInPanel;
   });
 
   /** Onclick handler */
