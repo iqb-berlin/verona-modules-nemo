@@ -1,17 +1,31 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, signal } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { ResponsesService } from './responses.service';
 import { AudioOptions } from '../models/unit-definition';
 
-@Injectable({
-  providedIn: 'root'
-})
+export enum AudioPlayerStatus {
+  PAUSED = 'PAUSED',
+  PLAYING = 'PLAYING',
+  ENDED = 'ENDED',
+  READY = 'READY',
+  EMPTY = 'EMPTY',
+  NO_SOURCE = 'NO_SOURCE'
+}
+
+type MediaEventType =
+  | 'playing'
+  | 'pause'
+  | 'ended'
+  | 'canplay'
+  | 'loadedmetadata'
+  | 'canplaythrough';
 
 export class AudioService {
   responsesService = inject(ResponsesService);
-  private _audioElement: HTMLAudioElement | null = null;
+  private readonly _audioElement: HTMLAudioElement | null = null;
 
+  /** Signals for audioId, maxPlay, playCount, and isPlaying derive from the audio source. */
   _audioId = signal<string>('audio');
   audioId = this._audioId.asReadonly();
   _maxPlay = signal<number>(0);
@@ -21,10 +35,15 @@ export class AudioService {
   _isPlaying = signal<boolean>(false);
   isPlaying = this._isPlaying.asReadonly();
 
+  /** The currently loaded audio source. */
+  private _currentSource = signal<string | undefined>(undefined);
+  currentSource = this._currentSource.asReadonly();
+
   private currentTime = 0;
   private percentElapsed = 0;
 
-  playerStatus: BehaviorSubject<string> = new BehaviorSubject('paused');
+  /** Player status used to track the current state of the audio player. */
+  playerStatus = new BehaviorSubject<AudioPlayerStatus>(AudioPlayerStatus.EMPTY);
 
   constructor() {
     this._audioElement = new Audio();
@@ -33,29 +52,36 @@ export class AudioService {
 
   attachListeners() {
     if (this._audioElement === null) return;
-    this._audioElement.addEventListener('playing', this.setPlayerStatus, false);
-    this._audioElement.addEventListener('pause', this.setPlayerStatus, false);
-    this._audioElement.addEventListener('ended', this.setPlayerStatus, false);
+    this._audioElement.addEventListener('playing', () => this.setPlayerStatus('playing'));
+    this._audioElement.addEventListener('pause', () => this.setPlayerStatus('pause'));
+    this._audioElement.addEventListener('ended', () => this.setPlayerStatus('ended'));
+    this._audioElement.addEventListener('canplay', () => this.setPlayerStatus('canplay'));
+    this._audioElement.addEventListener('loadedmetadata', () => this.setPlayerStatus('loadedmetadata'));
+    this._audioElement.addEventListener('canplaythrough', () => this.setPlayerStatus('canplaythrough'));
     this._audioElement.addEventListener('timeupdate', this.calculateTime, false);
   }
 
-  private setPlayerStatus = event => {
-    switch (event.type) {
+  private setPlayerStatus = (type: MediaEventType) => {
+    switch (type) {
       case 'playing':
-        this.playerStatus.next('playing');
+        this.playerStatus.next(AudioPlayerStatus.PLAYING);
         break;
       case 'pause':
-        this._playCount.update(count => count + 1);
         this._isPlaying.set(false);
-        this.playerStatus.next('paused');
+        this.playerStatus.next(AudioPlayerStatus.PAUSED);
         break;
       case 'ended':
         this._playCount.update(count => count + 1);
         this._isPlaying.set(false);
-        this.playerStatus.next('ended');
+        this.playerStatus.next(AudioPlayerStatus.ENDED);
+        break;
+      case 'canplay':
+      case 'loadedmetadata':
+      case 'canplaythrough':
+        this.playerStatus.next(AudioPlayerStatus.READY);
         break;
       default:
-        this.playerStatus.next('paused');
+        this.playerStatus.next(AudioPlayerStatus.EMPTY);
         break;
     }
   };
@@ -73,8 +99,13 @@ export class AudioService {
     this.percentElapsed = (ct / d);
   }
 
-  getPlayerStatus(): Observable<string> {
+  getPlayerStatus(): Observable<AudioPlayerStatus> {
     return this.playerStatus.asObservable();
+  }
+
+  /** Current status value helper */
+  getPlayerStatusValue(): AudioPlayerStatus {
+    return this.playerStatus.value;
   }
 
   play() {
@@ -89,27 +120,53 @@ export class AudioService {
 
   /**
    * Function to set the audio source and reset the playback position to the beginning.
+   * Uses READY from AudioPlayerStatus to resolve when the audio is ready to play.
    * @param audio - audio source as base64 string
-   * @returns Promise<boolean> - resolves to true if the audio source was successfully set
+   * @returns Promise<boolean> - resolves to true when the audio is READY
    */
   setAudioSrc(audio: AudioOptions): Promise<boolean> {
     return new Promise(resolve => {
-      setTimeout(() => {
-        this.getPlayerStatus().subscribe(status => {
-          if (status === 'paused') {
-            if (this._audioElement) this._audioElement.src = audio.audioSource;
-            this._audioId.set(audio.audioId || 'audio');
-            this._maxPlay.set(audio.maxPlay || 0);
-            this._audioElement?.load();
-            const playCount = Math.abs(Number(audio.value));
-            const percentElapsed = Number(audio.value) - playCount;
-            this._playCount.set(playCount || 0);
-            this.currentTime = 0;
-            this.percentElapsed = percentElapsed || 0;
-            resolve(true);
-          }
-        });
-      }, 50);
+      // normalize and check for a valid source first
+      const source = (audio?.audioSource || '').trim();
+
+      // update meta/signals
+      this._audioId.set(audio.audioId || 'audio');
+      this._maxPlay.set(audio.maxPlay || 0);
+      this._playCount.set(0);
+      this.percentElapsed = 0;
+      this.currentTime = 0;
+
+      // If no valid source: reset element, mark NO_SOURCE, and resolve(false)
+      if (!source) {
+        if (this._audioElement) {
+          try {
+            this._audioElement.pause();
+          } catch { /* ignore */ }
+          this._audioElement.src = '';
+          this._audioElement.load();
+        }
+        this._isPlaying.set(false);
+        this._currentSource.set(undefined);
+        this.playerStatus.next(AudioPlayerStatus.NO_SOURCE);
+        resolve(false);
+        return;
+      }
+
+      // feed the element with the correct audio source
+      if (this._audioElement) {
+        this._audioElement.src = source;
+        this._audioElement.load();
+      }
+      this._currentSource.set(source);
+
+      // mark status as EMPTY until the element is ready, then wait for READY
+      this.playerStatus.next(AudioPlayerStatus.EMPTY);
+      const subscribedStatus = this.getPlayerStatus().subscribe(status => {
+        if (status === AudioPlayerStatus.READY) {
+          subscribedStatus.unsubscribe();
+          resolve(true);
+        }
+      });
     });
   }
 
@@ -120,15 +177,31 @@ export class AudioService {
   getPlayFinished(id: string): Promise<boolean> {
     if (id !== this.audioId()) return Promise.resolve(false);
     if (this.maxPlay() !== 0 && this.playCount() >= this.maxPlay()) return Promise.resolve(false);
+    // If the audio has reached the end previously, reset to the beginning before replaying
+    try {
+      if (this.getPlayerStatusValue() === AudioPlayerStatus.ENDED && this._audioElement) {
+        this._audioElement.currentTime = 0;
+      }
+    } catch { /* ignore */ }
     this.play();
     return new Promise(resolve => {
       setTimeout(() => {
-        this.getPlayerStatus().subscribe(status => {
-          if (status === 'paused' && !this.isPlaying()) {
-            this._playCount.set(this.playCount() + 1);
+        const onEnded = () => {
+          cleanup();
+          resolve(true);
+        };
+        const onPause = () => {
+          if (!this.isPlaying()) {
+            cleanup();
             resolve(true);
           }
-        });
+        };
+        const cleanup = () => {
+          this._audioElement?.removeEventListener('ended', onEnded);
+          this._audioElement?.removeEventListener('pause', onPause);
+        };
+        this._audioElement?.addEventListener('ended', onEnded, { once: true });
+        this._audioElement?.addEventListener('pause', onPause, { once: true });
       }, 50);
     });
   }
