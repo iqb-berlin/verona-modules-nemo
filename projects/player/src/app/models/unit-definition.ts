@@ -93,6 +93,7 @@ export interface InteractionPlaceValueParams {
   numberOfRows?: number;
   maxNumberOfTens?: number;
   maxNumberOfOnes?: number;
+  formerState?: Response[];
 }
 
 export interface InteractionWriteParams {

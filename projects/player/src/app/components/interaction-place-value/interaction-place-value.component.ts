@@ -1,5 +1,7 @@
-import { Component, computed, effect, ElementRef, HostListener, signal, ViewChild } from '@angular/core';
-
+import {
+  Component, computed, effect, ElementRef, HostListener, signal, ViewChild
+} from '@angular/core';
+import { Response } from '@iqbspecs/response/response.interface';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { IconButtonTypeEnum, InteractionPlaceValueParams } from '../../models/unit-definition';
 
@@ -10,6 +12,8 @@ import { IconButtonTypeEnum, InteractionPlaceValueParams } from '../../models/un
 })
 export class InteractionPlaceValueComponent extends InteractionComponentDirective {
   localParameters!: InteractionPlaceValueParams;
+  /** Boolean to track if the former state has been restored from response. */
+  private hasRestoredFromFormerState = false;
   /** Global sequence counter stamped on items when first added to the upper panel. */
   private addedSeqCounter = 0;
   /** Used to sort items for layout so that visual order reflects the order items were first added (FIFO). */
@@ -119,6 +123,7 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
     effect(() => {
       const parameters = this.parameters() as InteractionPlaceValueParams;
       this.localParameters = this.createDefaultParameters();
+      this.hasRestoredFromFormerState = false;
       if (parameters) {
         this.localParameters.variableId = parameters.variableId || 'PLACE_VALUE';
         this.localParameters.value = parameters.value || 0;
@@ -129,13 +134,26 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
         this.localParameters.maxNumberOfOnes = parameters.maxNumberOfOnes || 20;
         this.maxNumberOfOnes = this.localParameters.maxNumberOfOnes;
 
-        // Emit displayed response
-        this.responses.emit([{
-          id: this.localParameters.variableId,
-          status: 'DISPLAYED',
-          value: '',
-          relevantForResponsesProgress: false
-        }]);
+        // Restore from former state once, if available; otherwise emit DISPLAYED
+        if (!this.hasRestoredFromFormerState) {
+          const formerStateResponses: Response[] = (parameters as any).formerState || [];
+          if (Array.isArray(formerStateResponses) && formerStateResponses.length > 0) {
+            const found = formerStateResponses.find(r => r.id === this.localParameters.variableId);
+            if (found && (found.value !== undefined && found.value !== null && `${found.value}` !== '')) {
+              this.restoreFromFormerState(found);
+              this.hasRestoredFromFormerState = true;
+              return;
+            }
+          }
+          // No former state
+          this.responses.emit([{
+            id: this.localParameters.variableId,
+            status: 'DISPLAYED',
+            value: '',
+            relevantForResponsesProgress: false
+          }]);
+          this.hasRestoredFromFormerState = true;
+        }
       }
     });
 
@@ -339,6 +357,60 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
       // Always (re)calculate transforms; ones move down when tens grow or wrap when row fills
       this.itemTransforms[oneIcon.id] = `translate(${x}px, ${y}px)`;
     });
+  }
+
+  /** Restores the upper panel selection (tens and ones) from a former-state response. */
+  private restoreFromFormerState(response: Response): void {
+    // Parse numeric value from response
+    const numeric = typeof response.value === 'string' ? parseInt(response.value, 10) : Number(response.value);
+    const total = Number.isFinite(numeric) ? Math.max(0, numeric) : 0;
+
+    // Determine desired tens and ones within configured caps
+    const desiredTens = Math.min(this.maxNumberOfTens, Math.floor(total / 10));
+    const desiredOnes = Math.min(this.maxNumberOfOnes, total % 10);
+
+    // Reset internal state
+    this.addedSeqCounter = 0;
+    this.addedSequence.clear();
+    this.tensSlotIndex.clear();
+    this.onesSlotIndex.clear();
+    this.nextTensSlot = 0;
+    this.nextOnesSlot = 0;
+    // Clear transforms
+    Object.keys(this.itemTransforms).forEach(k => { delete this.itemTransforms[Number(k)]; });
+
+    // Build new tens and ones arrays using the highest available stacked ids (top of wrapper)
+    const tensAll = this.tensArray();
+    const onesAll = this.onesArray();
+
+    const newTens: CountItem[] = [];
+    for (let i = tensAll.length - 1; i >= 0 && newTens.length < desiredTens; i -= 1) {
+      const it = tensAll[i];
+      if (!it) continue;
+      this.addedSeqCounter += 1;
+      this.addedSequence.set(it.id, this.addedSeqCounter);
+      this.tensSlotIndex.set(it.id, this.nextTensSlot);
+      this.nextTensSlot += 1;
+      newTens.push(it);
+    }
+
+    const newOnes: CountItem[] = [];
+    for (let i = onesAll.length - 1; i >= 0 && newOnes.length < desiredOnes; i -= 1) {
+      const it = onesAll[i];
+      if (!it) continue;
+      this.addedSeqCounter += 1;
+      this.addedSequence.set(it.id, this.addedSeqCounter);
+      this.onesSlotIndex.set(it.id, this.nextOnesSlot);
+      this.nextOnesSlot += 1;
+      newOnes.push(it);
+    }
+
+    // Apply restored arrays
+    this.tensCountAtTheTopPanel.set(newTens);
+    this.onesCountAtTheTopPanel.set(newOnes);
+
+    // Recalculate layout without extra animation flags
+    this.scheduleLayoutUpdate();
   }
 
   private scheduleLayoutUpdate(idsToAnimate?: number[]): void {
