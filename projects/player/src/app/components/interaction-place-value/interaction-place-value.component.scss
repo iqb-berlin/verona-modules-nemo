@@ -81,7 +81,6 @@
   position: absolute !important;
   top: 0;
   left: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Wrapper items should be positioned absolutely so they stack on top of each other */
@@ -106,12 +105,11 @@
   z-index: 1;
 }
 
-/* Disabled state: show a light overlay only over the wrapper area, without
-   affecting the opacity of children (moved items that are visually outside
-   the wrapper must not be dimmed). */
 .tens-wrapper.disabled,
 .ones-wrapper.disabled {
   position: relative;
+  background-color: rgba(0, 0, 0, 0.06);
+  border-radius: 15px;
 }
 .tens-wrapper.disabled::after,
 .ones-wrapper.disabled::after {
@@ -119,16 +117,11 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: rgba(0, 0, 0, 0.08);
-  /* Ensure the disabled overlay is visible above wrapper items,
-     but still below any .icon-item.moved that should remain interactive
-     and not look disabled while visually in the upper panel. */
+  background: rgba(0, 0, 0, 0.2);
   z-index: 2;
   pointer-events: none; /* do not block clicks on icons */
 }
 
-/* Moved items must remain clickable even if they are not the topmost stacked item
-   and even when wrapper is disabled. Also keep them above the stack. */
 .tens-wrapper .icon-item.moved,
 .ones-wrapper .icon-item.moved {
   pointer-events: auto;
@@ -139,11 +132,10 @@
   pointer-events: auto;
 }
 
-/* Remove heavy box-shadows on stacked wrapper items to avoid compounded dark shadow
-   BUT keep the default shadow for items that are moved into the upper panel. */
+/* Remove heavy box-shadows on stacked wrapper items to avoid compounded dark shadow. */
 .tens-wrapper .icon-item:first-child:not(.moved),
 .ones-wrapper .icon-item:first-child:not(.moved) {
-  @include variables.not-moved-tens-and-ones-box-shadow
+  @include variables.tens-and-ones-box-shadow;
 }
 
 .tens-wrapper .icon-item:not(.moved),
@@ -151,24 +143,7 @@
   box-shadow: none;
 }
 
-/* Moved items (visually in the upper panel) should have the default box shadow */
 .icon-item.moved {
-  @include variables.default-box-shadow;
-}
-
-/* Disable SVG filter shadows inside wrappers to prevent double-shadow */
-.tens-wrapper svg,
-.tens-wrapper g,
-.ones-wrapper svg,
-.ones-wrapper g {
-  filter: none !important;
-}
-
-/* Upper panel icon styles */
-.upper-panel-icon {
-  position: absolute;
-  z-index: 10;
-  transform-origin: center center;
-  transition: none; /* No transition for static positioning */
+  @include variables.tens-and-ones-box-shadow;
 }
 
