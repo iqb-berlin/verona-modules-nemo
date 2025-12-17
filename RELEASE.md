@@ -2,13 +2,12 @@
 
 ## Neu
 
-+ Änderungen an BUTTONS mit Bildern
-  + Es wurden Stiländerungen vorgenommen, damit die Bilder mit Schaltflächen besser aussehen. 
-  + Die Parameter „Layout“ und „imagePosition“ werden verwendet, um das Layout zu bestimmen (TOP_CENTER, LEFT_CENTER, LEFT_BOTTOM). 
-  + Stiländerungen wurden vorgenommen, wenn „imageUseFullArea“ auf „true“ gesetzt ist.
++ Es wurde ein neuer buttonType: TALL_RECTANGLE wurde hinzugefügt, die für Eiswagen-Aufgaben verwendet werden können.
++ Ein neuer InteractionType: PLACE_VALUE wurde hinzugefügt, der für die Erstellung von Aufgaben mit Einern und Zehnern verwendet werden kann.
++ Ein neuer layout: LEFT_CENTER_50 wurde hinzugefügt. Wenn sich nun ein Bild auf der linken Seite und Schaltflächen auf der rechten Seite befinden, 
+  wird durch die Verwendung von LEFT_CENTER_50 jede Seite des Layouts um 50 % in der Breite erweitert, sodass die Elemente näher beieinander liegen.
 
- + Änderungen an der Komponente „openingImage“: 
-   + Die Funktion „firstClickLayer“ wirkt sich auf die Audioquelle innerhalb von „openingImage“ aus, „mainAudio“ wird automatisch gestartet. 
-   + Es ist auch möglich, „imageUseFullArea“ für die Bilder innerhalb von „openingImage“ zu verwenden.
-   
- + Beispiele für unit-definition wurden mit Version 1.8 aktualisiert.
+## Bugfixes
+
++ Der Audiofehler, der bei doppeltem Klicken zu einer doppelten Wiedergabe führte, wurde behoben.
++ Der Fehler, bei dem IMAGE_ONLY-Bilder abgeschnitten wurden, wurde behoben.
