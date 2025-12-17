@@ -1,12 +1,17 @@
 <div class="buttons-container" data-cy="buttons-container"
-     [style.flex-direction]="localParameters.layout === 'LEFT_CENTER' ? 'row' : 'column'"
+     [style.flex-direction]="localParameters.layout !== 'TOP_CENTER' ? 'row' : 'column'"
+     [style.justify-content]="localParameters.layout === 'LEFT_CENTER_50' ? 'flex-start' : null"
+     [style.column-gap.px]="localParameters.layout === 'LEFT_CENTER_50' ? 24 : null"
      [style.overflow]="'hidden'"
      [style.margin-top.px]="useFullArea ? 0 : offsetTopPx()"
      [style.margin-bottom.px]="useFullArea ? 0 : offsetBottomPx()">
   @if (localParameters.imageSource || localParameters.text) {
     <div class="stimulus-wrapper"
          [style.margin-bottom.px]="(localParameters.layout !== 'LEFT_CENTER' && localParameters.layout !== 'LEFT_BOTTOM' && optionRows.length > 0) ? 10 : 0"
-         [style.margin-right.px]="(localParameters.layout === 'LEFT_CENTER' && optionRows.length > 0) ? 10 : 0">
+         [style.margin-right.px]="(localParameters.layout === 'LEFT_CENTER' && optionRows.length > 0) ? 10 : 0"
+         [style.flex]="localParameters.layout === 'LEFT_CENTER_50' ? '0 0 50%' : null"
+         [style.padding-right.px]="localParameters.layout === 'LEFT_CENTER_50' ? 0 : null"
+         [style.align-items]="localParameters.layout === 'LEFT_CENTER_50' ? 'flex-end' : null">
       @if (localParameters.imageSource) {
         <div class="image-wrapper">
           <img #imageElement
@@ -24,13 +29,17 @@
   }
   @if (optionRows.length > 0) {
     <div class="buttons-wrapper"
-         [style.padding-right]="localParameters.layout === 'LEFT_CENTER' && localParameters.imageSource !== '' ? '72px' : '5px'"
+         [style.padding-right]="localParameters.layout === 'LEFT_CENTER_50' ? '0' : (localParameters.layout === 'LEFT_CENTER' && localParameters.imageSource !== '' ? '72px' : '5px')"
+         [style.padding-left.px]="localParameters.layout === 'LEFT_CENTER_50' ? 0 : null"
+         [style.flex]="localParameters.layout === 'LEFT_CENTER_50' ? '0 0 50%' : null"
+         [style.align-items]="localParameters.layout === 'LEFT_CENTER_50' ? 'flex-start' : null"
     >
       @for (row of optionRows; track $index) {
         <div class="row"
              [class.two-buttons]="optionRows.length === 1 && row.length === 2 && localParameters.buttonType !== 'LONG_RECTANGLE' && localParameters.buttonType !== 'EXTRA_LARGE_SQUARE'"
              [class.two-extra-large-buttons]="localParameters.buttonType === 'EXTRA_LARGE_SQUARE' && optionRows.length === 1 && row.length === 2"
              [class.long-rectangle-buttons]="localParameters.buttonType === 'LONG_RECTANGLE'"
+             [style.width]="localParameters.layout === 'LEFT_CENTER_50' ? 'auto' : null"
              [attr.data-cy]="'button-row-' + $index">
           @for (button of row; track $index) {
             <stars-standard-button
