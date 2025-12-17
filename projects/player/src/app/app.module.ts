@@ -26,6 +26,7 @@ import { RibbonBarComponent } from './components/ribbon-bar/ribbon-bar.component
 import { InteractionPolygonButtonsComponent }
   from './components/interaction-polygon-buttons/interaction-polygon-buttons.component';
 import { OpeningImageComponent } from './components/opening-image/opening-image.component';
+import { InteractionPlaceValueComponent } from './components/interaction-place-value/interaction-place-value.component';
 
 @NgModule({
   declarations: [
@@ -50,8 +51,8 @@ import { OpeningImageComponent } from './components/opening-image/opening-image.
     InteractionFindOnImageComponent,
     RibbonBarComponent,
     InteractionPolygonButtonsComponent,
-    RibbonBarComponent,
-    OpeningImageComponent
+    OpeningImageComponent,
+    InteractionPlaceValueComponent
   ],
   providers: [
     provideZonelessChangeDetection(),
