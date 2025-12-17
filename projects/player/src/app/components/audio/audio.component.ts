@@ -46,15 +46,21 @@ export class AudioComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const currentAudio = this.getResolvedAudio();
-      if (currentAudio?.audioSource) {
-        const key = `${currentAudio.audioId}|${currentAudio.audioSource}`;
-        if (this.lastLoadedKey !== key) {
-          this.audioService.setAudioSrc(currentAudio).then(() => {
+      const inputAudio = this.audio();
+
+      // Only the component-provided input should trigger a load.
+      if (inputAudio?.audioSource) {
+        const source = inputAudio.audioSource.trim();
+        const key = `${inputAudio.audioId}|${source}`;
+        const current = this.audioService.currentSource?.();
+
+        if (source && this.lastLoadedKey !== key && current !== source) {
+          this.audioService.setAudioSrc(inputAudio).then(() => {
             this.lastLoadedKey = key;
           });
         }
       } else {
+        // No component-owned source; let UnitService drive the player.
         this.lastLoadedKey = null;
       }
     });
@@ -118,6 +124,10 @@ export class AudioComponent implements OnInit {
     }
 
     const status = this.audioService.getPlayerStatusValue();
+
+    // If already playing, ignore the click
+    if (status === 'PLAYING') return false;
+
     // Allow immediate playback when the player is READY, PAUSED, or ENDED (we reset currentTime in the service)
     if (status === 'READY' || status === 'PAUSED' || status === 'ENDED') {
       this.animationItem?.play();
@@ -128,20 +138,7 @@ export class AudioComponent implements OnInit {
       this.movingButton.set(false);
       return true;
     }
-
-    // Not yet ready: wait for READY via Observable, then start once
-    const subscribedStatus = this.audioService.getPlayerStatus().subscribe(subscribed => {
-      if (subscribed === 'READY' || subscribed === 'PAUSED' || subscribed === 'ENDED') {
-        subscribedStatus.unsubscribe();
-        this.animationItem?.play();
-        this.audioService.getPlayFinished(resolvedAudio.audioId!).then(() => {
-          this.animationItem?.stop();
-        });
-        this.responsesService.firstInteractionDone.set(true);
-        this.movingButton.set(false);
-      }
-    });
-    return true;
+    return false;
   }
 
   // eslint-disable-next-line class-methods-use-this
