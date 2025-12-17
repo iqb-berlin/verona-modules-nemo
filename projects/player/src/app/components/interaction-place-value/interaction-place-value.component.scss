@@ -1,0 +1,149 @@
+@use 'colors';
+@use 'variables';
+
+.place-value-container {
+  @include variables.flex-center;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  row-gap: variables.$big-gap-margin;
+}
+
+.place-value {
+  text-align: center;
+  font-size: 54px;
+  font-weight: 600;
+}
+
+.icons-upper-panel {
+  @include variables.default-box-shadow;
+  width: 680px;
+  background-color: colors.$white;
+  box-sizing: border-box;
+  border: 3px solid lightgrey;
+  border-radius: variables.$border-radius;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.icons-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.tens-wrapper,
+.ones-wrapper {
+  display: flex;
+  flex-direction: column;
+  border-radius: variables.$icons-border-radius;
+  height: 50px;
+  box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.02);
+  flex-shrink: 0; // Do not allow flexbox to shrink these areas
+  position: relative; // allow stacking
+  z-index: 1;
+}
+
+.tens-wrapper {
+  width: 645px;
+  border-radius: variables.$icons-border-radius;
+}
+.ones-wrapper {
+  width: 50px;
+  margin-right: 12px;
+}
+
+.icon-item.tens, .icon-item.ones {
+  height: 50px;
+  border-radius: variables.$icons-border-radius;
+  transform-origin: center center;
+  transition: transform 1s ease-in-out;
+}
+.icon-item.tens {
+  width: 645px;
+}
+
+.icon-item.ones {
+  width: 50px;
+}
+
+.icon-item.no-transition {
+  transition: none !important;
+  border-radius: variables.$icons-border-radius;;
+}
+
+.icon-item.animating {
+  z-index: 9999 !important;
+  /* Keep absolute positioning to avoid reflow/jump during animation */
+  position: absolute !important;
+  top: 0;
+  left: 0;
+}
+
+/* Wrapper items should be positioned absolutely so they stack on top of each other */
+.tens-wrapper .icon-item,
+.ones-wrapper .icon-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: center center;
+}
+
+/* Only the topmost wrapper item should be clickable */
+.tens-wrapper .icon-item:last-child,
+.ones-wrapper .icon-item:last-child {
+  pointer-events: auto;
+  z-index: 2;
+}
+
+.tens-wrapper .icon-item:not(:last-child),
+.ones-wrapper .icon-item:not(:last-child) {
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tens-wrapper.disabled,
+.ones-wrapper.disabled {
+  position: relative;
+  background-color: rgba(0, 0, 0, 0.06);
+  border-radius: 15px;
+}
+.tens-wrapper.disabled::after,
+.ones-wrapper.disabled::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 2;
+  pointer-events: none; /* do not block clicks on icons */
+}
+
+.tens-wrapper .icon-item.moved,
+.ones-wrapper .icon-item.moved {
+  pointer-events: auto;
+  z-index: 3;
+}
+.tens-wrapper.disabled .icon-item.moved,
+.ones-wrapper.disabled .icon-item.moved {
+  pointer-events: auto;
+}
+
+/* Remove heavy box-shadows on stacked wrapper items to avoid compounded dark shadow. */
+.tens-wrapper .icon-item:first-child:not(.moved),
+.ones-wrapper .icon-item:first-child:not(.moved) {
+  @include variables.tens-and-ones-box-shadow;
+}
+
+.tens-wrapper .icon-item:not(.moved),
+.ones-wrapper .icon-item:not(.moved) {
+  box-shadow: none;
+}
+
+.icon-item.moved {
+  @include variables.tens-and-ones-box-shadow;
+}
+

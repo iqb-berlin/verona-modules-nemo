@@ -19,7 +19,11 @@
       }
     } @else {
       @if (image()) {
-        <img [src]="image()" [class.long-rectangle-img]="type() === 'LONG_RECTANGLE'" [alt]="" data-cy="button-with-imageSource">
+        <img [src]="image()"
+             [class.long-rectangle-img]="type() === 'LONG_RECTANGLE'"
+             [class.tall-rectangle-img]="type() === 'TALL_RECTANGLE'"
+             [alt]=""
+             data-cy="button-with-imageSource">
       } @else if (icon()) {
         <stars-standard-icon [icon]="icon()" [selected]="!!selected()"></stars-standard-icon>
       } @else if (text()) {
