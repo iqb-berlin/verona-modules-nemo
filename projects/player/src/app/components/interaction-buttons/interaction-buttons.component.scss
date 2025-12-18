@@ -7,7 +7,6 @@
   height: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
 }
 
 .stimulus-wrapper {
@@ -18,10 +17,8 @@
   display: flex;
   justify-content: center;
   flex-direction: column;
-  align-items: center;
   overflow: hidden;
   box-sizing: border-box;
-  padding: 10px;
 }
 .image-wrapper {
   width: 100%;
