@@ -50,9 +50,11 @@
   flex: 0 0 50%;
 }
 
-.buttons-container.layout--left-bottom .stimulus-wrapper {
-  align-items: flex-end;
+.buttons-container.layout--left-bottom .image-wrapper {
+  align-self: flex-end;
+  justify-content: flex-end;
 }
+
 .image-wrapper {
   width: 100%;
   max-width: 100%;
@@ -84,7 +86,7 @@
   padding: 5px 0 24px 5px;
 
   &:has(.row.tall-rectangle-buttons) {
-    padding: 10px;
+    padding-right: 72px;
   }
 
   .buttons-container.layout--left-center-50 & {
