@@ -1,4 +1,4 @@
-import { UnitDefinition } from '../../../../projects/player/src/app/models/unit-definition';
+import { InteractionButtonParams, UnitDefinition } from '../../../../projects/player/src/app/models/unit-definition';
 
 export function testMainAudioFeatures(subject: string, interactionType: string, configFile: string) {
   describe(`Main Audio Features - ${interactionType}`, () => {
@@ -17,7 +17,7 @@ export function testMainAudioFeatures(subject: string, interactionType: string, 
     });
 
     it('2. Should handle firstClickLayer correctly', () => {
-      if (testData.mainAudio?.firstClickLayer) {
+      if (testData.firstAudioOptions?.firstClickLayer) {
         cy.get('[data-cy="click-layer"]').should('exist').and('be.visible');
 
         // Remove click layer to enable interactions
@@ -29,7 +29,7 @@ export function testMainAudioFeatures(subject: string, interactionType: string, 
         if (!testData.mainAudio?.disableInteractionUntilComplete) {
           // if interactionType:IMAGE_ONLY, then it is enough that the image exists and visible
           if (interactionType === 'image_only') {
-            cy.get('[data-cy="image-only-container"]').should('exist').and('be.visible');
+            cy.get('[data-cy="stimulus-image"]').should('exist').and('be.visible');
           } else if (interactionType === 'write') {
             cy.get('[data-cy=character-button-a]').click();
             cy.get('[data-cy=text-span]').should('contain', 'a');
@@ -59,7 +59,7 @@ export function testMainAudioFeatures(subject: string, interactionType: string, 
         cy.get('[data-cy="interaction-disabled-overlay"]').should('not.exist');
 
         if (interactionType === 'image_only') {
-          cy.get('[data-cy="image-only-container"]').should('exist').and('be.visible');
+          cy.get('[data-cy="stimulus-image"]').should('exist').and('be.visible');
         } else if (interactionType === 'write') {
           // Keyboard should be clickable
           cy.get('[data-cy=character-button-a]').should('not.be.disabled');
@@ -111,9 +111,24 @@ export function testMainAudioFeatures(subject: string, interactionType: string, 
       cy.get('[data-cy="audio-button-container"]').should('exist');
     });
 
-    // TODO: check if this is still needed and add the test case
-    // it('the button should move when animateButton is true', () => {
-    //   // write a test about animateButton
-    // });
+    it('6. Audio button should move when animateButton is true', () => {
+      // Set up test data
+      cy.setupTestData(subject, 'buttons_animateButton_true_test', interactionType);
+
+      cy.get('@testData').then(data => {
+        testData = data as unknown as UnitDefinition;
+
+        if (testData.firstAudioOptions?.animateButton) {
+          // The button should NOT be moving initially
+          cy.get('.custom-audio-button').should('exist').and('not.have.class', 'moving-button');
+
+          // Do not interact with the page; wait slightly over 10 seconds
+          cy.wait(11000);
+
+          // After 10s of inactivity (and before first interaction), it should start moving
+          cy.get('.custom-audio-button').should('have.class', 'moving-button');
+        }
+      });
+    });
   });
 }

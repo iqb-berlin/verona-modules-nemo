@@ -106,7 +106,7 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  it.only('3. Should handle different button types (BIG_SQUARE, TEXT, etc.)', () => {
+  it('3. Should handle different button types (BIG_SQUARE, TEXT, etc.)', () => {
     const buttonTypeConfigs = [
       { buttonType: 'MEDIUM_SQUARE', file: 'buttons_buttonType_mediumSquare_test.json' },
       { buttonType: 'BIG_SQUARE', file: 'buttons_buttonType_bigSquare_test.json' },
@@ -205,16 +205,17 @@ describe('BUTTONS Interaction E2E Tests', () => {
 
         if (imagePosition === 'LEFT') {
         // Check if the image is on the left
-          cy.get('[data-cy="buttons-container"]').should('have.class', 'flex-row');
+          cy.get('[data-cy="buttons-container"]').should('have.css', 'flex-direction', 'row');
         }
       }
     });
   });
 
-  it('5b. Should handle height/max-height when imageUseFullArea parameter is set', () => {
-    // Keep below variable in sync with projects/player/src/app/components/interaction-buttons/interaction-buttons.component.ts
-    const imgWrapperHeight = 330;
-    const imgWrapperMaxHeight = 500;
+  it('5b. Should handle margin-top and margin-bottom when imageUseFullArea parameter is set', () => {
+    // eslint-disable-next-line max-len
+    // Keep below variable in sync with projects/player/src/app/components/interaction-buttons/interaction-buttons.component.html
+    const marginWithUseFullArea = 0;
+    const marginWithoutUseFullArea = 125;
 
     // when imageUseFullArea is true stimulus-wrapper max-height = imgWrapperMaxHeight
     // when it is false, stimulus-wrapper height = imgWrapperHeight
@@ -240,29 +241,23 @@ describe('BUTTONS Interaction E2E Tests', () => {
       // Check if there is an image
       cy.get('[data-cy="stimulus-image"]').should('exist').and('be.visible');
 
-      cy.get('.stimulus-wrapper').should('exist').then($el => {
+      cy.get('[data-cy="buttons-container"]').should('exist').then($el => {
         const el = $el[0] as HTMLElement;
         const computed = getComputedStyle(el);
 
-        // Check max-height rules
-        const maxHeightValue = computed.getPropertyValue('max-height').trim();
+        const marginBottom = computed.getPropertyValue('margin-bottom').trim();
+        const marginTop = computed.getPropertyValue('margin-top').trim();
 
         if (imageUseFullArea) {
-          // No explicit limits should be applied
-          expect(maxHeightValue).to.equal(`${imgWrapperMaxHeight}px`);
-          // Also ensure no inline height is set
-          expect(el.style.height).to.equal('');
-          // Additionally, when imageUseFullArea is true, there should be no fixed positioning applied
-          // and no top offset on the stimulus-wrapper
-          expect(computed.position).to.not.equal('fixed');
-          // When not positioned, computed top should be 'auto'
-          expect(computed.top).to.equal('auto');
-          // And there should be no inline styles for position/top
-          expect(el.style.position).to.equal('');
-          expect(el.style.top).to.equal('');
+          // No margin-bottom should be applied
+          expect(marginBottom).to.equal(`${marginWithUseFullArea}px`);
+          // No margin-right should be applied
+          expect(marginTop).to.equal(`${marginWithUseFullArea}px`);
         } else {
-          // When not using full area, height should be set to imgWrapperHeight
-          expect(el.style.height).to.equal(`${imgWrapperHeight}px`);
+          // When not using full area
+          expect(marginBottom).to.equal(`${marginWithoutUseFullArea}px`);
+          // No margin-right should be applied
+          expect(marginTop).to.equal(`${marginWithoutUseFullArea}px`);
         }
       });
     });
@@ -361,30 +356,6 @@ describe('BUTTONS Interaction E2E Tests', () => {
       cy.setupTestData(subject, file, interactionType);
 
       cy.get(`[data-cy=button-with-${key}]`).should('exist');
-    });
-  });
-
-  it('8. With 1 row and image on TOP, wrappers should be fixed with correct offsets', () => {
-    // Keep below variables in sync with projects/player/src/app/components/interaction-buttons/interaction-buttons.component.ts
-    const distanceFromBottom = 100; // buttons-wrapper bottom
-    const distanceFromTop = 125; // stimulus-wrapper top
-
-    cy.setupTestData(subject, 'buttons_1Row_2_medium_radio_image_top_option_icon_firstClickLayer_false_test', interactionType);
-
-    // Ensure rendered
-    assertButtonExists();
-
-    // Both wrappers should be position: fixed
-    cy.get('[data-cy="buttons-wrapper"]').should('exist').then($el => {
-      const style = getComputedStyle($el[0] as HTMLElement);
-      expect(style.position).to.equal('fixed');
-      expect(style.bottom).to.equal(`${distanceFromBottom}px`);
-    });
-
-    cy.get('[data-cy="stimulus-wrapper"]').should('exist').then($el => {
-      const style = getComputedStyle($el[0] as HTMLElement);
-      expect(style.position).to.equal('fixed');
-      expect(style.top).to.equal(`${distanceFromTop}px`);
     });
   });
 
