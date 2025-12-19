@@ -20,7 +20,7 @@
     "buttonType": "TEXT",
     "buttonAlignment": "AUTO",
     "imagePosition": "LEFT",
-    "layout": "LEFT_CENTER",
+    "layout": "LEFT_CENTER_50",
     "multiSelect": false,
     "numberOfRows": 4,
     "options": {

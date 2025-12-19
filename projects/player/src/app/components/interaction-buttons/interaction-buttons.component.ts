@@ -111,6 +111,23 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
     });
   }
 
+  /** Returns the layout class name for the container based on the current layout parameter. */
+  getLayoutClass(): string {
+    const layout = this.localParameters?.layout;
+    switch (layout) {
+      case 'TOP_CENTER':
+        return 'layout--top-center';
+      case 'LEFT_CENTER':
+        return 'layout--left-center';
+      case 'LEFT_CENTER_50':
+        return 'layout--left-center-50';
+      case 'LEFT_BOTTOM':
+        return 'layout--left-bottom';
+      default:
+        return '';
+    }
+  }
+
   private resetSelection(): void {
     if (!this.localParameters.options) return;
 

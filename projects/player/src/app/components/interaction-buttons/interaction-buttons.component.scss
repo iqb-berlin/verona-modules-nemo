@@ -8,6 +8,29 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+  &.layout--top-center {
+    flex-direction: column;
+  }
+
+  &.layout--left-center,
+  &.layout--left-center-50,
+  &.layout--left-bottom {
+    flex-direction: row;
+  }
+
+  &.layout--left-center-50 {
+    column-gap: 24px;
+  }
+
+  &.has-image:not(.layout--left-center-50) {
+    overflow: hidden;
+  }
+
+  &.layout--left-bottom {
+    padding: 0 24px;
+    align-items: baseline;
+  }
 }
 
 .stimulus-wrapper {
@@ -18,11 +41,20 @@
   display: flex;
   justify-content: center;
   flex-direction: column;
-  align-items: center;
   overflow: hidden;
   box-sizing: border-box;
-  padding: 10px;
 }
+
+.buttons-container.layout--left-center-50 .stimulus-wrapper,
+.buttons-container.layout--left-bottom .stimulus-wrapper {
+  flex: 0 0 50%;
+}
+
+.buttons-container.layout--left-bottom .image-wrapper {
+  align-self: flex-end;
+  justify-content: flex-end;
+}
+
 .image-wrapper {
   width: 100%;
   max-width: 100%;
@@ -51,6 +83,25 @@
   flex-direction: column;
   gap: variables.$small-gap-margin;
 
+  padding: 5px 0 24px 5px;
+
+  &:has(.row.tall-rectangle-buttons) {
+    padding-right: 72px;
+  }
+
+  .buttons-container.layout--left-center-50 & {
+    flex: 0 0 50%;
+    align-items: flex-start;
+    padding-right: 0;
+  }
+
+  .buttons-container.layout--left-center.has-image & {
+    padding-right: 72px;
+  }
+  .buttons-container.layout--left-center:not(.has-image) & {
+    padding-right: 5px;
+  }
+
   .row {
     @include variables.flex-center;
     flex-direction: row;
@@ -73,6 +124,10 @@
     &.tall-rectangle-buttons {
       column-gap: 0;
     }
+  }
+
+  .buttons-container.layout--left-center-50 & .row {
+    width: auto;
   }
 
   &.flex-row {

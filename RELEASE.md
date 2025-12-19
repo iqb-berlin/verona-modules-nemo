@@ -1,4 +1,4 @@
-# Release Note 0.6.21 #
+# Release Note 0.6.22 #
 
 ## Neu
 

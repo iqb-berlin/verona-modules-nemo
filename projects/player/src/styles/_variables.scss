@@ -45,10 +45,6 @@ $square-image-height: 300px;
   box-shadow: 5px 5px 0 4px rgba(0, 0, 0, 0.2);
 }
 
-@mixin smiley-box-shadow {
-  box-shadow: 3px -4px 0 14px rgba(0, 0, 0, 0.2);
-}
-
 @mixin tens-and-ones-box-shadow {
   box-shadow: 5px 5px 3px 2px rgba(0, 0, 0, 0.2);
 }
