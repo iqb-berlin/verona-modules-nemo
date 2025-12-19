@@ -1,13 +1,8 @@
-# Release Note 0.6.21 #
-
-## Neu
-
-+ Es wurde ein neuer buttonType: TALL_RECTANGLE wurde hinzugefügt, die für Eiswagen-Aufgaben verwendet werden können.
-+ Ein neuer InteractionType: PLACE_VALUE wurde hinzugefügt, der für die Erstellung von Aufgaben mit Einern und Zehnern verwendet werden kann.
-+ Ein neuer layout: LEFT_CENTER_50 wurde hinzugefügt. Wenn sich nun ein Bild auf der linken Seite und Schaltflächen auf der rechten Seite befinden, 
-  wird durch die Verwendung von LEFT_CENTER_50 jede Seite des Layouts um 50 % in der Breite erweitert, sodass die Elemente näher beieinander liegen.
+# Release Note 0.6.23 #
 
 ## Bugfixes
 
-+ Der Audiofehler, der bei doppeltem Klicken zu einer doppelten Wiedergabe führte, wurde behoben.
-+ Der Fehler, bei dem IMAGE_ONLY-Bilder abgeschnitten wurden, wurde behoben.
++ PLACE_VALUE: Die Symbole für Einer und Zehner haben jetzt einen weißen Hintergrund (vorher war er transparent).
++ Layout LEFT_CENTER_50: Die Elemente lagen sehr dicht beieinander, es wurde ein Abstand dazwischen eingefügt.
++ Layout LEFT_BOTTOM: Der Abstand zwischen Bild und buttons wurde korrigiert. TALL_RECTANGLE-buttons haben eine Breite von 80 Pixel und eine Höhe von 190 Pixel.
++ buttonType: CIRCLE mit SMILEY-Symbol: Box-Schatten korrigiert.
