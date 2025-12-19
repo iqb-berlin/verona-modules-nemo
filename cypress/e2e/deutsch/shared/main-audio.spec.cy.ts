@@ -72,22 +72,29 @@ export function testMainAudioFeatures(subject: string, interactionType: string, 
     });
 
     it('4. Should be consistent with maxPlay time', () => {
-      const maxPLayTime = testData.mainAudio?.maxPlay ?? 1;
+      const maxPlayTime = testData.mainAudio?.maxPlay ?? 1;
 
       // Remove click layer
       cy.removeClickLayer();
 
       // Initially audio button container should be enabled
       cy.get('[data-cy="audio-button-container"]').should('exist');
-      if (maxPLayTime > 0) {
-        // Click the audio button maxPLayTime times
-        for (let i = 0; i <= maxPLayTime; i++) {
+      if (maxPlayTime > 0) {
+        // Click the audio button exactly maxPlayTime times
+        for (let i = 0; i < maxPlayTime; i++) {
           cy.get('[data-cy="speaker-icon"]').click();
           // Wait for audio to finish playing
           cy.waitUntilAudioIsFinishedPlaying();
         }
-        // After maxPlayTime exceeded, the container should be disabled
-        cy.get('[data-cy="audio-button-container-disabled"]').should('exist');
+
+        // One extra click beyond maxPlay should NOT start playback again
+        cy.get('[data-cy="speaker-icon"]').click();
+
+        // Assert that the audio does not start playing again
+        // Check immediately and after a short delay to ensure it doesn't flip to playing
+        cy.get('[data-cy="audio-button-animation"]').should('not.have.class', 'playing');
+        cy.wait(1000);
+        cy.get('[data-cy="audio-button-animation"]').should('not.have.class', 'playing');
       }
     });
 
@@ -113,7 +120,7 @@ export function testMainAudioFeatures(subject: string, interactionType: string, 
 
     it('6. Audio button should move when animateButton is true', () => {
       // Set up test data
-      cy.setupTestData(subject, 'buttons_animateButton_true_test', interactionType);
+      cy.setupTestData(subject, `${interactionType}_animateButton_true_test.json`, interactionType);
 
       cy.get('@testData').then(data => {
         testData = data as unknown as UnitDefinition;

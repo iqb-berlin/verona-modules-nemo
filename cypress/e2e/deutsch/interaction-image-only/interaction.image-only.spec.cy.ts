@@ -13,8 +13,7 @@ describe('IMAGE_ONLY Interaction E2E Tests', () => {
 
   it('1. Should display imageSource', () => {
     // Check if the imageSource is displayed
-    cy.get('[data-cy="image-only-container"]')
-      .find('img')
+    cy.get('[data-cy="stimulus-image"]')
       .should('have.attr', 'src')
       .and($src => expect($src).to.not.be.empty);
   });
