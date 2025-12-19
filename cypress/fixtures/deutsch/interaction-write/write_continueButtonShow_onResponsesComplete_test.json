@@ -1,6 +1,6 @@
 {
   "id": "stars-unit-definition",
-  "version": "1.8",
+  "version": "1.10",
   "backgroundColor": "#3cf",
   "ribbonBars": false,
   "continueButtonShow": "ON_RESPONSES_COMPLETE",
