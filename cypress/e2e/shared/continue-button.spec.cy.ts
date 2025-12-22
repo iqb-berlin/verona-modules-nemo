@@ -1,15 +1,15 @@
-import { getButtonOptions, getCorrectAnswerParam, getIndexByOneBasedInput } from '../../../support/utils';
+import { getButtonOptions, getCorrectAnswerParam, getIndexByOneBasedInput } from '../../support/utils';
 import {
   InteractionButtonParams,
   InteractionDropParams,
   UnitDefinition
-} from '../../../../projects/player/src/app/models/unit-definition';
+} from '../../../projects/player/src/app/models/unit-definition';
 
-export function testContinueButtonFeatures(subject: string, interactionType: string) {
+export function testContinueButtonFeatures(interactionType: string) {
   describe(`Continue Button Features - ${interactionType}`, () => {
     const testSetup = (continueButtonShow: string, file: string) => {
       cy.log(`Testing continueButtonShow: ${continueButtonShow}`);
-      cy.setupTestData(subject, file, interactionType);
+      cy.setupTestData(file, interactionType);
     };
 
     const applyStandardScenarios = () => {

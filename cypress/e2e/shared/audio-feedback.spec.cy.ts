@@ -2,13 +2,13 @@ import {
   InteractionButtonParams,
   InteractionDropParams,
   UnitDefinition
-} from '../../../../projects/player/src/app/models/unit-definition';
-import { getButtonOptions, getCorrectAnswerParam, getIndexByOneBasedInput } from '../../../support/utils';
+} from '../../../projects/player/src/app/models/unit-definition';
+import { getButtonOptions, getCorrectAnswerParam, getIndexByOneBasedInput } from '../../support/utils';
 
-export function testAudioFeedback(subject: string, interactionType: string) {
+export function testAudioFeedback(interactionType: string) {
   describe(`Audio Feedback - ${interactionType}`, () => {
     const loadDefaultTestFile = () => {
-      cy.setupTestData(subject, `${interactionType}_feedback_test`, interactionType);
+      cy.setupTestData(`${interactionType}_feedback_test`, interactionType);
       return cy.get('@testData') as unknown as Cypress.Chainable<UnitDefinition>;
     };
 

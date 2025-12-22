@@ -1,14 +1,14 @@
-import { UnitDefinition } from '../../../../projects/player/src/app/models/unit-definition';
+import { UnitDefinition } from '../../../projects/player/src/app/models/unit-definition';
 
-export function testRibbonBars(subject: string, interactionType: string) {
+export function testRibbonBars(interactionType: string) {
   describe(`Ribbon Bars - ${interactionType}`, () => {
     const loadDefaultTestFile = () => {
-      cy.setupTestData(subject, `${interactionType}_ribbonBars_true_test`, interactionType);
+      cy.setupTestData(`${interactionType}_ribbonBars_true_test`, interactionType);
       return cy.get('@testData') as unknown as Cypress.Chainable<UnitDefinition>;
     };
 
     const loadWhiteBgTestFile = () => {
-      cy.setupTestData(subject, `${interactionType}_ribbonBars_true_bg_white_test`, interactionType);
+      cy.setupTestData(`${interactionType}_ribbonBars_true_bg_white_test`, interactionType);
       return cy.get('@testData') as unknown as Cypress.Chainable<UnitDefinition>;
     };
 

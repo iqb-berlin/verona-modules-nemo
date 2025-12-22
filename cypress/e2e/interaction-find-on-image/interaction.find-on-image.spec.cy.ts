@@ -1,18 +1,17 @@
 import {
   InteractionFindOnImageParams,
   UnitDefinition
-} from '../../../../projects/player/src/app/models/unit-definition';
+} from '../../../projects/player/src/app/models/unit-definition';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
 import { testAudioFeedback } from '../shared/audio-feedback.spec.cy';
 
 describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
-  const subject = 'deutsch';
   const interactionType = 'find_on_image';
   const defaultTestFile = 'find_on_image_test';
 
   beforeEach(() => {
-    cy.setupTestData(subject, defaultTestFile, interactionType);
+    cy.setupTestData(defaultTestFile, interactionType);
   });
 
   it('1. Should display the image element', () => {
@@ -31,7 +30,7 @@ describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
   it('3a. Should display show area with width and height when showArea parameter is provided', () => {
     let testData: UnitDefinition;
     // Set up test data
-    cy.setupTestData(subject, 'find_on_image_with_showArea_test', interactionType);
+    cy.setupTestData('find_on_image_with_showArea_test', interactionType);
     cy.get('@testData').then(data => {
       testData = data as unknown as UnitDefinition;
 
@@ -99,7 +98,7 @@ describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
   });
 
   // Import and run shared tests for FIND_ON_IMAGE interaction type
-  testContinueButtonFeatures(subject, interactionType);
-  testRibbonBars(subject, interactionType);
-  testAudioFeedback(subject, interactionType);
+  testContinueButtonFeatures(interactionType);
+  testRibbonBars(interactionType);
+  testAudioFeedback(interactionType);
 });

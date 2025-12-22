@@ -1,7 +1,7 @@
 import {
   InteractionDropParams,
   UnitDefinition
-} from '../../../../projects/player/src/app/models/unit-definition';
+} from '../../../projects/player/src/app/models/unit-definition';
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
@@ -10,15 +10,16 @@ import {
   formatPxValue,
   getDropLandingArgs,
   getDropLandingTranslate
-} from '../../../../projects/player/src/app/shared/utils/interaction-drop.util';
+} from '../../../projects/player/src/app/shared/utils/interaction-drop.util';
 
 describe('DROP Interaction E2E Tests', () => {
-  const subject = 'deutsch';
   const interactionType = 'drop';
   const defaultTestFile = 'drop_4_option_test';
   const testFileWithImageLandingXY = `${interactionType}_imagePosition_top_rectangle_with_imageLandingXY_100-100_test`;
-  const yValueToBottom = 280; // Ref from the value on interaction-drop.component.ts calculateButtonTransformValues function
-  const yValueToTop = -280; // Ref from the value on interaction-drop.component.ts calculateButtonTransformValues function
+  /** Ref from the value on interaction-drop.component.ts calculateButtonTransformValues function. */
+  const yValueToBottom = 280;
+  /** Ref from the value on interaction-drop.component.ts calculateButtonTransformValues function. */
+  const yValueToTop = -280;
   const dropImage = '[data-cy="drop-image"]';
   const buttonIndex = 1;
 
@@ -92,7 +93,7 @@ describe('DROP Interaction E2E Tests', () => {
    */
   const getTestSetupWithImageLandingXY = (
   ): Cypress.Chainable<any> => {
-    cy.setupTestData(subject, testFileWithImageLandingXY, interactionType);
+    cy.setupTestData(testFileWithImageLandingXY, interactionType);
 
     return cy.get('@testData').then(data => {
       const testData = data as unknown as UnitDefinition;
@@ -113,7 +114,7 @@ describe('DROP Interaction E2E Tests', () => {
 
               let xPx = '';
               let yPx = '';
-              if (imageLandingXY !== '') {
+              if (typeof imageLandingXY === 'string' && imageLandingXY.trim() !== '') {
                 const translate = getDropLandingTranslate(
                   imageLandingXY,
                   buttonCenterX,
@@ -172,146 +173,156 @@ describe('DROP Interaction E2E Tests', () => {
     cy.get(`[data-cy="button-${buttonIndex}"]`).click();
   };
 
-  it('1. Should have correct number of options', () => {
-    let testData: UnitDefinition;
-    // Set up test data
-    cy.setupTestData(subject, defaultTestFile, interactionType);
-    cy.get('@testData').then(data => {
-      testData = data as unknown as UnitDefinition;
+  // Rendering
+  describe('Rendering', () => {
+    beforeEach(() => {
+      cy.setupTestData(defaultTestFile, interactionType);
+    });
 
-      const dropParams = testData.interactionParameters as InteractionDropParams;
-      const optionsLength = dropParams.options?.length;
-      // Check if the correct number of options exists (rows are indexed from 0)
-      cy.get('stars-standard-button[data-cy^="button-"]').should('have.length', optionsLength).then(() => {
-        cy.log(`Total options: ${optionsLength}`);
+    it('renders the correct number of options', () => {
+      let testData: UnitDefinition;
+      cy.get('@testData').then(data => {
+        testData = data as unknown as UnitDefinition;
+
+        const dropParams = testData.interactionParameters as InteractionDropParams;
+        const optionsLength = dropParams.options?.length;
+        cy.get('stars-standard-button[data-cy^="button-"]').should('have.length', optionsLength).then(() => {
+          cy.log(`Total options: ${optionsLength}`);
+        });
       });
     });
   });
 
-  it('2a. Should apply correct styles when imagePosition === BOTTOM', () => {
-    let testData: UnitDefinition;
-    // Set up test data
-    cy.setupTestData(subject, defaultTestFile, interactionType);
-    cy.get('@testData').then(data => {
-      testData = data as unknown as UnitDefinition;
-
-      const dropParams = testData.interactionParameters as InteractionDropParams;
-
-      const imagePosition = dropParams.imagePosition;
-      if (imagePosition === 'BOTTOM') {
-        // First, check if the container has the correct flex-direction
-        cy.get('[data-cy="drop-container"]')
-          .should('have.css', 'flex-direction', 'column-reverse');
-
-        // Start animation
-        assertStartAnimation();
-
-        cy.get(`[data-cy="drop-animate-wrapper-${buttonIndex}"]`)
-          .should('have.attr', 'style')
-          .then($style => {
-            const styleValue = $style.toString();
-            const { yValue } = getTransformTranslateValues(styleValue);
-            // Image position is BOTTOM, check Y value (downward movement)
-            expect(yValue.trim()).to.equal(`${yValueToBottom}px`);
-          });
-      }
-    });
-  });
-
-  it('2b. Should apply correct styles when imagePosition === TOP', () => {
-    let testData: UnitDefinition;
-    // Set up test data
-    cy.setupTestData(subject, `${interactionType}_imagePosition_top_test`, interactionType);
-    cy.get('@testData').then(data => {
-      testData = data as unknown as UnitDefinition;
-
-      const dropParams = testData.interactionParameters as InteractionDropParams;
-
-      const imagePosition = dropParams.imagePosition;
-      if (imagePosition === 'TOP') {
-        // First, check if the container has the correct flex-direction
-        cy.get('[data-cy="drop-container"]')
-          .should('have.css', 'flex-direction', 'column');
-
-        // Start animation
-        assertStartAnimation();
-
-        cy.get(`[data-cy="drop-animate-wrapper-${buttonIndex}"]`)
-          .should('have.attr', 'style')
-          .then($style => {
-            const styleValue = $style.toString();
-            const { yValue } = getTransformTranslateValues(styleValue);
-            // Image position is TOP, check Y value (upward movement)
-            expect(yValue.trim()).to.equal(`${yValueToTop}px`);
-          });
-      }
-    });
-  });
-
-  it('3. Should apply correct transform values when imageLandingXY values exists', () => {
-    getTestSetupWithImageLandingXY().then(result => {
-      const { imageLandingXY, xPx, yPx } = result as {
-        imageLandingXY: string;
-        xPx: string;
-        yPx: string;
-      };
-      if (imageLandingXY !== '') {
-        assertStartAnimation();
-        assertTransformTranslate(xPx, yPx);
-      }
-    });
-  });
-
-  it('4. Should move the option back to initial position when clicked again', () => {
-    // Set up test data
-    cy.setupTestData(subject, defaultTestFile, interactionType);
-
-    // Remove click layer
-    cy.removeClickLayer();
-
-    // First click - button should move down
-    cy.get(`[data-cy="button-${buttonIndex}"]`).click();
-
-    // Wait for animation to complete
-    cy.wait(3000);
-
-    // The second click-button should return to original position
-    cy.get(`[data-cy="button-${buttonIndex}"]`).click();
-    cy.get(`[data-cy="drop-animate-wrapper-${buttonIndex}"]`)
-      .should($el => {
-        const style = $el.attr('style') || '';
-        // Expect the element to be explicitly reset to translate3d(0px, 0px, 0px)
-        expect(style.replace(/\s+/g, ' ').trim()).to.include('transform: translate3d(0px, 0px, 0px)');
+  // Image position
+  describe('Image position', () => {
+    describe('BOTTOM', () => {
+      beforeEach(() => {
+        cy.setupTestData(defaultTestFile, interactionType);
       });
-  });
 
-  it('5. Should handle drag events correctly', () => {
-    getTestSetupWithImageLandingXY().then(result => {
-      const { imageLandingXY, xPx, yPx } = result as {
-        imageLandingXY: string;
-        xPx: string;
-        yPx: string;
-      };
-      if (imageLandingXY !== '') {
-        // Triggers the drag event
-        cy.get(`[data-cy="drop-animate-wrapper-${buttonIndex}"]`)
-          .trigger('mousedown', { button: 0, bubbles: true, force: true })
-          .trigger('mousemove', { pageX: 10, pageY: 0, force: true });
+      it('applies correct styles and downward movement', () => {
+        let testData: UnitDefinition;
+        cy.get('@testData').then(data => {
+          testData = data as unknown as UnitDefinition;
 
-        cy.get(dropImage) // droppable
+          const dropParams = testData.interactionParameters as InteractionDropParams;
+          const imagePosition = dropParams.imagePosition;
+          if (imagePosition === 'BOTTOM') {
+            cy.get('[data-cy="drop-container"]').should('have.css', 'flex-direction', 'column-reverse');
+            assertStartAnimation();
+            cy.get(`[data-cy="drop-animate-wrapper-${buttonIndex}"]`)
+              .should('have.attr', 'style')
+              .then($style => {
+                const styleValue = $style.toString();
+                const { yValue } = getTransformTranslateValues(styleValue);
+                expect(yValue.trim()).to.equal(`${yValueToBottom}px`);
+              });
+          }
+        });
+      });
+    });
 
-          .trigger('mousemove', { position: 'center', force: true })
-          .trigger('mouseup', { button: 0, bubbles: true, force: true });
-        // Wait for animation to complete
-        cy.wait(1000);
-        assertTransformTranslate(xPx, yPx);
-      }
+    describe('TOP', () => {
+      beforeEach(() => {
+        cy.setupTestData(`${interactionType}_imagePosition_top_test`, interactionType);
+      });
+
+      it('applies correct styles and upward movement', () => {
+        let testData: UnitDefinition;
+        cy.get('@testData').then(data => {
+          testData = data as unknown as UnitDefinition;
+
+          const dropParams = testData.interactionParameters as InteractionDropParams;
+          const imagePosition = dropParams.imagePosition;
+          if (imagePosition === 'TOP') {
+            cy.get('[data-cy="drop-container"]').should('have.css', 'flex-direction', 'column');
+            assertStartAnimation();
+            cy.get(`[data-cy="drop-animate-wrapper-${buttonIndex}"]`)
+              .should('have.attr', 'style')
+              .then($style => {
+                const styleValue = $style.toString();
+                const { yValue } = getTransformTranslateValues(styleValue);
+                expect(yValue.trim()).to.equal(`${yValueToTop}px`);
+              });
+          }
+        });
+      });
     });
   });
 
-  // Import and run shared tests for the DROP interaction type
-  testContinueButtonFeatures(subject, interactionType);
-  testMainAudioFeatures(subject, interactionType, defaultTestFile);
-  testRibbonBars(subject, interactionType);
-  testAudioFeedback(subject, interactionType);
+  // Landing coordinates
+  describe('Landing coordinates', () => {
+    it('applies correct transform values when imageLandingXY exists', () => {
+      getTestSetupWithImageLandingXY().then(result => {
+        const { imageLandingXY, xPx, yPx } = result as {
+          imageLandingXY: string;
+          xPx: string;
+          yPx: string;
+        };
+        if (imageLandingXY !== '') {
+          assertStartAnimation();
+          assertTransformTranslate(xPx, yPx);
+        }
+      });
+    });
+  });
+
+  // Click behavior
+  describe('Click behavior', () => {
+    beforeEach(() => {
+      cy.setupTestData(defaultTestFile, interactionType);
+      cy.removeClickLayer();
+    });
+
+    it('toggles option back to initial position when clicked again', () => {
+      // First click - button should move down
+      cy.get(`[data-cy="button-${buttonIndex}"]`).click();
+
+      // Wait for animation to complete
+      cy.wait(3000);
+
+      // Second click - should return to original position
+      cy.get(`[data-cy="button-${buttonIndex}"]`).click();
+      cy.get(`[data-cy="drop-animate-wrapper-${buttonIndex}"]`)
+        .should($el => {
+          const style = $el.attr('style') || '';
+          // Expect the element to be explicitly reset to translate3d(0px, 0px, 0px)
+          expect(style.replace(/\s+/g, ' ').trim()).to.include('transform: translate3d(0px, 0px, 0px)');
+        });
+    });
+  });
+
+  // Drag and drop
+  describe('Drag and drop', () => {
+    it('handles drag events correctly', () => {
+      getTestSetupWithImageLandingXY().then(result => {
+        const { imageLandingXY, xPx, yPx } = result as {
+          imageLandingXY: string;
+          xPx: string;
+          yPx: string;
+        };
+        if (imageLandingXY !== '') {
+          // Triggers the drag event
+          cy.get(`[data-cy="drop-animate-wrapper-${buttonIndex}"]`)
+            .trigger('mousedown', { button: 0, bubbles: true, force: true })
+            .trigger('mousemove', { pageX: 10, pageY: 0, force: true });
+
+          cy.get(dropImage) // droppable
+            .trigger('mousemove', { position: 'center', force: true })
+            .trigger('mouseup', { button: 0, bubbles: true, force: true });
+          // Wait for animation to complete
+          cy.wait(1000);
+          assertTransformTranslate(xPx, yPx);
+        }
+      });
+    });
+  });
+
+  // Shared behavior suites
+  describe('Shared behaviors', () => {
+    testContinueButtonFeatures(interactionType);
+    testMainAudioFeatures(interactionType, defaultTestFile);
+    testRibbonBars(interactionType);
+    testAudioFeedback(interactionType);
+  });
 });

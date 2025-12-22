@@ -16,11 +16,10 @@ declare global {
 
       /**
        * Setup test data for component testing
-       * @param subject - Test subject (eg: deutsch, mathe...)
        * @param configFile - Test data file name (eg: buttons_test...)
        * @param interactionType - interactionType parameter of component being tested (eg: buttons, drop...)
        */
-      setupTestData(subject:string, configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>;
+      setupTestData(configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>;
 
       /**
        * Click on the click layer
@@ -29,12 +28,11 @@ declare global {
 
       /**
        * Setup test data for postMessages testing
-       * @param subject - Test subject (eg: deutsch, mathe...)
        * @param configFile - Test data file name (eg: buttons_test...)
        * @param interactionType - interactionType parameter of component being tested (eg: buttons, drop...)
        */
       // eslint-disable-next-line max-len
-      setupTestDataWithPostMessageMock(subject:string, configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>
+      setupTestDataWithPostMessageMock(configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>
 
       /**
        * Send message from parent window

@@ -1,11 +1,11 @@
-import { InteractionButtonParams, UnitDefinition } from '../../../../projects/player/src/app/models/unit-definition';
+import { UnitDefinition } from '../../../projects/player/src/app/models/unit-definition';
 
-export function testMainAudioFeatures(subject: string, interactionType: string, configFile: string) {
+export function testMainAudioFeatures(interactionType: string, configFile: string) {
   describe(`Main Audio Features - ${interactionType}`, () => {
     let testData: UnitDefinition;
 
     beforeEach(() => {
-      cy.setupTestData(subject, configFile, interactionType);
+      cy.setupTestData(configFile, interactionType);
       cy.get('@testData').then(data => {
         testData = data as unknown as UnitDefinition;
       });
@@ -100,7 +100,7 @@ export function testMainAudioFeatures(subject: string, interactionType: string, 
 
     it('5. Should be limitless clickable when maxPlay is 0', () => {
       // Set up test data
-      cy.setupTestData(subject, `${interactionType}_maxPlay_0_test.json`, `${interactionType}`);
+      cy.setupTestData(`${interactionType}_maxPlay_0_test.json`, `${interactionType}`);
 
       // A number to test it is more times clickable
       const clickTime = 5;
@@ -120,7 +120,7 @@ export function testMainAudioFeatures(subject: string, interactionType: string, 
 
     it('6. Audio button should move when animateButton is true', () => {
       // Set up test data
-      cy.setupTestData(subject, `${interactionType}_animateButton_true_test.json`, interactionType);
+      cy.setupTestData(`${interactionType}_animateButton_true_test.json`, interactionType);
 
       cy.get('@testData').then(data => {
         testData = data as unknown as UnitDefinition;

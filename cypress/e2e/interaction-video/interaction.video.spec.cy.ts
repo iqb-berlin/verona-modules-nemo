@@ -1,16 +1,15 @@
 import {
   InteractionVideoParams,
   UnitDefinition
-} from '../../../../projects/player/src/app/models/unit-definition';
+} from '../../../projects/player/src/app/models/unit-definition';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
 
 describe('VIDEO Interaction E2E Tests', () => {
-  const subject = 'deutsch';
   const interactionType = 'video';
   const defaultTestFile = 'video_test';
 
   beforeEach(() => {
-    cy.setupTestData(subject, defaultTestFile, interactionType);
+    cy.setupTestData(defaultTestFile, interactionType);
   });
 
   const clickVideoPlay = () => {
@@ -77,7 +76,7 @@ describe('VIDEO Interaction E2E Tests', () => {
   it('3b. Should not display the image element when there is no imageSource', () => {
     let testData: UnitDefinition;
     // Set up test data
-    cy.setupTestData(subject, 'video_without_imageSource_test', interactionType);
+    cy.setupTestData('video_without_imageSource_test', interactionType);
     cy.get('@testData').then(data => {
       testData = data as unknown as UnitDefinition;
 
@@ -105,7 +104,7 @@ describe('VIDEO Interaction E2E Tests', () => {
   it('4b. Should not display text when there is no text parameter', () => {
     let testData: UnitDefinition;
     // Set up test data
-    cy.setupTestData(subject, 'video_without_text_test', interactionType);
+    cy.setupTestData('video_without_text_test', interactionType);
     cy.get('@testData').then(data => {
       testData = data as unknown as UnitDefinition;
 
@@ -136,5 +135,5 @@ describe('VIDEO Interaction E2E Tests', () => {
   });
 
   // Import and run shared tests for the VIDEO interaction type
-  testRibbonBars(subject, interactionType);
+  testRibbonBars(interactionType);
 });

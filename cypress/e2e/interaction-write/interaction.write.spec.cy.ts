@@ -1,16 +1,15 @@
-import { InteractionWriteParams, UnitDefinition } from '../../../../projects/player/src/app/models/unit-definition';
+import { InteractionWriteParams, UnitDefinition } from '../../../projects/player/src/app/models/unit-definition';
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
 import { testAudioFeedback } from '../shared/audio-feedback.spec.cy';
 
 describe('WRITE Interaction E2E Tests', () => {
-  const subject = 'deutsch';
   const interactionType = 'write';
   const defaultTestFile = 'write_test';
 
   beforeEach(() => {
-    cy.setupTestData(subject, defaultTestFile, interactionType);
+    cy.setupTestData(defaultTestFile, interactionType);
   });
 
   it('1. Should have stimulus wrapper with an image inside', () => {
@@ -43,7 +42,8 @@ describe('WRITE Interaction E2E Tests', () => {
       testData = data as unknown as UnitDefinition;
 
       const writeParams = testData.interactionParameters as InteractionWriteParams;
-      const maxInputLength = writeParams.maxInputLength;
+      // Use default 10 when maxInputLength is missing (aligns with write component)
+      const maxInputLength: number = writeParams.maxInputLength ?? 10;
 
       // Create an array of maxInputLength letters
       const letters = Array.from({ length: maxInputLength }, () => {
@@ -110,10 +110,10 @@ describe('WRITE Interaction E2E Tests', () => {
       testData = data as unknown as UnitDefinition;
 
       const writeParams = testData.interactionParameters as InteractionWriteParams;
-      const extraKeyboardKeys = writeParams.keysToAdd;
+      const extraKeyboardKeys: string[] = writeParams.keysToAdd ?? [];
 
       if (extraKeyboardKeys.length > 0) {
-        extraKeyboardKeys.forEach((key:string) => {
+        extraKeyboardKeys.forEach((key: string) => {
           cy.get(`[data-cy=keyboard-button-${key}]`).should('exist');
           cy.log(`${key} extra keyboard key exists`);
         });
@@ -122,8 +122,8 @@ describe('WRITE Interaction E2E Tests', () => {
   });
 
   // Import and run shared tests for the WRITE interaction type
-  testContinueButtonFeatures(subject, interactionType);
-  testMainAudioFeatures(subject, interactionType, defaultTestFile);
-  testRibbonBars(subject, interactionType);
-  testAudioFeedback(subject, interactionType);
+  testContinueButtonFeatures(interactionType);
+  testMainAudioFeatures(interactionType, defaultTestFile);
+  testRibbonBars(interactionType);
+  testAudioFeedback(interactionType);
 });

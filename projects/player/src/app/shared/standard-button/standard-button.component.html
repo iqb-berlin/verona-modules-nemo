@@ -15,7 +15,7 @@
   <label [for]="id() + '_' + value()">
     @if (type() === 'CIRCLE') {
       @if (icon()) {
-        <stars-standard-icon [icon]="icon()" [selected]="!!selected()"></stars-standard-icon>
+        <stars-standard-icon [icon]="icon()" [selected]="!!selected()" data-cy="button-with-icon"></stars-standard-icon>
       }
     } @else {
       @if (image()) {
@@ -25,7 +25,7 @@
              [alt]=""
              data-cy="button-with-imageSource">
       } @else if (icon()) {
-        <stars-standard-icon [icon]="icon()" [selected]="!!selected()"></stars-standard-icon>
+        <stars-standard-icon [icon]="icon()" [selected]="!!selected()" data-cy="button-with-icon"></stars-standard-icon>
       } @else if (text()) {
         <span data-cy="button-with-text">
           {{ text() }}

@@ -51,8 +51,8 @@ Cypress.Commands.add('loadUnit', (filename: string) => {
   });
 });
 
-Cypress.Commands.add('setupTestData', (subject: string, configFile: string, interactionType: string) => {
-  const fullPath = `${subject}/interaction-${interactionType}/${configFile}`;
+Cypress.Commands.add('setupTestData', (configFile: string, interactionType: string) => {
+  const fullPath = `interaction-${interactionType}/${configFile}`;
   cy.fixture(fullPath).as('testData');
   cy.visit('http://localhost:4200');
   cy.loadUnit(fullPath);
@@ -63,9 +63,9 @@ Cypress.Commands.add('removeClickLayer', () => {
 });
 
 // eslint-disable-next-line max-len
-Cypress.Commands.add('setupTestDataWithPostMessageMock', (subject: string, configFile: string, interactionType: string) => {
+Cypress.Commands.add('setupTestDataWithPostMessageMock', (configFile: string, interactionType: string) => {
   // 1. FIRST load fixture data
-  const fullPath = `${subject}/interaction-${interactionType}/${configFile}`;
+  const fullPath = `interaction-${interactionType}/${configFile}`;
   return cy.fixture(fullPath).then(unit => {
     const unitJson = JSON.stringify(unit);
     cy.wrap(unit, { log: false }).as('testData');

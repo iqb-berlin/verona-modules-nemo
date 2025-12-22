@@ -2,13 +2,12 @@ import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
 
 describe('IMAGE_ONLY Interaction E2E Tests', () => {
-  const subject = 'deutsch';
   const interactionType = 'image_only';
   const defaultTestFile = 'image_only_test';
 
   beforeEach(() => {
     // Set up test data
-    cy.setupTestData(subject, defaultTestFile, interactionType);
+    cy.setupTestData(defaultTestFile, interactionType);
   });
 
   it('1. Should display imageSource', () => {
@@ -39,6 +38,6 @@ describe('IMAGE_ONLY Interaction E2E Tests', () => {
   });
 
   // Import and run shared tests for the IMAGE_ONLY interaction type
-  testMainAudioFeatures(subject, interactionType, defaultTestFile);
-  testRibbonBars(subject, interactionType);
+  testMainAudioFeatures(interactionType, defaultTestFile);
+  testRibbonBars(interactionType);
 });
