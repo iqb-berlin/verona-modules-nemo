@@ -1,5 +1,5 @@
 <div class="place-value-container" data-cy="interaction-place-value">
-  <div class="place-value">{{localParameters.value}}</div>
+  <div class="place-value" data-cy="place-value">{{localParameters.value}}</div>
 
   <div
     class="icons-upper-panel"
@@ -23,6 +23,7 @@
              [class.moved]="inUpperPanel(ones.id)"
              [style.transform]="itemTransforms[ones.id] || null"
              (click)="onItemClick('ones', ones, $event)"
+             data-cy="icon-item-ones"
          >
           @if (isSelected(ones.id)) {
             <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -50,7 +51,9 @@
              [class.animating]="isAnimating(tens.id)"
              [class.moved]="inUpperPanel(tens.id)"
              [style.transform]="itemTransforms[tens.id] || null"
-             (click)="onItemClick('tens', tens, $event)">
+             (click)="onItemClick('tens', tens, $event)"
+             data-cy="icon-item-tens"
+        >
           @if (isSelected(tens.id)) {
             <svg width="652" height="50" viewBox="0 0 652 50" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect width="644" height="50" rx="16" fill="#DCDCDC"/>

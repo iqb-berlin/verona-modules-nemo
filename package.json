@@ -9,7 +9,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "validate-data": "validate-json cypress/fixtures/interaction-find_on_image stars-unit-definition 1.10",
+    "validate-data": "validate-json cypress/fixtures/interaction-polygon_buttons stars-unit-definition 1.10",
     "build": "ng build --configuration production --output-hashing=none",
     "postbuild": "node projects/tools/distpacker.js dist/stars-player/browser index_packed.html",
     "e2e": "npx cypress run",

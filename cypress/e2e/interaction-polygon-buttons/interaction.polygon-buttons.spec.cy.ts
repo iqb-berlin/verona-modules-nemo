@@ -1,9 +1,13 @@
 import {
   UnitDefinition, InteractionPolygonButtonsParams
 } from '../../../projects/player/src/app/models/unit-definition';
+import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
+import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
+import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
 
 describe('POLYGON BUTTONS Interaction E2E Tests', () => {
   const interactionType = 'polygon_buttons';
+  const defaultTestFile = 'polygon_buttons_test';
 
   // Small helpers
   const assertPolygonExists = (index = 0) => {
@@ -18,8 +22,7 @@ describe('POLYGON BUTTONS Interaction E2E Tests', () => {
 
   describe('Rendering', () => {
     it('renders the correct number of polygon options', () => {
-      const file = 'polygon_buttons-singleselect_test.json';
-      setupAndAssert(file);
+      setupAndAssert(defaultTestFile);
 
       cy.get('@testData').then(data => {
         const testData = data as unknown as UnitDefinition;
@@ -37,7 +40,7 @@ describe('POLYGON BUTTONS Interaction E2E Tests', () => {
   describe('Selection behavior', () => {
     it('single-select: selects only the clicked polygon at a time', () => {
       // single-select fixture
-      setupAndAssert('polygon_buttons-singleselect_test.json');
+      setupAndAssert(defaultTestFile);
 
       // Click first polygon
       cy.get('[data-cy="polygon-0"]').click();
@@ -51,7 +54,7 @@ describe('POLYGON BUTTONS Interaction E2E Tests', () => {
 
     it('multi-select: toggles clicked polygons independently', () => {
       // multi-select fixture
-      setupAndAssert('polygon_buttons-multiselect_test.json');
+      setupAndAssert('polygon_buttons_multiselect_test.json');
 
       // Click first and second polygons
       cy.get('[data-cy="polygon-0"]').click();
@@ -64,5 +67,11 @@ describe('POLYGON BUTTONS Interaction E2E Tests', () => {
       cy.get('[data-cy="polygon-0"]').should('not.have.class', 'clicked');
       cy.get('[data-cy="polygon-1"]').should('have.class', 'clicked');
     });
+  });
+
+  describe('Shared Features', () => {
+    testMainAudioFeatures(interactionType, defaultTestFile);
+    testContinueButtonFeatures(interactionType);
+    testRibbonBars(interactionType);
   });
 });

@@ -1,7 +1,5 @@
 import { getButtonOptions, getCorrectAnswerParam, getIndexByOneBasedInput } from '../../support/utils';
 import {
-  InteractionButtonParams,
-  InteractionDropParams,
   UnitDefinition
 } from '../../../projects/player/src/app/models/unit-definition';
 
@@ -9,7 +7,14 @@ export function testContinueButtonFeatures(interactionType: string) {
   describe(`Continue Button Features - ${interactionType}`, () => {
     const testSetup = (continueButtonShow: string, file: string) => {
       cy.log(`Testing continueButtonShow: ${continueButtonShow}`);
+      cy.log(`Testing file: ${file}`);
+      cy.log(`Testing interactionType: ${interactionType}`);
       cy.setupTestData(file, interactionType);
+      cy.get('@testData').then((data: any) => {
+        if (data.firstAudioOptions?.firstClickLayer) {
+          cy.removeClickLayer();
+        }
+      });
     };
 
     const applyStandardScenarios = () => {
@@ -21,6 +26,8 @@ export function testContinueButtonFeatures(interactionType: string) {
         // Click a specific place on image
         cy.get('[data-cy="image-element"]')
           .click(100, 150);
+      } else if (interactionType === 'polygon_buttons') {
+        cy.get('[data-cy="polygon-1"]').click();
       } else {
         // InteractionType: BUTTONS, DROP
         // Click the button index 1
@@ -97,13 +104,19 @@ export function testContinueButtonFeatures(interactionType: string) {
               // For find_on_image, the correctAnswerParam is in the format "x1,y1-x2,y2"
               cy.clickInPositionRange(correctAnswerParam);
             } else {
-              // For other interaction types (buttons, drop), find the button containing the correct answer
+              // For other interaction types (buttons, drop, polygon_buttons),
+              // find the button containing the correct answer
               const buttonOptions = getButtonOptions(
-                dataToCheck.interactionParameters as InteractionButtonParams | InteractionDropParams
+                dataToCheck.interactionParameters as any
               );
               const buttonIndex = getIndexByOneBasedInput(buttonOptions, correctAnswerParam);
 
-              cy.get(`[data-cy="button-${buttonIndex}"]`).click();
+              if (buttonIndex !== undefined) {
+                const buttonSelector = interactionType === 'polygon_buttons' ?
+                  `[data-cy="polygon-${buttonIndex}"]` :
+                  `[data-cy="button-${buttonIndex}"]`;
+                cy.get(buttonSelector).click();
+              }
             }
 
             // Continue button should appear
@@ -131,7 +144,10 @@ export function testContinueButtonFeatures(interactionType: string) {
             cy.get('[data-cy=character-button-a]').click();
           } else {
             // Click any button
-            cy.get('[data-cy="button-0"]').click();
+            const buttonSelector = interactionType === 'polygon_buttons' ?
+              '[data-cy="polygon-0"]' :
+              '[data-cy="button-0"]';
+            cy.get(buttonSelector).click();
           }
 
           // Continue button should not exist after clicking any button
@@ -145,7 +161,10 @@ export function testContinueButtonFeatures(interactionType: string) {
             cy.get('[data-cy=character-button-a]').click();
           } else {
             // any button
-            cy.get('[data-cy="button-0"]').click();
+            const buttonSelector = interactionType === 'polygon_buttons' ?
+              '[data-cy="polygon-0"]' :
+              '[data-cy="button-0"]';
+            cy.get(buttonSelector).click();
           }
 
           // Continue button still should not exist

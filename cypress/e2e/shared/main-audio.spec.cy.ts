@@ -34,8 +34,12 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
             cy.get('[data-cy=character-button-a]').click();
             cy.get('[data-cy=text-span]').should('contain', 'a');
           } else {
-            cy.get('[data-cy="button-0"]').should('be.visible').click();
-            cy.get('[data-cy="button-0"]').should('have.class', 'selected');
+            const buttonSelector = interactionType === 'polygon_buttons' ?
+              '[data-cy="polygon-0"]' :
+              '[data-cy="button-0"]';
+            const selectedClass = interactionType === 'polygon_buttons' ? 'clicked' : 'selected';
+            cy.get(buttonSelector).should('be.visible').click();
+            cy.get(buttonSelector).should('have.class', selectedClass);
           }
         }
       }
@@ -65,8 +69,15 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
           cy.get('[data-cy=character-button-a]').should('not.be.disabled');
         } else {
           // Buttons should be clickable
-          cy.get('[data-cy="button-0"]').click();
-          cy.get('[data-cy="button-0"] input').should('have.attr', 'data-selected');
+          const buttonSelector = interactionType === 'polygon_buttons' ?
+            '[data-cy="polygon-0"]' :
+            '[data-cy="button-0"]';
+          cy.get(buttonSelector).click();
+          if (interactionType === 'polygon_buttons') {
+            cy.get(buttonSelector).should('have.class', 'clicked');
+          } else {
+            cy.get(`${buttonSelector} input`).should('have.attr', 'data-selected');
+          }
         }
       }
     });
