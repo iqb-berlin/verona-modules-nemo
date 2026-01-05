@@ -101,7 +101,7 @@
 
 .tens-wrapper .icon-item:not(:last-child),
 .ones-wrapper .icon-item:not(:last-child) {
-  pointer-events: none;
+  pointer-events: auto;
   z-index: 1;
 }
 
@@ -124,7 +124,7 @@
 
 .tens-wrapper .icon-item.moved,
 .ones-wrapper .icon-item.moved {
-  pointer-events: auto;
+  pointer-events: auto !important;
   z-index: 3;
 }
 .tens-wrapper.disabled .icon-item.moved,

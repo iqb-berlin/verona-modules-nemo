@@ -23,7 +23,7 @@
              [class.moved]="inUpperPanel(ones.id)"
              [style.transform]="itemTransforms[ones.id] || null"
              (click)="onItemClick('ones', ones, $event)"
-             data-cy="icon-item-ones"
+             [attr.data-cy]="inUpperPanel(ones.id) ? 'icon-item-ones-moved' : 'icon-item-ones'"
          >
           @if (isSelected(ones.id)) {
             <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -52,7 +52,7 @@
              [class.moved]="inUpperPanel(tens.id)"
              [style.transform]="itemTransforms[tens.id] || null"
              (click)="onItemClick('tens', tens, $event)"
-             data-cy="icon-item-tens"
+             [attr.data-cy]="inUpperPanel(tens.id) ? 'icon-item-tens-moved' : 'icon-item-tens'"
         >
           @if (isSelected(tens.id)) {
             <svg width="652" height="50" viewBox="0 0 652 50" fill="none" xmlns="http://www.w3.org/2000/svg">
