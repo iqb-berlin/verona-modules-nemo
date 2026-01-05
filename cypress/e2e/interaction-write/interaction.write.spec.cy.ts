@@ -6,29 +6,29 @@ import { testAudioFeedback } from '../shared/audio-feedback.spec.cy';
 
 describe('WRITE Interaction E2E Tests', () => {
   const interactionType = 'write';
-  const defaultTestFile = 'write_test';
-
-  beforeEach(() => {
-    cy.setupTestData(defaultTestFile, interactionType);
-  });
+  const defaultTestFile = 'write_characters_test';
 
   it('1. Should have stimulus wrapper with an image inside', () => {
+    cy.setupTestData(defaultTestFile, interactionType);
     cy.get('[data-cy=stimulus-wrapper]')
       .find('[data-cy=stimulus-image]')
       .should('exist');
   });
 
   it('2. Should have a text-wrapper and text-display elements', () => {
+    cy.setupTestData(defaultTestFile, interactionType);
     cy.get('[data-cy=text-wrapper]')
       .find('[data-cy=text-display]')
       .should('exist');
   });
 
   it('3. Should have a keyboard wrapper', () => {
+    cy.setupTestData(defaultTestFile, interactionType);
     cy.get('[data-cy=keyboard-wrapper]').should('exist');
   });
 
   it('4. Should display the text written by keyboard', () => {
+    cy.setupTestData(defaultTestFile, interactionType);
     // Remove click layer
     cy.removeClickLayer();
 
@@ -37,6 +37,7 @@ describe('WRITE Interaction E2E Tests', () => {
   });
 
   it('5. Should allow the text maxInputLength length', () => {
+    cy.setupTestData(defaultTestFile, interactionType);
     let testData: UnitDefinition;
     cy.get('@testData').then(data => {
       testData = data as unknown as UnitDefinition;
@@ -71,6 +72,7 @@ describe('WRITE Interaction E2E Tests', () => {
   });
 
   it('6. Should add a backspace key if addBackspaceKey param is true', () => {
+    cy.setupTestData(defaultTestFile, interactionType);
     let testData: UnitDefinition;
     cy.get('@testData').then(data => {
       testData = data as unknown as UnitDefinition;
@@ -86,6 +88,7 @@ describe('WRITE Interaction E2E Tests', () => {
   });
 
   it('7. Should add äöü if addUmlautKeys param is true', () => {
+    cy.setupTestData(defaultTestFile, interactionType);
     let testData: UnitDefinition;
     const umlautKeys = ['ä', 'ö', 'ü'];
     cy.get('@testData').then(data => {
@@ -104,6 +107,7 @@ describe('WRITE Interaction E2E Tests', () => {
   });
 
   it('8. Should add the buttons inside keysToAdd param', () => {
+    cy.setupTestData(defaultTestFile, interactionType);
     let testData: UnitDefinition;
 
     cy.get('@testData').then(data => {
@@ -119,6 +123,18 @@ describe('WRITE Interaction E2E Tests', () => {
         });
       }
     });
+  });
+
+  it('9. Should render the correct UI based on keyboardMode', () => {
+    // 1. Check default keyboardMode: CHARACTERS
+    cy.setupTestData(defaultTestFile, interactionType);
+    cy.get('[data-cy=write-container]').should('have.class', 'characters-type');
+    cy.get('[data-cy=character-button-a]').should('exist');
+
+    // 2. Check keyboardMode: NUMBERS_LINE
+    cy.setupTestData('write_numbersLine_test', interactionType);
+    cy.get('[data-cy=write-container]').should('have.class', 'numbers_line-type');
+    cy.get('[data-cy=numbers-button-1]').should('exist');
   });
 
   // Import and run shared tests for the WRITE interaction type
