@@ -1,7 +1,7 @@
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
 
-describe('IMAGE_ONLY Interaction E2E Tests', () => {
+describe('Interaction IMAGE_ONLY Component', () => {
   const interactionType = 'image_only';
   const defaultTestFile = 'image_only_test';
 
@@ -10,14 +10,14 @@ describe('IMAGE_ONLY Interaction E2E Tests', () => {
     cy.setupTestData(defaultTestFile, interactionType);
   });
 
-  it('1. Should display imageSource', () => {
+  it('displays imageSource', () => {
     // Check if the imageSource is displayed
     cy.get('[data-cy="stimulus-image"]')
       .should('have.attr', 'src')
       .and($src => expect($src).to.not.be.empty);
   });
 
-  it('2. Should show the continue button after the main audio is complete', () => {
+  it('shows the continue button after the main audio is complete', () => {
     // Continue button should NOT exist initially
     cy.assertContinueButtonNotExists();
 
@@ -37,7 +37,9 @@ describe('IMAGE_ONLY Interaction E2E Tests', () => {
     cy.assertContinueButtonExistsAndVisible();
   });
 
-  // Import and run shared tests for the IMAGE_ONLY interaction type
-  testMainAudioFeatures(interactionType, defaultTestFile);
-  testRibbonBars(interactionType);
+  // Shared tests for the IMAGE_ONLY interaction type
+  describe('Shared behaviors', () => {
+    testMainAudioFeatures(interactionType, defaultTestFile);
+    testRibbonBars(interactionType);
+  });
 });

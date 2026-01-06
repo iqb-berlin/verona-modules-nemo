@@ -6,7 +6,7 @@ import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
 import { testAudioFeedback } from '../shared/audio-feedback.spec.cy';
 
-describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
+describe('Interaction FIND_ON_IMAGE Component', () => {
   const interactionType = 'find_on_image';
   const defaultTestFile = 'find_on_image_test';
 
@@ -14,20 +14,20 @@ describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
     cy.setupTestData(defaultTestFile, interactionType);
   });
 
-  it('1. Should display the image element', () => {
+  it('displays the image element', () => {
     cy.get('[data-cy="image-element"]')
       .should('exist')
       .and('be.visible')
       .and('have.attr', 'src');
   });
 
-  it('2. Should display the text parameter', () => {
+  it('displays the text parameter', () => {
     cy.get('[data-cy="component-text"]')
       .should('exist')
       .and('be.visible');
   });
 
-  it('3a. Should display show area with width and height when showArea parameter is provided', () => {
+  it('displays show area with width and height when showArea parameter is provided', () => {
     let testData: UnitDefinition;
     // Set up test data
     cy.setupTestData('find_on_image_with_showArea_test', interactionType);
@@ -51,12 +51,12 @@ describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
     });
   });
 
-  it('3b. Should not display show area when showArea parameter is not provided', () => {
+  it('does not display show area when showArea parameter is not provided', () => {
     cy.get('[data-cy="show-area"]')
       .should('not.exist');
   });
 
-  it('4. Should handle mouse clicks on the image', () => {
+  it('handles mouse clicks on the image', () => {
     cy.get('[data-cy="image-element"]')
       .click(100, 150); // Click at specific coordinates
 
@@ -65,7 +65,7 @@ describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
       .should('exist');
   });
 
-  it('5. Should handle multiple clicks and update visualization', () => {
+  it('handles multiple clicks and update visualization', () => {
     // First click
     cy.get('[data-cy="image-element"]')
       .click(100, 100);
@@ -86,7 +86,7 @@ describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
       });
   });
 
-  it('6. Should handle touch events on mobile devices', () => {
+  it('handles touch events on mobile devices', () => {
     cy.viewport('ipad-mini');
 
     cy.get('[data-cy="image-element"]')
@@ -97,8 +97,10 @@ describe('FIND_ON_IMAGE Interaction E2E Tests', () => {
       .should('exist');
   });
 
-  // Import and run shared tests for FIND_ON_IMAGE interaction type
-  testContinueButtonFeatures(interactionType);
-  testRibbonBars(interactionType);
-  testAudioFeedback(interactionType);
+  // Shared tests for FIND_ON_IMAGE interaction type
+  describe('Shared behaviors', () => {
+    testContinueButtonFeatures(interactionType);
+    testRibbonBars(interactionType);
+    testAudioFeedback(interactionType);
+  });
 });

@@ -6,7 +6,7 @@ import {
 import { getButtonOptions, getCorrectAnswerParam, getIndexByOneBasedInput } from '../../support/utils';
 
 export function testAudioFeedback(interactionType: string) {
-  describe(`Audio Feedback - ${interactionType}`, () => {
+  describe(`Audio Feedback for interactionType - ${interactionType}`, () => {
     const loadDefaultTestFile = () => {
       cy.setupTestData(`${interactionType}_feedback_test`, interactionType);
       return cy.get('@testData') as unknown as Cypress.Chainable<UnitDefinition>;
@@ -44,7 +44,7 @@ export function testAudioFeedback(interactionType: string) {
       }
     };
 
-    it('1. Should play the right feedback according to the selected answer', () => {
+    it('plays the right feedback according to the selected answer', () => {
       // Load the file
       loadDefaultTestFile().then(testData => {
         // Get the correct answer parameter

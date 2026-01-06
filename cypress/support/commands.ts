@@ -312,3 +312,23 @@ Cypress.Commands.add('clearTextInput', (testData?: UnitDefinition) => {
   // Start the clearing process
   performBackspace();
 });
+
+Cypress.Commands.add('movePlaceValueIcons', (targetTens: number, targetOnes: number) => {
+  // Check how many are already moved
+  cy.get('body').then($body => {
+    const initialTensMoved = $body.find('[data-cy="icon-item-tens-moved"]').length;
+    const initialOnesMoved = $body.find('[data-cy="icon-item-ones-moved"]').length;
+
+    // Move tens
+    for (let i = initialTensMoved; i < targetTens; i++) {
+      cy.get('[data-cy="icon-item-tens"]').first().click({ force: true });
+      cy.get('[data-cy="icon-item-tens-moved"]').should('have.length', i + 1);
+    }
+
+    // Move ones
+    for (let i = initialOnesMoved; i < targetOnes; i++) {
+      cy.get('[data-cy="icon-item-ones"]').first().click({ force: true });
+      cy.get('[data-cy="icon-item-ones-moved"]').should('have.length', i + 1);
+    }
+  });
+});

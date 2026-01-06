@@ -5,7 +5,7 @@ import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
 
-describe('POLYGON BUTTONS Interaction E2E Tests', () => {
+describe('Interaction POLYGON BUTTONS Component', () => {
   const interactionType = 'polygon_buttons';
   const defaultTestFile = 'polygon_buttons_test';
 
@@ -69,6 +69,7 @@ describe('POLYGON BUTTONS Interaction E2E Tests', () => {
     });
   });
 
+  // Shared tests for the POLYGON_BUTTONS interaction type
   describe('Shared Features', () => {
     testMainAudioFeatures(interactionType, defaultTestFile);
     testContinueButtonFeatures(interactionType);

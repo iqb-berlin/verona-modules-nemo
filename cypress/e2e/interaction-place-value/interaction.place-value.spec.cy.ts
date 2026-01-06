@@ -45,15 +45,15 @@ describe('PLACE_VALUE Interaction E2E Tests', () => {
     cy.removeClickLayer();
 
     // Click a "one" icon
-    cy.get('[data-cy="icon-item-ones"]').last().click();
+    cy.get('[data-cy="icon-item-ones"]').last().click({ force: true });
     cy.get('[data-cy="icon-item-ones-moved"]').should('have.length', 1);
 
     // Click another "one" icon
-    cy.get('[data-cy="icon-item-ones"]').last().click();
+    cy.get('[data-cy="icon-item-ones"]').last().click({ force: true });
     cy.get('[data-cy="icon-item-ones-moved"]').should('have.length', 2);
 
     // Click a "ten" icon
-    cy.get('[data-cy="icon-item-tens"]').last().click();
+    cy.get('[data-cy="icon-item-tens"]').last().click({ force: true });
     cy.get('[data-cy="icon-item-tens-moved"]').should('have.length', 1);
   });
 
@@ -62,22 +62,49 @@ describe('PLACE_VALUE Interaction E2E Tests', () => {
     cy.removeClickLayer();
 
     // Move some icons first
-    cy.get('[data-cy="icon-item-ones"]').last().click();
-    cy.get('[data-cy="icon-item-tens"]').last().click();
+    cy.get('[data-cy="icon-item-ones"]').last().click({ force: true });
+    cy.get('[data-cy="icon-item-tens"]').last().click({ force: true });
     cy.get('[data-cy="icon-item-ones-moved"]').should('have.length', 1);
     cy.get('[data-cy="icon-item-tens-moved"]').should('have.length', 1);
 
     // Click the moved icons again to move them back
-    cy.get('[data-cy="icon-item-ones-moved"]').first().click();
+    cy.get('[data-cy="icon-item-ones-moved"]').first().click({ force: true });
     cy.get('[data-cy="icon-item-ones-moved"]').should('not.exist');
 
-    cy.get('[data-cy="icon-item-tens-moved"]').first().click();
+    cy.get('[data-cy="icon-item-tens-moved"]').first().click({ force: true });
     cy.get('[data-cy="icon-item-tens-moved"]').should('not.exist');
   });
 
-  // describe('Shared Features', () => {
-  //   testMainAudioFeatures(interactionType, defaultTestFile);
-  //   testContinueButtonFeatures(interactionType);
-  //   testRibbonBars(interactionType);
-  // });
+  it('disables wrappers when max icons are moved to upper panel', () => {
+    setupAndAssert(`${defaultTestFile}.json`);
+    cy.removeClickLayer();
+
+    cy.get('@testData').then(data => {
+      const testData = data as unknown as UnitDefinition;
+      const params = testData.interactionParameters as InteractionPlaceValueParams;
+      const maxNumberOfOnes = params.maxNumberOfOnes ?? 0;
+      const maxNumberOfTens = params.maxNumberOfTens ?? 0;
+
+      // Move max number of tens and ones
+      cy.movePlaceValueIcons(maxNumberOfTens, maxNumberOfOnes);
+
+      cy.get('[data-cy="tens-wrapper"]').should('have.class', 'disabled');
+      cy.get('[data-cy="ones-wrapper"]').should('have.class', 'disabled');
+
+      // Move one ten back and check if it is enabled again
+      cy.get('[data-cy="icon-item-tens-moved"]').first().click({ force: true });
+      cy.get('[data-cy="tens-wrapper"]').should('not.have.class', 'disabled');
+
+      // Move one one back and check if it is enabled again
+      cy.get('[data-cy="icon-item-ones-moved"]').first().click({ force: true });
+      cy.get('[data-cy="ones-wrapper"]').should('not.have.class', 'disabled');
+    });
+  });
+
+  // Shared tests for the PLACE_VALUE interaction type
+  describe('Shared Features', () => {
+    testMainAudioFeatures(interactionType, defaultTestFile);
+    testContinueButtonFeatures(interactionType);
+    testRibbonBars(interactionType);
+  });
 });

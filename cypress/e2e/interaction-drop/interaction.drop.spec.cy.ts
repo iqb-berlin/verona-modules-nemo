@@ -12,7 +12,7 @@ import {
   getDropLandingTranslate
 } from '../../../projects/player/src/app/shared/utils/interaction-drop.util';
 
-describe('DROP Interaction E2E Tests', () => {
+describe('Interaction DROP Component', () => {
   const interactionType = 'drop';
   const defaultTestFile = 'drop_4_option_test';
   const testFileWithImageLandingXY = `${interactionType}_imagePosition_top_rectangle_with_imageLandingXY_100-100_test`;
@@ -94,6 +94,7 @@ describe('DROP Interaction E2E Tests', () => {
   const getTestSetupWithImageLandingXY = (
   ): Cypress.Chainable<any> => {
     cy.setupTestData(testFileWithImageLandingXY, interactionType);
+    cy.removeClickLayer();
 
     return cy.get('@testData').then(data => {
       const testData = data as unknown as UnitDefinition;
@@ -101,6 +102,10 @@ describe('DROP Interaction E2E Tests', () => {
       const imageLandingXY = dropParams.imageLandingXY;
 
       return cy.get(dropImage)
+        .should('be.visible')
+        .and($img => {
+          expect(($img[0] as HTMLImageElement).naturalWidth).to.be.greaterThan(0);
+        })
         .then($img => cy.get(`[data-cy="button-${buttonIndex}"]`)
           .then($button => cy.get('[data-cy="drop-container"]')
             .then($container => {
@@ -156,19 +161,15 @@ describe('DROP Interaction E2E Tests', () => {
    */
   const assertTransformTranslate = (xPx: string, yPx: string): void => {
     cy.get(`[data-cy="drop-animate-wrapper-${buttonIndex}"]`)
-      .should('have.attr', 'style')
-      .then($style => {
-        const styleValue = $style!.toString();
-        const { xValue, yValue } = getTransformTranslateValues(styleValue);
+      .should($el => {
+        const style = $el.attr('style') || '';
+        const { xValue, yValue } = getTransformTranslateValues(style);
         expect(xValue).to.equal(xPx);
         expect(yValue).to.equal(yPx);
       });
   };
 
   const assertStartAnimation = (): void => {
-    // Remove click layer
-    cy.removeClickLayer();
-
     // Click button to start animation
     cy.get(`[data-cy="button-${buttonIndex}"]`).click();
   };
@@ -177,6 +178,7 @@ describe('DROP Interaction E2E Tests', () => {
   describe('Rendering', () => {
     beforeEach(() => {
       cy.setupTestData(defaultTestFile, interactionType);
+      cy.removeClickLayer();
     });
 
     it('renders the correct number of options', () => {
@@ -198,6 +200,7 @@ describe('DROP Interaction E2E Tests', () => {
     describe('BOTTOM', () => {
       beforeEach(() => {
         cy.setupTestData(defaultTestFile, interactionType);
+        cy.removeClickLayer();
       });
 
       it('applies correct styles and downward movement', () => {
@@ -211,10 +214,9 @@ describe('DROP Interaction E2E Tests', () => {
             cy.get('[data-cy="drop-container"]').should('have.css', 'flex-direction', 'column-reverse');
             assertStartAnimation();
             cy.get(`[data-cy="drop-animate-wrapper-${buttonIndex}"]`)
-              .should('have.attr', 'style')
-              .then($style => {
-                const styleValue = $style.toString();
-                const { yValue } = getTransformTranslateValues(styleValue);
+              .should($el => {
+                const style = $el.attr('style') || '';
+                const { yValue } = getTransformTranslateValues(style);
                 expect(yValue.trim()).to.equal(`${yValueToBottom}px`);
               });
           }
@@ -225,6 +227,7 @@ describe('DROP Interaction E2E Tests', () => {
     describe('TOP', () => {
       beforeEach(() => {
         cy.setupTestData(`${interactionType}_imagePosition_top_test`, interactionType);
+        cy.removeClickLayer();
       });
 
       it('applies correct styles and upward movement', () => {
@@ -238,10 +241,9 @@ describe('DROP Interaction E2E Tests', () => {
             cy.get('[data-cy="drop-container"]').should('have.css', 'flex-direction', 'column');
             assertStartAnimation();
             cy.get(`[data-cy="drop-animate-wrapper-${buttonIndex}"]`)
-              .should('have.attr', 'style')
-              .then($style => {
-                const styleValue = $style.toString();
-                const { yValue } = getTransformTranslateValues(styleValue);
+              .should($el => {
+                const style = $el.attr('style') || '';
+                const { yValue } = getTransformTranslateValues(style);
                 expect(yValue.trim()).to.equal(`${yValueToTop}px`);
               });
           }
@@ -318,7 +320,7 @@ describe('DROP Interaction E2E Tests', () => {
     });
   });
 
-  // Shared behavior suites
+  // Shared tests for the DROP interaction type
   describe('Shared behaviors', () => {
     testContinueButtonFeatures(interactionType);
     testMainAudioFeatures(interactionType, defaultTestFile);

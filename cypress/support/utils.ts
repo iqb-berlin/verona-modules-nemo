@@ -1,5 +1,5 @@
 import {
-  InteractionButtonParams, InteractionDropParams, InteractionPolygonButtonsParams,
+  InteractionParameters,
   SelectionOption,
   UnitDefinition
 } from '../../projects/player/src/app/models/unit-definition';
@@ -46,9 +46,7 @@ export function getCorrectAnswerParam(testData: UnitDefinition): string {
  * @returns SelectionOption[]
  */
 export const getButtonOptions =
-  (interactionParameters: InteractionButtonParams |
-  InteractionDropParams |
-  InteractionPolygonButtonsParams): SelectionOption[] => {
+  (interactionParameters: InteractionParameters): SelectionOption[] => {
     const opts = (interactionParameters as any).options;
 
     // If options is already an array (drop or polygon interaction)

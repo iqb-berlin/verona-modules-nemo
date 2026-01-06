@@ -90,6 +90,13 @@ declare global {
        */
       clearTextInput(testData?: UnitDefinition): Chainable<void>
 
+      /**
+       * Move specified number of tens and ones in place_value interaction
+       * @param targetTens - Number of tens to move
+       * @param targetOnes - Number of ones to move
+       */
+      movePlaceValueIcons(targetTens: number, targetOnes: number): Chainable<void>
+
     }
   }
 }

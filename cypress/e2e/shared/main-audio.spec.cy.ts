@@ -1,7 +1,7 @@
 import { UnitDefinition } from '../../../projects/player/src/app/models/unit-definition';
 
 export function testMainAudioFeatures(interactionType: string, configFile: string) {
-  describe(`Main Audio Features - ${interactionType}`, () => {
+  describe(`Main Audio Features for interactionType - ${interactionType}`, () => {
     let testData: UnitDefinition;
 
     beforeEach(() => {
@@ -11,12 +11,12 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
       });
     });
 
-    it('1. Should have audio button', () => {
+    it('has audio button', () => {
       // Check if the speaker icon exists
       cy.get('[data-cy="speaker-icon"]').should('exist');
     });
 
-    it('2. Should handle firstClickLayer correctly', () => {
+    it('handles firstClickLayer correctly', () => {
       if (testData.firstAudioOptions?.firstClickLayer) {
         cy.get('[data-cy="click-layer"]').should('exist').and('be.visible');
 
@@ -33,6 +33,9 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
           } else if (interactionType === 'write') {
             cy.get('[data-cy=character-button-a]').click();
             cy.get('[data-cy=text-span]').should('contain', 'a');
+          } else if (interactionType === 'place_value') {
+            cy.get('[data-cy=icon-item-tens]').first().click({ force: true });
+            cy.get('[data-cy=icon-item-tens-moved]').should('exist');
           } else {
             const buttonSelector = interactionType === 'polygon_buttons' ?
               '[data-cy="polygon-0"]' :
@@ -45,7 +48,7 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
       }
     });
 
-    it('3. Should wait for audio completion when disableInteractionUntilComplete is true', () => {
+    it('waits for audio completion when disableInteractionUntilComplete is true', () => {
       if (testData.mainAudio?.disableInteractionUntilComplete) {
         // Initially, the interaction should be disabled with overlay visible
         cy.get('[data-cy="interaction-disabled-overlay"]').should('exist');
@@ -82,7 +85,7 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
       }
     });
 
-    it('4. Should be consistent with maxPlay time', () => {
+    it('is consistent with maxPlay time', () => {
       const maxPlayTime = testData.mainAudio?.maxPlay ?? 1;
 
       // Remove click layer
@@ -109,7 +112,7 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
       }
     });
 
-    it('5. Should be limitless clickable when maxPlay is 0', () => {
+    it('is limitless clickable when maxPlay is 0', () => {
       // Set up test data
       cy.setupTestData(`${interactionType}_maxPlay_0_test.json`, `${interactionType}`);
 
@@ -129,7 +132,7 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
       cy.get('[data-cy="audio-button-container"]').should('exist');
     });
 
-    it('6. Audio button should move when animateButton is true', () => {
+    it('animates audio button when animateButton is true', () => {
       // Set up test data
       cy.setupTestData(`${interactionType}_animateButton_true_test.json`, interactionType);
 

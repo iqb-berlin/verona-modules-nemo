@@ -161,20 +161,22 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
     effect(() => {
       const tensCount = this.tensCountAtTheTopPanel().length;
       const onesCount = this.onesCountAtTheTopPanel().length;
-      this.responses.emit([
-        {
-          id: this.localParameters?.variableId || 'PLACE_VALUE',
-          status: 'VALUE_CHANGED',
-          value: (tensCount * 10) + onesCount,
-          relevantForResponsesProgress: true
-        },
-        {
-          id: this.localParameters?.variableId ? `${this.localParameters?.variableId}_TENS` : 'PLACE_VALUE_TENS',
-          status: 'VALUE_CHANGED',
-          value: tensCount,
-          relevantForResponsesProgress: true
-        }
-      ]);
+      if (this.hasRestoredFromFormerState) {
+        this.responses.emit([
+          {
+            id: this.localParameters?.variableId || 'PLACE_VALUE',
+            status: 'VALUE_CHANGED',
+            value: (tensCount * 10) + onesCount,
+            relevantForResponsesProgress: (tensCount > 0 || onesCount > 0)
+          },
+          {
+            id: this.localParameters?.variableId ? `${this.localParameters?.variableId}_TENS` : 'PLACE_VALUE_TENS',
+            status: 'VALUE_CHANGED',
+            value: tensCount,
+            relevantForResponsesProgress: (tensCount > 0 || onesCount > 0)
+          }
+        ]);
+      }
     });
 
     // Always recalculate transforms when the upper-panel membership changes

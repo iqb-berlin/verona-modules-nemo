@@ -7,7 +7,7 @@ import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
 import { testAudioFeedback } from '../shared/audio-feedback.spec.cy';
 
-describe('BUTTONS Interaction E2E Tests', () => {
+describe('Interaction BUTTONS Component', () => {
   const interactionType = 'buttons';
   const defaultTestFile = 'buttons_test';
 
@@ -264,9 +264,11 @@ describe('BUTTONS Interaction E2E Tests', () => {
     });
   });
 
-  // Import and run shared tests for the BUTTONS interaction type
-  testContinueButtonFeatures(interactionType);
-  testMainAudioFeatures(interactionType, defaultTestFile);
-  testRibbonBars(interactionType);
-  testAudioFeedback(interactionType);
+  // Shared tests for the BUTTONS interaction type
+  describe('Shared behaviors', () => {
+    testContinueButtonFeatures(interactionType);
+    testMainAudioFeatures(interactionType, defaultTestFile);
+    testRibbonBars(interactionType);
+    testAudioFeedback(interactionType);
+  });
 });

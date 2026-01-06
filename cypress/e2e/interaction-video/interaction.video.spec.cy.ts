@@ -4,7 +4,7 @@ import {
 } from '../../../projects/player/src/app/models/unit-definition';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
 
-describe('VIDEO Interaction E2E Tests', () => {
+describe('Interaction VIDEO Component', () => {
   const interactionType = 'video';
   const defaultTestFile = 'video_test';
 
@@ -33,14 +33,14 @@ describe('VIDEO Interaction E2E Tests', () => {
     });
   };
 
-  it('1. Should display the video element', () => {
+  it('displays the video element', () => {
     assertCheckIfVideoElementVisible();
 
     // Check if there is a source element with a valid src attribute
     cy.get('[data-cy="video-player-source"]').should('exist').and('have.attr', 'src');
   });
 
-  it('2. Should start playing when clicked on the play button', () => {
+  it('starts playing when clicked on the play button', () => {
     // Start the video
     clickVideoPlay();
 
@@ -50,7 +50,7 @@ describe('VIDEO Interaction E2E Tests', () => {
     });
   });
 
-  it('3a. Should display the image element as a placeholder before end after, when there is imageSource', () => {
+  it('displays the image element as a placeholder before end after, when there is imageSource', () => {
     cy.get('[data-cy="video-player"]')
       .should('have.attr', 'poster')
       .and('not.be.empty');
@@ -73,7 +73,7 @@ describe('VIDEO Interaction E2E Tests', () => {
     });
   });
 
-  it('3b. Should not display the image element when there is no imageSource', () => {
+  it('does not display the image element when there is no imageSource', () => {
     let testData: UnitDefinition;
     // Set up test data
     cy.setupTestData('video_without_imageSource_test', interactionType);
@@ -95,13 +95,13 @@ describe('VIDEO Interaction E2E Tests', () => {
     });
   });
 
-  it('4a. Should display text when there is text parameter', () => {
+  it('displays text when there is text parameter', () => {
     cy.get('[data-cy="text-wrapper"]')
       .should('exist')
       .and('be.visible');
   });
 
-  it('4b. Should not display text when there is no text parameter', () => {
+  it('does not display text when there is no text parameter', () => {
     let testData: UnitDefinition;
     // Set up test data
     cy.setupTestData('video_without_text_test', interactionType);
@@ -118,7 +118,7 @@ describe('VIDEO Interaction E2E Tests', () => {
     });
   });
 
-  it('5. Should show the continue button after the video is complete', () => {
+  it('shows the continue button after the video is complete', () => {
     // Continue button should NOT exist initially
     cy.get('[data-cy="continue-button"]').should('not.exist');
 
@@ -134,6 +134,8 @@ describe('VIDEO Interaction E2E Tests', () => {
     cy.assertContinueButtonExistsAndVisible();
   });
 
-  // Import and run shared tests for the VIDEO interaction type
-  testRibbonBars(interactionType);
+  // Shared tests for the VIDEO interaction type
+  describe('Shared Features', () => {
+    testRibbonBars(interactionType);
+  });
 });

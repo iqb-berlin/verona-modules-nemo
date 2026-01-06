@@ -1,7 +1,7 @@
 import { UnitDefinition } from '../../../projects/player/src/app/models/unit-definition';
 
 export function testRibbonBars(interactionType: string) {
-  describe(`Ribbon Bars - ${interactionType}`, () => {
+  describe(`Ribbon Bars for interactionType - ${interactionType}`, () => {
     const loadDefaultTestFile = () => {
       cy.setupTestData(`${interactionType}_ribbonBars_true_test`, interactionType);
       return cy.get('@testData') as unknown as Cypress.Chainable<UnitDefinition>;
@@ -29,7 +29,7 @@ export function testRibbonBars(interactionType: string) {
       return cy.wrap(testData);
     });
 
-    it('1. Should show ribbon bars component if ribbonBars is true', () => {
+    it('shows ribbon bars component if ribbonBars is true', () => {
       // Load the file
       loadDefaultTestFile().then(testData => {
         // Remove click layer
@@ -42,7 +42,7 @@ export function testRibbonBars(interactionType: string) {
       });
     });
 
-    it('2a. Should show ribbon bar as WHITE if background is NOT white', () => {
+    it('shows ribbon bar as WHITE if background is NOT white', () => {
       setupRibbonBarTest(loadDefaultTestFile).then(testData => {
         const bgColor = testData.backgroundColor?.toUpperCase() || '';
         const isBgColorWhite = ['#FFF', '#FFFFFF', '#EEE', '#EEEEEE', 'WHITE'].includes(bgColor);
@@ -58,7 +58,7 @@ export function testRibbonBars(interactionType: string) {
       });
     });
 
-    it('2b. Should show ribbon bar as BLUE if background is white', () => {
+    it('shows ribbon bar as BLUE if background is white', () => {
       setupRibbonBarTest(loadWhiteBgTestFile).then(testData => {
         const bgColor = testData.backgroundColor?.toUpperCase() || '';
         const isBgColorWhite = ['#FFF', '#FFFFFF', '#EEE', '#EEEEEE', 'WHITE'].includes(bgColor);
