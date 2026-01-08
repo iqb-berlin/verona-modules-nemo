@@ -40,5 +40,8 @@ export function testOpeningImageFeatures(interactionType: string, configFile: st
       // after the opening-image is gone, it automatically plays the audioSource inside the mainAudio
       cy.get('[data-cy="audio-button-animation"]').should('have.class', 'playing');
     });
+
+    /** TO-DO: Add test to check if speaker-icon and continue-button is hidden as long as imageSource is shown */
+    /** TO-DO: Add test to check if imageUseFullArea being applied correctly */
   });
 }
