@@ -46,7 +46,7 @@ export function testContinueButtonFeatures(interactionType: string) {
     continueButtonConfigs.forEach(({ continueButtonShow, file }) => {
       if (continueButtonShow === 'ON_ANY_RESPONSE') {
         // eslint-disable-next-line max-len
-        it.only('shows continue button after any response is clicked when continueButtonShow === ON_ANY_RESPONSE ', () => {
+        it('shows continue button after any response is clicked when continueButtonShow === ON_ANY_RESPONSE ', () => {
           testSetup(continueButtonShow, file);
 
           // Continue button should not exist initially
@@ -61,7 +61,7 @@ export function testContinueButtonFeatures(interactionType: string) {
         });
       }
       if (continueButtonShow === 'NO') {
-        it.only('does not show continue button when continueButtonShow === NO', () => {
+        it('does not show continue button when continueButtonShow === NO', () => {
           testSetup(continueButtonShow, file);
 
           // Continue button should not exist initially
@@ -75,7 +75,7 @@ export function testContinueButtonFeatures(interactionType: string) {
       }
       if (continueButtonShow === 'ON_RESPONSES_COMPLETE') {
         // eslint-disable-next-line max-len
-        it.only('shows continue button after all responses are clicked when continueButtonShow === ON_RESPONSES_COMPLETE', () => {
+        it('shows continue button after all responses are clicked when continueButtonShow === ON_RESPONSES_COMPLETE', () => {
           // Setup test data
           testSetup(continueButtonShow, file);
 
@@ -102,7 +102,7 @@ export function testContinueButtonFeatures(interactionType: string) {
         });
       }
       if (continueButtonShow === 'ALWAYS') {
-        it.only('shows continue button immediately when continueButtonShow === ALWAYS', () => {
+        it('shows continue button immediately when continueButtonShow === ALWAYS', () => {
           testSetup(continueButtonShow, file);
           // Default value: ALWAYS Continue button should be visible immediately
           cy.assertContinueButtonExistsAndVisible();
@@ -113,7 +113,7 @@ export function testContinueButtonFeatures(interactionType: string) {
       // Do not test ON_MAIN_AUDIO_COMPLETE for find_on_image as there is no audio for this interaction type
       if (continueButtonShow === 'ON_MAIN_AUDIO_COMPLETE' && interactionType !== 'find_on_image') {
         // eslint-disable-next-line max-len
-        it.only('shows continue button after main audio is complete when continueButtonShow === ON_MAIN_AUDIO_COMPLETE', () => {
+        it('shows continue button after main audio is complete when continueButtonShow === ON_MAIN_AUDIO_COMPLETE', () => {
           testSetup(continueButtonShow, file);
           // Continue button should not exist initially
           cy.assertContinueButtonNotExists();
