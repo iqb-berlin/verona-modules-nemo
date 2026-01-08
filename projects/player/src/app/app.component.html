@@ -6,7 +6,7 @@
   }
 
   <!-- audio component (show if player is not hidden) -->
-  @if (unitService.playerButtonStatus() !== 'HIDE') {
+  @if (unitService.playerButtonStatus() !== 'HIDE' && !unitService.showingOpeningImage()) {
     <stars-audio></stars-audio>
   }
 

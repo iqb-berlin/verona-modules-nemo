@@ -41,7 +41,10 @@ export class OpeningImageComponent extends InteractionComponentDirective {
 
         // If there is no opening audio, show image immediately and schedule finish based on duration
         if (params.audioSource === '') {
-          if (!this.showImage()) this.showImage.set(true);
+          if (!this.showImage()) {
+            this.showImage.set(true);
+            this.unitService.showingOpeningImage.set(true);
+          }
           this.scheduleFinishAfterDuration();
         }
       }
@@ -58,7 +61,10 @@ export class OpeningImageComponent extends InteractionComponentDirective {
 
       // When opening audio finished, show image and schedule finish
       if (currentAudioId === 'openingAudio' && !isPlaying && playCount >= 1) {
-        if (!this.showImage()) this.showImage.set(true);
+        if (!this.showImage()) {
+          this.showImage.set(true);
+          this.unitService.showingOpeningImage.set(true);
+        }
         this.scheduleFinishAfterDuration();
       }
     });
@@ -77,6 +83,7 @@ export class OpeningImageComponent extends InteractionComponentDirective {
 
   private finishOpeningFlowAndStartMainAudio() {
     // Close opening flow
+    this.unitService.showingOpeningImage.set(false);
     this.unitService.finishOpeningFlow();
     // After opening flow, disable the first click layer for the main audio
     const currentOpts = this.unitService.firstAudioOptions() || {};
