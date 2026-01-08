@@ -11,6 +11,7 @@ import {
   getDropLandingArgs,
   getDropLandingTranslate
 } from '../../../projects/player/src/app/shared/utils/interaction-drop.util';
+import { testOpeningImageFeatures } from "../shared/opening-image.spec.cy";
 
 describe('Interaction DROP Component', () => {
   const interactionType = 'drop';
@@ -324,7 +325,8 @@ describe('Interaction DROP Component', () => {
   describe('Shared behaviors', () => {
     testContinueButtonFeatures(interactionType);
     testMainAudioFeatures(interactionType, defaultTestFile);
-    testRibbonBars(interactionType);
-    testAudioFeedback(interactionType);
+    testRibbonBars(interactionType, `${interactionType}_ribbonBars_true_test`);
+    testAudioFeedback(interactionType, `${interactionType}_feedback_test`);
+    testOpeningImageFeatures(interactionType, `${interactionType}_with_openingImage_test`);
   });
 });

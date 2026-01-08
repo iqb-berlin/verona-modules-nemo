@@ -36,7 +36,11 @@
 //   }
 // }
 
-import { UnitDefinition } from '../../projects/player/src/app/models/unit-definition';
+import {
+  InteractionParameters,
+  UnitDefinition
+} from '../../projects/player/src/app/models/unit-definition';
+import { getButtonOptions, getCorrectAnswerParam, getIndexByOneBasedInput } from './utils';
 
 Cypress.Commands.add('loadUnit', (filename: string) => {
   cy.fixture(filename).as('unit').then(unit => {
@@ -331,4 +335,58 @@ Cypress.Commands.add('movePlaceValueIcons', (targetTens: number, targetOnes: num
       cy.get('[data-cy="icon-item-ones-moved"]').should('have.length', i + 1);
     }
   });
+});
+
+Cypress.Commands.add('applyStandardScenarios', (interactionType: string) => {
+  cy.log('first apply standard scenarios that are wrong:');
+  if (interactionType === 'write') {
+    // Click any letter
+    cy.get('[data-cy=character-button-a]').click();
+  } else if (interactionType === 'find_on_image') {
+    // Click a specific place on image
+    cy.get('[data-cy="image-element"]')
+      .click(100, 150);
+  } else if (interactionType === 'polygon_buttons') {
+    cy.get('[data-cy="polygon-1"]').click();
+  } else if (interactionType === 'place_value') {
+    cy.get('[data-cy="icon-item-ones"]').first().click({ force: true });
+  } else {
+    // InteractionType: BUTTONS, DROP
+    // Click the button index 1
+    cy.clickButtonAtIndexOne();
+  }
+});
+
+Cypress.Commands.add('applyCorrectAnswerScenarios', (interactionType: string, dataToCheck: UnitDefinition) => {
+  const correctAnswerParam = getCorrectAnswerParam(dataToCheck);
+  // Click correct answer based on interaction type
+  if (interactionType === 'write') {
+    // Delete text that was written previously
+    cy.clearTextInput(dataToCheck);
+    // Write the correct answer on the keyboard
+    cy.writeTextOnKeyboard(correctAnswerParam);
+  } else if (interactionType === 'find_on_image') {
+    // For find_on_image, the correctAnswerParam is in the format "x1,y1-x2,y2"
+    cy.clickInPositionRange(correctAnswerParam);
+  } else if (interactionType === 'place_value') {
+    // For place_value, the correctAnswerParam is in the format "tens-ones"
+    const targetValue = Number.parseInt(correctAnswerParam, 10);
+    const targetTens = Math.floor(targetValue / 10);
+    const targetOnes = targetValue % 10;
+    cy.movePlaceValueIcons(targetTens, targetOnes);
+  } else {
+    // For other interaction types (buttons, drop, polygon_buttons),
+    // find the button containing the correct answer
+    const buttonOptions = getButtonOptions(
+      dataToCheck.interactionParameters as unknown as InteractionParameters
+    );
+    const buttonIndex = getIndexByOneBasedInput(buttonOptions, correctAnswerParam);
+
+    if (buttonIndex !== undefined) {
+      const buttonSelector = interactionType === 'polygon_buttons' ?
+        `[data-cy="polygon-${buttonIndex}"]` :
+        `[data-cy="button-${buttonIndex}"]`;
+      cy.get(buttonSelector).click();
+    }
+  }
 });

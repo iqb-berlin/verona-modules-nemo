@@ -1,9 +1,9 @@
 import { UnitDefinition } from '../../../projects/player/src/app/models/unit-definition';
 
-export function testRibbonBars(interactionType: string) {
-  describe(`Ribbon Bars for interactionType - ${interactionType}`, () => {
+export function testRibbonBars(interactionType: string, configFile: string) {
+  describe(`Ribbon Bar Features for interactionType - ${interactionType}`, () => {
     const loadDefaultTestFile = () => {
-      cy.setupTestData(`${interactionType}_ribbonBars_true_test`, interactionType);
+      cy.setupTestData(configFile, interactionType);
       return cy.get('@testData') as unknown as Cypress.Chainable<UnitDefinition>;
     };
 

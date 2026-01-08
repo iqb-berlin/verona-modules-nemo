@@ -100,7 +100,7 @@ describe('Interaction FIND_ON_IMAGE Component', () => {
   // Shared tests for FIND_ON_IMAGE interaction type
   describe('Shared behaviors', () => {
     testContinueButtonFeatures(interactionType);
-    testRibbonBars(interactionType);
-    testAudioFeedback(interactionType);
+    testRibbonBars(interactionType, `${interactionType}_ribbonBars_true_test`);
+    testAudioFeedback(interactionType, `${interactionType}_feedback_test`);
   });
 });
