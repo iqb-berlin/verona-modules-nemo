@@ -172,11 +172,11 @@ describe('Interaction BUTTONS Component', () => {
       const imageConfigs = [
         {
           imageUseFullArea: true,
-          file: 'buttons_image_w-1427_h-802_useFullArea_true_test.json'
+          file: 'buttons_useFullArea_true_test.json'
         },
         {
           imageUseFullArea: false,
-          file: 'buttons_image_w-444_h-225_useFullArea_false_test.json'
+          file: 'buttons_useFullArea_false_test.json'
         }
       ];
 
