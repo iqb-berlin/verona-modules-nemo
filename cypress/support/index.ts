@@ -16,11 +16,10 @@ declare global {
 
       /**
        * Setup test data for component testing
-       * @param subject - Test subject (eg: deutsch, mathe...)
        * @param configFile - Test data file name (eg: buttons_test...)
        * @param interactionType - interactionType parameter of component being tested (eg: buttons, drop...)
        */
-      setupTestData(subject:string, configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>;
+      setupTestData(configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>;
 
       /**
        * Click on the click layer
@@ -29,12 +28,11 @@ declare global {
 
       /**
        * Setup test data for postMessages testing
-       * @param subject - Test subject (eg: deutsch, mathe...)
        * @param configFile - Test data file name (eg: buttons_test...)
        * @param interactionType - interactionType parameter of component being tested (eg: buttons, drop...)
        */
       // eslint-disable-next-line max-len
-      setupTestDataWithPostMessageMock(subject:string, configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>
+      setupTestDataWithPostMessageMock(configFile: string, interactionType: string): Chainable<JQuery<HTMLElement>>
 
       /**
        * Send message from parent window
@@ -91,6 +89,26 @@ declare global {
        * @param testData Optional test data containing interactionParameters.maxInputLength
        */
       clearTextInput(testData?: UnitDefinition): Chainable<void>
+
+      /**
+       * Move specified number of tens and ones in place_value interaction
+       * @param targetTens - Number of tens to move
+       * @param targetOnes - Number of ones to move
+       */
+      movePlaceValueIcons(targetTens: number, targetOnes: number): Chainable<void>
+
+      /**
+       * Apply standard scenarios that are wrong based on interaction type
+       * @param interactionType - The type of interaction
+       */
+      applyStandardScenarios(interactionType: string): Chainable<void>;
+
+      /**
+       * Apply correct answer scenarios based on interaction type
+       * @param interactionType - The type of interaction
+       * @param dataToCheck - The unit definition data
+       */
+      applyCorrectAnswerScenarios(interactionType: string, dataToCheck: UnitDefinition): Chainable<void>;
 
     }
   }
