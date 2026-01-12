@@ -7,8 +7,8 @@
 >
   @if (localParameters.imageSource || localParameters.text) {
     <div class="stimulus-wrapper"
-         [style.margin-bottom.px]="(localParameters.layout !== 'LEFT_CENTER' && localParameters.layout !== 'LEFT_BOTTOM' && optionRows.length > 0) ? 10 : 0"
-         [style.margin-right.px]="(localParameters.layout === 'LEFT_CENTER' && optionRows.length > 0) ? 10 : 0"
+         [style.margin-bottom.px]="(localParameters.layout !== 'LEFT_CENTER' && localParameters.layout !== 'LEFT_BOTTOM' && optionRows.length > 0 && !useFullArea) ? 10 : 0"
+         [style.margin-right.px]="(localParameters.layout === 'LEFT_CENTER' && optionRows.length > 0 && !useFullArea) ? 10 : 0"
     >
       @if (localParameters.imageSource) {
         <div class="image-wrapper">

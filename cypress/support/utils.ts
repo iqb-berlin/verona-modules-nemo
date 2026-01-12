@@ -1,5 +1,5 @@
 import {
-  InteractionButtonParams, InteractionDropParams,
+  InteractionParameters,
   SelectionOption,
   UnitDefinition
 } from '../../projects/player/src/app/models/unit-definition';
@@ -46,16 +46,16 @@ export function getCorrectAnswerParam(testData: UnitDefinition): string {
  * @returns SelectionOption[]
  */
 export const getButtonOptions =
-  (interactionParameters: InteractionButtonParams | InteractionDropParams): SelectionOption[] => {
-    const opts = interactionParameters.options;
+  (interactionParameters: InteractionParameters): SelectionOption[] => {
+    const opts = (interactionParameters as any).options;
 
-    // If options is already an array (drop interaction)
+    // If options is already an array (drop or polygon interaction)
     if (Array.isArray(opts)) {
       return opts;
     }
 
     // If options is an object with buttons property (button interaction)
-    if (opts && 'buttons' in opts && Array.isArray(opts.buttons)) {
+    if (opts && typeof opts === 'object' && 'buttons' in opts && Array.isArray(opts.buttons)) {
       return opts.buttons;
     }
 

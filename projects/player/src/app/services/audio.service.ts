@@ -69,11 +69,13 @@ export class AudioService {
       case 'pause':
         this._isPlaying.set(false);
         this.playerStatus.next(AudioPlayerStatus.PAUSED);
+        this.sendPlaybackTimeChanged();
         break;
       case 'ended':
         this._playCount.update(count => count + 1);
         this._isPlaying.set(false);
         this.playerStatus.next(AudioPlayerStatus.ENDED);
+        this.sendPlaybackTimeChanged();
         break;
       case 'canplay':
       case 'loadedmetadata':
