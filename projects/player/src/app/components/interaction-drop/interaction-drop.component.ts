@@ -86,7 +86,7 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
   constructor() {
     super();
     effect(() => {
-      // this.resetSelection();
+      this.resetSelection();
 
       const parameters = this.parameters() as InteractionDropParams;
       this.localParameters = InteractionDropComponent.createDefaultParameters();
@@ -106,10 +106,11 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
 
         // Attempt to restore former state once
         if (!this.hasRestoredFromFormerState) {
-          const formerStateResponses: StarsResponse[] = (parameters as any).formerState || [];
+          const formerStateResponses: Response[] = parameters.formerState || [];
 
           if (Array.isArray(formerStateResponses) && formerStateResponses.length > 0) {
-            const foundResponse = formerStateResponses.find(r => r.id === this.localParameters.variableId);
+            const foundResponse = formerStateResponses
+              .find(r => r.id === this.localParameters.variableId);
 
             if (foundResponse && foundResponse.value != null) {
               this.restoreFromFormerState(foundResponse);

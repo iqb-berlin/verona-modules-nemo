@@ -11,12 +11,14 @@ import {
   SelectionOption
 } from '../../models/unit-definition';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
+import { AudioComponent } from "../audio/audio.component";
 
 @Component({
   selector: 'stars-interaction-buttons',
   templateUrl: './interaction-buttons.component.html',
   imports: [
-    StandardButtonComponent
+    StandardButtonComponent,
+    AudioComponent
   ],
   styleUrls: ['./interaction-buttons.component.scss']
 })
@@ -83,6 +85,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
 
         // Only restore from former state once, on initial load
         if (!this.hasRestoredFromFormerState) {
+          this.resetSelection();
           const formerStateResponse: Response[] = parameters.formerState || [];
 
           if (Array.isArray(formerStateResponse) && formerStateResponse.length > 0) {
@@ -98,7 +101,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
           }
 
           // No former state found - initialize as new
-          this.resetSelection();
           this.responses.emit([{
             id: this.localParameters.variableId,
             status: 'DISPLAYED',

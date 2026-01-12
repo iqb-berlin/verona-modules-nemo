@@ -1,15 +1,18 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { AudioService } from './audio.service';
 
 import {
   AudioOptions,
   ContinueButtonEnum,
   FirstAudioOptionsParams,
-  InteractionEnum, OpeningImageParams,
+  InteractionEnum,
+  InteractionParameters,
+  OpeningImageParams,
   UnitDefinition
 } from '../models/unit-definition';
 
 export enum MainPlayerStatus {
+// TODO no need for this
   PAUSED = 'PAUSED',
   PLAYING = 'PLAYING', // audio waves can be shown
   ENDED = 'ENDED',
@@ -22,25 +25,28 @@ export enum MainPlayerStatus {
 })
 
 export class UnitService {
+  // TODO make more signals readonly
   firstAudioOptions = signal<FirstAudioOptionsParams | undefined>(undefined);
   mainAudio = signal<AudioOptions | undefined>(undefined);
   backgroundColor = signal('#EEE');
-  continueButton = signal<ContinueButtonEnum>('ALWAYS');
+  continueButton = signal<ContinueButtonEnum>('NO');
   interaction = signal<InteractionEnum | undefined>(undefined);
-  parameters = signal<unknown>({});
+  parameters = signal<InteractionParameters>({});
   hasInteraction = signal(false);
   ribbonBars = signal<boolean>(false);
   disableInteractionUntilComplete = signal(false);
   openingImageParams = signal<OpeningImageParams | null>(null);
+
+  private audioService = inject(AudioService);
+
   /** Opening flow is active: interactions and main audio hidden */
+  // TODO rename functions to be more descriptive
   private _openingFlowActive = signal<boolean>(false);
   openingFlowActive = this._openingFlowActive.asReadonly();
 
   /** Player button status: ready, paused, playing, ended, hide */
+  // TODO no need for this
   playerButtonStatus = signal<MainPlayerStatus>(MainPlayerStatus.HIDE);
-
-  constructor(private audioService: AudioService) {
-  }
 
   // Public helpers for OpeningImageComponent
   startOpeningFlow(params: OpeningImageParams = {} as OpeningImageParams) {
@@ -56,7 +62,7 @@ export class UnitService {
     this.mainAudio.set(undefined);
     this.firstAudioOptions.set(undefined);
     this.backgroundColor.set('#EEE');
-    this.continueButton.set('ALWAYS');
+    this.continueButton.set('NO');
     this.interaction.set(undefined);
     this.parameters.set({});
     this.hasInteraction.set(false);
@@ -110,6 +116,7 @@ export class UnitService {
 
     const openingAudioSource = def.openingImage?.audioSource?.trim();
     const openingParams = def.openingImage;
+    // TODO don't access audioService directly, only
     if (openingAudioSource && openingParams) {
       this.audioService
         .setAudioSrc({ audioId: 'openingAudio', audioSource: openingAudioSource } as AudioOptions)

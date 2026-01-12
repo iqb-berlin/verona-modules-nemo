@@ -111,6 +111,7 @@ export class ResponsesService {
     }
 
     // Restore from former state if available
+    // TODO duplicated code with setFormerState() ???
     const former = this.formerStateResponses();
     if (former && former.length > 0) {
       const mainAudioResp = former.find(r => r.id === 'mainAudio');
@@ -315,6 +316,7 @@ export class ResponsesService {
   }
 
   private getPresentationStatus(): Progress {
+    // TODO if no mainAudio, should we return 'complete'?
     if (this.mainAudioComplete()) return 'complete';
     return 'some';
   }
@@ -378,18 +380,23 @@ export class ResponsesService {
     }
   }
 
+  resetState() {
+    this.formerStateResponses.set([]);
+    this.mainAudioComplete.set(false);
+    this.allResponses = [];
+    this.lastResponsesString = '';
+    this.responseProgress.set('none');
+  }
+
   setFormerState(unitState: UnitState | null) {
     const prevPresentation = this.getPresentationStatus();
     const prevResponse = this.responseProgress();
 
     if (!unitState) {
-      this.formerStateResponses.set([]);
-      this.mainAudioComplete.set(false);
-      this.allResponses = [];
-      this.lastResponsesString = '';
-      this.responseProgress.set('none');
+      this.resetState();
     } else if (unitState.dataParts) {
       const dataParts = unitState.dataParts || {};
+      // TODO check if dataParts never can have more than one key (responses)
       const responsesJson = Object.values(dataParts)[0];
 
       if (responsesJson) {
@@ -397,14 +404,13 @@ export class ResponsesService {
           const parsedResponses = JSON.parse(responsesJson as string) as Response[];
           this.formerStateResponses.set(parsedResponses);
 
-          const deepCopy: Response[] = JSON.parse(JSON.stringify(parsedResponses));
-          this.allResponses = deepCopy;
+          this.allResponses = JSON.parse(JSON.stringify(parsedResponses));
           this.lastResponsesString = responsesJson as string;
 
           // Restore mainAudio completion from saved responses
-          const mainAudioResp = parsedResponses.find(r => r.id === 'mainAudio');
-          if (mainAudioResp) {
-            const n = this.asNumberOrZero(mainAudioResp.value);
+          const mainAudioResponse = parsedResponses.find(r => r.id === 'mainAudio');
+          if (mainAudioResponse) {
+            const n = this.asNumberOrZero(mainAudioResponse.value);
             this.mainAudioComplete.set(n >= 1);
           } else {
             this.mainAudioComplete.set(false);
@@ -424,19 +430,11 @@ export class ResponsesService {
           }
         } catch (error) {
           console.warn('RESPONSE SERVICE Failed to parse former state responses:', error);
-          this.formerStateResponses.set([]);
-          this.mainAudioComplete.set(false);
-          this.allResponses = [];
-          this.lastResponsesString = '';
-          this.responseProgress.set('none');
+          this.resetState();
         }
       } else {
         // No responses present in former state
-        this.formerStateResponses.set([]);
-        this.mainAudioComplete.set(false);
-        this.allResponses = [];
-        this.lastResponsesString = '';
-        this.responseProgress.set('none');
+        this.resetState();
       }
     }
 

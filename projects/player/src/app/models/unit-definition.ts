@@ -22,6 +22,8 @@ export type ImagePositionEnum = 'TOP' | 'LEFT' | 'BOTTOM';
 export type TargetSizeEnum = 'MEDIUM' | 'LARGE' | 'SMALL';
 export type ButtonAlignmentEnum = 'AUTO' | 'ROW_BOTTOM';
 export type LayoutEnum = 'LEFT_CENTER' | 'TOP_CENTER' | 'LEFT_BOTTOM' | 'LEFT_CENTER_50';
+export type InteractionParameters = InteractionButtonParams | InteractionDropParams | InteractionWriteParams |
+InteractionFindOnImageParams | InteractionPolygonButtonsParams | InteractionPlaceValueParams;
 
 export interface UnitDefinition {
   id: string;
@@ -34,8 +36,7 @@ export interface UnitDefinition {
   mainAudio?: MainAudio;
   interactionType: InteractionEnum;
   interactionMaxTimeMS: number
-  interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams |
-  InteractionVideoParams | InteractionFindOnImageParams | InteractionPolygonButtonsParams | InteractionPlaceValueParams;
+  interactionParameters: InteractionParameters;
   variableInfo: VariableInfo[] | undefined;
   audioFeedback: AudioFeedback | undefined;
 }
