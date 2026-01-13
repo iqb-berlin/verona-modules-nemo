@@ -1,74 +1,28 @@
 import {
-  InteractionButtonParams,
-  InteractionDropParams,
   UnitDefinition
 } from '../../../projects/player/src/app/models/unit-definition';
-import { getButtonOptions, getCorrectAnswerParam, getIndexByOneBasedInput } from '../../support/utils';
 
-export function testAudioFeedback(interactionType: string) {
-  describe(`Audio Feedback for interactionType - ${interactionType}`, () => {
+export function testAudioFeedback(interactionType: string, configFile: string) {
+  describe(`Audio Feedback Features for interactionType - ${interactionType}`, () => {
     const loadDefaultTestFile = () => {
-      cy.setupTestData(`${interactionType}_feedback_test`, interactionType);
+      cy.setupTestData(configFile, interactionType);
       return cy.get('@testData') as unknown as Cypress.Chainable<UnitDefinition>;
-    };
-
-    /**
-     * Function to handle the interaction with the correct answer.
-     */
-    const performInteraction = (
-      testData: UnitDefinition,
-      correctAnswerParam: string
-    ) => {
-      // Handle WRITE interactionType
-      if (interactionType === 'write') {
-        // Delete text that was written previously
-        cy.clearTextInput(testData);
-        // Write the correct answer on the keyboard
-        cy.writeTextOnKeyboard(correctAnswerParam);
-      }
-
-      // Handle BUTTONS and DROP interactionType
-      if (interactionType === 'buttons' || interactionType === 'drop') {
-        const buttonOptions = getButtonOptions(
-          testData.interactionParameters as InteractionButtonParams | InteractionDropParams
-        );
-        const buttonIndex = getIndexByOneBasedInput(buttonOptions, correctAnswerParam);
-
-        cy.get(`[data-cy="button-${buttonIndex}"]`).click();
-      }
-
-      // Handle FIND_ON_IMAGE interactionType
-      if (interactionType === 'find_on_image') {
-        // For find on image, the correctAnswerParam is in the format "x1,y1-x2,y2"
-        cy.clickInPositionRange(correctAnswerParam);
-      }
     };
 
     it('plays the right feedback according to the selected answer', () => {
       // Load the file
       loadDefaultTestFile().then(testData => {
-        // Get the correct answer parameter
-        const correctAnswerParam = getCorrectAnswerParam(testData);
+        // Remove click layer if it's not a FIND_ON_IMAGE interaction type, because it doesn't have a speaker icon
+        if (interactionType !== 'find_on_image') {
+          // Start the audio
+          cy.get('[data-cy="speaker-icon"]').click();
 
-        if (['buttons', 'drop', 'write'].includes(interactionType)) {
-          // Only try to remove the click layer for interaction types that have one
-          cy.removeClickLayer();
-
-          // Wait until the audio is played until the end for interaction types that have one
+          // Wait until the audio is finished playing
           cy.waitUntilAudioIsFinishedPlaying();
         }
 
         // First interaction - should be the wrong answer
-        if (interactionType === 'buttons' || interactionType === 'drop') {
-          // Click the button index 1
-          cy.clickButtonAtIndexOne();
-        } else if (interactionType === 'write') {
-          const text = 'kopf';
-          cy.writeTextOnKeyboard(text);
-        } else if (interactionType === 'find_on_image') {
-          // Click on a wrong position - outside the correct position range
-          cy.get('[data-cy="image-element"]').click(10, 10);
-        }
+        cy.applyStandardScenarios(interactionType);
 
         // Click on the continue button
         cy.clickContinueButton();
@@ -77,7 +31,7 @@ export function testAudioFeedback(interactionType: string) {
         cy.waitUntilFeedbackIsFinishedPlaying();
 
         // Perform the interaction with correct answer
-        performInteraction(testData, correctAnswerParam);
+        cy.applyCorrectAnswerScenarios(interactionType, testData);
 
         // Click on the continue button again
         cy.clickContinueButton();

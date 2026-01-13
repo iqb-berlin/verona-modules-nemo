@@ -1,6 +1,4 @@
-import { getButtonOptions, getCorrectAnswerParam, getIndexByOneBasedInput } from '../../support/utils';
 import {
-  InteractionParameters,
   UnitDefinition
 } from '../../../projects/player/src/app/models/unit-definition';
 
@@ -16,58 +14,23 @@ export function testContinueButtonFeatures(interactionType: string) {
       });
     };
 
-    const applyStandardScenarios = () => {
-      cy.log('first apply standard scenarios that are wrong:');
-      if (interactionType === 'write') {
-        // Click any letter
-        cy.get('[data-cy=character-button-a]').click();
-      } else if (interactionType === 'find_on_image') {
-        // Click a specific place on image
-        cy.get('[data-cy="image-element"]')
-          .click(100, 150);
-      } else if (interactionType === 'polygon_buttons') {
-        cy.get('[data-cy="polygon-1"]').click();
-      } else if (interactionType === 'place_value') {
-        cy.get('[data-cy="icon-item-ones"]').first().click({ force: true });
-      } else {
-        // InteractionType: BUTTONS, DROP
-        // Click the button index 1
-        cy.clickButtonAtIndexOne();
-      }
-    };
+    const assertContinueButtonClickTriggersNavigation = () => {
+      // Spy on postMessage of the parent window (used by VeronaPostService)
+      cy.window().then(window => {
+        // In Cypress E2E, AUT runs in an iframe; Verona posts to win.parent
+        const target = window.parent || window;
+        cy.spy(target, 'postMessage').as('postMessage');
+      });
 
-    const applyCorrectAnswerScenarios = (dataToCheck: UnitDefinition) => {
-      const correctAnswerParam = getCorrectAnswerParam(dataToCheck);
-      // Click correct answer based on interaction type
-      if (interactionType === 'write') {
-        // Delete text that was written previously
-        cy.clearTextInput(dataToCheck);
-        // Write the correct answer on the keyboard
-        cy.writeTextOnKeyboard(correctAnswerParam);
-      } else if (interactionType === 'find_on_image') {
-        // For find_on_image, the correctAnswerParam is in the format "x1,y1-x2,y2"
-        cy.clickInPositionRange(correctAnswerParam);
-      } else if (interactionType === 'place_value') {
-        // For place_value, the correctAnswerParam is in the format "tens-ones"
-        const targetValue = Number.parseInt(correctAnswerParam, 10);
-        const targetTens = Math.floor(targetValue / 10);
-        const targetOnes = targetValue % 10;
-        cy.movePlaceValueIcons(targetTens, targetOnes);
-      } else {
-        // For other interaction types (buttons, drop, polygon_buttons),
-        // find the button containing the correct answer
-        const buttonOptions = getButtonOptions(
-          dataToCheck.interactionParameters as unknown as InteractionParameters
-        );
-        const buttonIndex = getIndexByOneBasedInput(buttonOptions, correctAnswerParam);
+      cy.clickContinueButton();
 
-        if (buttonIndex !== undefined) {
-          const buttonSelector = interactionType === 'polygon_buttons' ?
-            `[data-cy="polygon-${buttonIndex}"]` :
-            `[data-cy="button-${buttonIndex}"]`;
-          cy.get(buttonSelector).click();
-        }
-      }
+      cy.wait(600);
+
+      cy.get('@postMessage').should('have.been.called');
+      cy.get('@postMessage').should('have.been.calledWithMatch', Cypress.sinon.match({
+        type: 'vopUnitNavigationRequestedNotification',
+        target: 'next'
+      }));
     };
 
     const continueButtonConfigs = [
@@ -89,10 +52,12 @@ export function testContinueButtonFeatures(interactionType: string) {
           // Continue button should not exist initially
           cy.assertContinueButtonNotExists();
 
-          applyStandardScenarios();
+          cy.applyStandardScenarios(interactionType);
 
           // Continue button should appear
           cy.assertContinueButtonExistsAndVisible();
+
+          assertContinueButtonClickTriggersNavigation();
         });
       }
       if (continueButtonShow === 'NO') {
@@ -102,7 +67,7 @@ export function testContinueButtonFeatures(interactionType: string) {
           // Continue button should not exist initially
           cy.assertContinueButtonNotExists();
 
-          applyStandardScenarios();
+          cy.applyStandardScenarios(interactionType);
 
           // Continue button should not exist after clicking any button
           cy.assertContinueButtonNotExists();
@@ -118,7 +83,7 @@ export function testContinueButtonFeatures(interactionType: string) {
           cy.assertContinueButtonNotExists();
 
           // Click wrong answers
-          applyStandardScenarios();
+          cy.applyStandardScenarios(interactionType);
 
           // Continue button should still not exist
           cy.assertContinueButtonNotExists();
@@ -127,11 +92,13 @@ export function testContinueButtonFeatures(interactionType: string) {
           cy.get('@testData').then(data => {
             const dataToCheck = data as unknown as UnitDefinition;
             // Click correct answers
-            applyCorrectAnswerScenarios(dataToCheck);
+            cy.applyCorrectAnswerScenarios(interactionType, dataToCheck);
           });
 
           // Continue button should appear
           cy.assertContinueButtonExistsAndVisible();
+
+          assertContinueButtonClickTriggersNavigation();
         });
       }
       if (continueButtonShow === 'ALWAYS') {
@@ -139,6 +106,8 @@ export function testContinueButtonFeatures(interactionType: string) {
           testSetup(continueButtonShow, file);
           // Default value: ALWAYS Continue button should be visible immediately
           cy.assertContinueButtonExistsAndVisible();
+
+          assertContinueButtonClickTriggersNavigation();
         });
       }
       // Do not test ON_MAIN_AUDIO_COMPLETE for find_on_image as there is no audio for this interaction type
@@ -150,7 +119,7 @@ export function testContinueButtonFeatures(interactionType: string) {
           cy.assertContinueButtonNotExists();
 
           // Click wrong answers
-          applyStandardScenarios();
+          cy.applyStandardScenarios(interactionType);
 
           // Continue button should not exist after clicking any button
           cy.assertContinueButtonNotExists();
@@ -162,7 +131,7 @@ export function testContinueButtonFeatures(interactionType: string) {
           cy.get('@testData').then(data => {
             const dataToCheck = data as unknown as UnitDefinition;
             // Click correct answers
-            applyCorrectAnswerScenarios(dataToCheck);
+            cy.applyCorrectAnswerScenarios(interactionType, dataToCheck);
           });
 
           // Continue button still should not exist
@@ -173,6 +142,8 @@ export function testContinueButtonFeatures(interactionType: string) {
 
           // Continue button should appear
           cy.assertContinueButtonExistsAndVisible();
+
+          assertContinueButtonClickTriggersNavigation();
         });
       }
     });

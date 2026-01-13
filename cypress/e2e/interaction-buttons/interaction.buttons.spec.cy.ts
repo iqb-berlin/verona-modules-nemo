@@ -6,6 +6,7 @@ import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
 import { testAudioFeedback } from '../shared/audio-feedback.spec.cy';
+import { testOpeningImageFeatures } from '../shared/opening-image.spec.cy';
 
 describe('Interaction BUTTONS Component', () => {
   const interactionType = 'buttons';
@@ -171,11 +172,11 @@ describe('Interaction BUTTONS Component', () => {
       const imageConfigs = [
         {
           imageUseFullArea: true,
-          file: 'buttons_image_w-1427_h-802_useFullArea_true_test.json'
+          file: 'buttons_useFullArea_true_test.json'
         },
         {
           imageUseFullArea: false,
-          file: 'buttons_image_w-444_h-225_useFullArea_false_test.json'
+          file: 'buttons_useFullArea_false_test.json'
         }
       ];
 
@@ -268,7 +269,8 @@ describe('Interaction BUTTONS Component', () => {
   describe('Shared behaviors', () => {
     testContinueButtonFeatures(interactionType);
     testMainAudioFeatures(interactionType, defaultTestFile);
-    testRibbonBars(interactionType);
-    testAudioFeedback(interactionType);
+    testRibbonBars(interactionType, `${interactionType}_ribbonBars_true_test`);
+    testAudioFeedback(interactionType, `${interactionType}_feedback_test`);
+    testOpeningImageFeatures(interactionType, `${interactionType}_with_openingImage_test`);
   });
 });

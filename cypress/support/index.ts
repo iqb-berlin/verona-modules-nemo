@@ -97,6 +97,19 @@ declare global {
        */
       movePlaceValueIcons(targetTens: number, targetOnes: number): Chainable<void>
 
+      /**
+       * Apply standard scenarios that are wrong based on interaction type
+       * @param interactionType - The type of interaction
+       */
+      applyStandardScenarios(interactionType: string): Chainable<void>;
+
+      /**
+       * Apply correct answer scenarios based on interaction type
+       * @param interactionType - The type of interaction
+       * @param dataToCheck - The unit definition data
+       */
+      applyCorrectAnswerScenarios(interactionType: string, dataToCheck: UnitDefinition): Chainable<void>;
+
     }
   }
 }

@@ -136,6 +136,6 @@ describe('Interaction VIDEO Component', () => {
 
   // Shared tests for the VIDEO interaction type
   describe('Shared Features', () => {
-    testRibbonBars(interactionType);
+    testRibbonBars(interactionType, `${interactionType}_ribbonBars_true_test`);
   });
 });

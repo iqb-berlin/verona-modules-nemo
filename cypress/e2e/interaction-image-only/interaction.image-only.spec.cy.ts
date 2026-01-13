@@ -1,5 +1,7 @@
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
+import { testAudioFeedback } from "../shared/audio-feedback.spec.cy";
+import { testOpeningImageFeatures } from "../shared/opening-image.spec.cy";
 
 describe('Interaction IMAGE_ONLY Component', () => {
   const interactionType = 'image_only';
@@ -40,6 +42,6 @@ describe('Interaction IMAGE_ONLY Component', () => {
   // Shared tests for the IMAGE_ONLY interaction type
   describe('Shared behaviors', () => {
     testMainAudioFeatures(interactionType, defaultTestFile);
-    testRibbonBars(interactionType);
+    testRibbonBars(interactionType, `${interactionType}_ribbonBars_true_test`);
   });
 });

@@ -4,6 +4,8 @@ import {
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
+import { testOpeningImageFeatures } from '../shared/opening-image.spec.cy';
+import { testAudioFeedback } from "../shared/audio-feedback.spec.cy";
 
 describe('Interaction POLYGON BUTTONS Component', () => {
   const interactionType = 'polygon_buttons';
@@ -73,6 +75,8 @@ describe('Interaction POLYGON BUTTONS Component', () => {
   describe('Shared Features', () => {
     testMainAudioFeatures(interactionType, defaultTestFile);
     testContinueButtonFeatures(interactionType);
-    testRibbonBars(interactionType);
+    testRibbonBars(interactionType, `${interactionType}_ribbonBars_true_test`);
+    testAudioFeedback(interactionType, `${interactionType}_feedback_test`);
+    testOpeningImageFeatures(interactionType, `${interactionType}_with_openingImage_test`);
   });
 });

@@ -123,7 +123,7 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
     effect(() => {
       const parameters = this.parameters() as InteractionPlaceValueParams;
       this.localParameters = this.createDefaultParameters();
-      this.hasRestoredFromFormerState = false;
+      this.resetSelection();
       if (parameters) {
         this.localParameters.variableId = parameters.variableId || 'PLACE_VALUE';
         this.localParameters.value = parameters.value || 0;
@@ -157,28 +157,6 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
       }
     });
 
-    // Emit VALUE_CHANGED whenever the image-panel counts change
-    effect(() => {
-      const tensCount = this.tensCountAtTheTopPanel().length;
-      const onesCount = this.onesCountAtTheTopPanel().length;
-      if (this.hasRestoredFromFormerState) {
-        this.responses.emit([
-          {
-            id: this.localParameters?.variableId || 'PLACE_VALUE',
-            status: 'VALUE_CHANGED',
-            value: (tensCount * 10) + onesCount,
-            relevantForResponsesProgress: (tensCount > 0 || onesCount > 0)
-          },
-          {
-            id: this.localParameters?.variableId ? `${this.localParameters?.variableId}_TENS` : 'PLACE_VALUE_TENS',
-            status: 'VALUE_CHANGED',
-            value: tensCount,
-            relevantForResponsesProgress: (tensCount > 0 || onesCount > 0)
-          }
-        ]);
-      }
-    });
-
     // Always recalculate transforms when the upper-panel membership changes
     // (additions or removals of tens/ones).
     effect(() => {
@@ -190,6 +168,43 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
       // Recompute positions for all without marking everything as animating
       this.scheduleLayoutUpdate();
     });
+  }
+
+  /** Emits responses for the current state of the component */
+  private emitResponses(): void {
+    const tensCount = this.tensCountAtTheTopPanel().length;
+    const onesCount = this.onesCountAtTheTopPanel().length;
+
+    this.responses.emit([
+      {
+        id: this.localParameters?.variableId || 'PLACE_VALUE',
+        status: 'VALUE_CHANGED',
+        value: (tensCount * 10) + onesCount,
+        relevantForResponsesProgress: true
+      },
+      {
+        id: this.localParameters?.variableId ? `${this.localParameters?.variableId}_TENS` : 'PLACE_VALUE_TENS',
+        status: 'VALUE_CHANGED',
+        value: tensCount,
+        relevantForResponsesProgress: true
+      }
+    ]);
+  }
+
+  /** Resets the component's state to its initial values */
+  private resetSelection(): void {
+    this.addedSeqCounter = 0;
+    this.addedSequence.clear();
+    this.tensSlotIndex.clear();
+    this.onesSlotIndex.clear();
+    this.nextTensSlot = 0;
+    this.nextOnesSlot = 0;
+    this.tensCountAtTheTopPanel.set([]);
+    this.onesCountAtTheTopPanel.set([]);
+    Object.keys(this.itemTransforms).forEach(k => { delete this.itemTransforms[Number(k)]; });
+    this.animatingFlags.set({});
+    this.selectionAnimatingIds.clear();
+    this.hasRestoredFromFormerState = false;
   }
 
   /** Check if tens wrapper should be disabled */
@@ -259,8 +274,9 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
       }
     }
 
-    // Recompute layout transforms.
+    // Recompute layout transforms and emit responses
     this.scheduleLayoutUpdate([movedId]);
+    this.emitResponses();
   }
 
   /**
@@ -370,14 +386,7 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
     const desiredOnes = Math.min(this.maxNumberOfOnes, total % 10);
 
     // Reset internal state
-    this.addedSeqCounter = 0;
-    this.addedSequence.clear();
-    this.tensSlotIndex.clear();
-    this.onesSlotIndex.clear();
-    this.nextTensSlot = 0;
-    this.nextOnesSlot = 0;
-    // Clear transforms
-    Object.keys(this.itemTransforms).forEach(k => { delete this.itemTransforms[Number(k)]; });
+    this.resetSelection();
 
     // Build new tens and ones arrays using the highest available stacked ids (top of wrapper)
     const tensAll = this.tensArray();

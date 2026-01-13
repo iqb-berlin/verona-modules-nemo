@@ -141,7 +141,7 @@ describe('Interaction WRITE Component', () => {
   describe('Shared Features', () => {
     testContinueButtonFeatures(interactionType);
     testMainAudioFeatures(interactionType, defaultTestFile);
-    testRibbonBars(interactionType);
-    testAudioFeedback(interactionType);
+    testRibbonBars(interactionType, `${interactionType}_ribbonBars_true_test`);
+    testAudioFeedback(interactionType, `${interactionType}_feedback_test`);
   });
 });

@@ -1,10 +1,12 @@
 import { testMainAudioFeatures } from '../shared/main-audio.spec.cy';
 import { testContinueButtonFeatures } from '../shared/continue-button.spec.cy';
 import { testRibbonBars } from '../shared/ribbon-bar.spec.cy';
+import { testOpeningImageFeatures } from '../shared/opening-image.spec.cy';
 import {
   InteractionPlaceValueParams,
   UnitDefinition
 } from '../../../projects/player/src/app/models/unit-definition';
+import { testAudioFeedback } from "../shared/audio-feedback.spec.cy";
 
 describe('PLACE_VALUE Interaction E2E Tests', () => {
   const interactionType = 'place_value';
@@ -105,6 +107,8 @@ describe('PLACE_VALUE Interaction E2E Tests', () => {
   describe('Shared Features', () => {
     testMainAudioFeatures(interactionType, defaultTestFile);
     testContinueButtonFeatures(interactionType);
-    testRibbonBars(interactionType);
+    testRibbonBars(interactionType, `${interactionType}_ribbonBars_true_test`);
+    testAudioFeedback(interactionType, `${interactionType}_feedback_test`);
+    testOpeningImageFeatures(interactionType, `${interactionType}_with_openingImage_test`);
   });
 });
