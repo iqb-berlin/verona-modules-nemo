@@ -25,7 +25,7 @@ export class UnitService {
   firstAudioOptions = signal<FirstAudioOptionsParams | undefined>(undefined);
   mainAudio = signal<AudioOptions | undefined>(undefined);
   backgroundColor = signal('#EEE');
-  continueButton = signal<ContinueButtonEnum>('ALWAYS');
+  continueButton = signal<ContinueButtonEnum>('NO');
   interaction = signal<InteractionEnum | undefined>(undefined);
   parameters = signal<unknown>({});
   hasInteraction = signal(false);
