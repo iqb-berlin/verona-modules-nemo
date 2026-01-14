@@ -147,7 +147,6 @@ export interface OpeningImageParams {
   audioSource?: string;
   imageSource: string;
   presentationDurationMS?: number;
-  imageUseFullArea?: boolean;
 }
 
 export interface AudioOptions extends MainAudio {

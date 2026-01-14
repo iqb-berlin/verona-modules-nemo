@@ -32,6 +32,8 @@ export class UnitService {
   ribbonBars = signal<boolean>(false);
   disableInteractionUntilComplete = signal(false);
   openingImageParams = signal<OpeningImageParams | null>(null);
+  /** To hide the speaker icon when imageSource inside openingImage is being shown */
+  showingOpeningImage = signal<boolean>(false);
   /** Opening flow is active: interactions and main audio hidden */
   private _openingFlowActive = signal<boolean>(false);
   openingFlowActive = this._openingFlowActive.asReadonly();
@@ -63,6 +65,7 @@ export class UnitService {
     this.ribbonBars.set(false);
     this.disableInteractionUntilComplete.set(false);
     this.openingImageParams.set(null);
+    this.showingOpeningImage.set(false);
     this._openingFlowActive.set(false);
     this.playerButtonStatus.set(MainPlayerStatus.HIDE);
   }
