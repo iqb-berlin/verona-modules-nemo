@@ -1,5 +1,11 @@
 <div class="place-value-container" data-cy="interaction-place-value">
-  <div class="place-value" data-cy="place-value">{{localParameters.value}}</div>
+  <div class="place-value" data-cy="place-value">
+    @if (localParameters.value === 0) {
+      &nbsp;
+    } @else {
+      {{localParameters.value}}
+    }
+  </div>
 
   <div
     class="icons-upper-panel"
