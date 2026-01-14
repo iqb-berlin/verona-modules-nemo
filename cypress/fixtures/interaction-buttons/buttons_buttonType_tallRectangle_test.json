@@ -1,6 +1,6 @@
 {
   "id": "stars-unit-definition",
-  "version": "1.10",
+  "version": "2.0",
   "backgroundColor": "#FFC7B1",
   "continueButtonShow": "ON_MAIN_AUDIO_COMPLETE",
   "firstAudioOptions": {
@@ -19,7 +19,6 @@
     "layout": "LEFT_BOTTOM",
     "imageUseFullArea": false,
     "buttonType": "TALL_RECTANGLE",
-    "buttonAlignment": "ROW_BUTTON",
     "multiSelect": false,
     "numberOfRows": 1,
     "options": {
