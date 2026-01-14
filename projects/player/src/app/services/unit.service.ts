@@ -25,7 +25,7 @@ export class UnitService {
   firstAudioOptions = signal<FirstAudioOptionsParams | undefined>(undefined);
   mainAudio = signal<AudioOptions | undefined>(undefined);
   backgroundColor = signal('#EEE');
-  continueButton = signal<ContinueButtonEnum>('ALWAYS');
+  continueButton = signal<ContinueButtonEnum>('NO');
   interaction = signal<InteractionEnum | undefined>(undefined);
   parameters = signal<unknown>({});
   hasInteraction = signal(false);
@@ -58,7 +58,7 @@ export class UnitService {
     this.mainAudio.set(undefined);
     this.firstAudioOptions.set(undefined);
     this.backgroundColor.set('#EEE');
-    this.continueButton.set('ALWAYS');
+    this.continueButton.set('NO');
     this.interaction.set(undefined);
     this.parameters.set({});
     this.hasInteraction.set(false);
@@ -97,6 +97,8 @@ export class UnitService {
     }
     if (def.continueButtonShow) {
       this.continueButton.set(def.continueButtonShow);
+    } else {
+      this.continueButton.set('ALWAYS');
     }
     if (def.interactionType) this.interaction.set(def.interactionType);
     if (def.interactionParameters) this.parameters.set(def.interactionParameters);
