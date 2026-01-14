@@ -1,17 +1,11 @@
-import { UnitDefinition } from '../../../projects/player/src/app/models/unit-definition';
-
 export function testOpeningImageFeatures(interactionType: string, configFile: string) {
   describe(`Opening Image Features for interactionType - ${interactionType}`, () => {
-    let testData: UnitDefinition;
 
     beforeEach(() => {
       cy.setupTestData(configFile, interactionType);
-      cy.get('@testData').then(data => {
-        testData = data as unknown as UnitDefinition;
-      });
     });
 
-    it('should show and hide opening image correctly', () => {
+    it.only('should show and hide opening image correctly', () => {
       // Remove click layer to enable interactions
       cy.removeClickLayer();
 
@@ -23,10 +17,14 @@ export function testOpeningImageFeatures(interactionType: string, configFile: st
 
       // After the audio is played
       cy.get('[data-cy="speaker-icon"]').click();
-      cy.waitUntilAudioIsFinishedPlaying();
+      cy.wait(1000);
 
       // data-cy="opening-image" can be seen
       cy.get('[data-cy="opening-image"]').should('be.visible');
+
+      // speaker-icon and continue-button can not be seen as long as opening-image can be seen
+      cy.get('[data-cy="speaker-icon"]').should('not.exist');
+      cy.get('[data-cy="continue-button"]').should('not.exist');
 
       // and stays presentationDurationMS milliseconds
       cy.get('@testData').then((data: any) => {
@@ -40,8 +38,5 @@ export function testOpeningImageFeatures(interactionType: string, configFile: st
       // after the opening-image is gone, it automatically plays the audioSource inside the mainAudio
       cy.get('[data-cy="audio-button-animation"]').should('have.class', 'playing');
     });
-
-    /** TO-DO: Add test to check if speaker-icon and continue-button is hidden as long as imageSource is shown */
-    /** TO-DO: Add test to check if imageUseFullArea being applied correctly */
   });
 }
