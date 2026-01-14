@@ -6,7 +6,7 @@
   }
 
   <!-- audio component (show if player is not hidden) -->
-  @if (unitService.playerButtonStatus() !== 'HIDE') {
+  @if (unitService.playerButtonStatus() !== 'HIDE' && !unitService.showingOpeningImage()) {
     <stars-audio></stars-audio>
   }
 
@@ -63,24 +63,30 @@
       [offsetTopPx]="interactionAreaOffsetTopPx"
       [offsetBottomPx]="interactionAreaOffsetBottomPx"
       (responses)="responsesService.newResponses($event)"></stars-interaction-write>
-  } @else if (!unitService.openingFlowActive() && unitService.interaction() === 'VIDEO') {
+  } @else if (unitService.interaction() === 'VIDEO') {
     <stars-interaction-video class="interaction"
       [parameters]="unitService.parameters()"
       [offsetTopPx]="interactionAreaOffsetTopPx"
       [offsetBottomPx]="interactionAreaOffsetBottomPx"
       (responses)="responsesService.newResponses($event)"></stars-interaction-video>
-  } @else if (!unitService.openingFlowActive() && unitService.interaction() === 'FIND_ON_IMAGE') {
+  } @else if (unitService.interaction() === 'FIND_ON_IMAGE') {
     <stars-interaction-find-on-image class="interaction"
       [parameters]="getParametersWithFormerState()"
       [offsetTopPx]="interactionAreaOffsetTopPx"
       [offsetBottomPx]="interactionAreaOffsetBottomPx"
       (responses)="responsesService.newResponses($event)"></stars-interaction-find-on-image>
-  } @else if (unitService.interaction() === 'POLYGON_BUTTONS') {
+  } @else if (!unitService.openingFlowActive() && unitService.interaction() === 'POLYGON_BUTTONS') {
     <stars-interaction-polygon-buttons class="interaction"
       [parameters]="getParametersWithFormerState()"
       [offsetTopPx]="interactionAreaOffsetTopPx"
       [offsetBottomPx]="interactionAreaOffsetBottomPx"
       (responses)="responsesService.newResponses($event)"></stars-interaction-polygon-buttons>
+  } @else if (!unitService.openingFlowActive() && unitService.interaction() === 'PLACE_VALUE') {
+    <stars-interaction-place-value class="interaction"
+      [parameters]="getParametersWithFormerState()"
+      [offsetTopPx]="interactionAreaOffsetTopPx"
+      [offsetBottomPx]="interactionAreaOffsetBottomPx"
+      (responses)="responsesService.newResponses($event)"></stars-interaction-place-value>
   }
 
   <!-- lower ribbons -->

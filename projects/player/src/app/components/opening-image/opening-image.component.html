@@ -1,8 +1,5 @@
-<div class="opening-image-wrapper"
-     [style.margin-top.px]="useFullArea ? 0 : offsetTopPx()"
-     [style.margin-bottom.px]="useFullArea ? 0 : offsetBottomPx()"
-     data-cy="opening-image">
+<div class="opening-image-wrapper" data-cy="opening-image-wrapper">
   @if (showImage()) {
-    <img [src]="unitService.openingImageParams()?.imageSource" alt="Image" />
+    <img [src]="unitService.openingImageParams()?.imageSource" alt="Image" data-cy="opening-image"/>
   }
 </div>

@@ -1,14 +1,8 @@
-# Release Note 0.6.21 #
+# Release Note 0.6.23 #
 
-## Neu
+## Bugfixes
 
-+ Änderungen an BUTTONS mit Bildern
-  + Es wurden Stiländerungen vorgenommen, damit die Bilder mit Schaltflächen besser aussehen. 
-  + Die Parameter „Layout“ und „imagePosition“ werden verwendet, um das Layout zu bestimmen (TOP_CENTER, LEFT_CENTER, LEFT_BOTTOM). 
-  + Stiländerungen wurden vorgenommen, wenn „imageUseFullArea“ auf „true“ gesetzt ist.
-
- + Änderungen an der Komponente „openingImage“: 
-   + Die Funktion „firstClickLayer“ wirkt sich auf die Audioquelle innerhalb von „openingImage“ aus, „mainAudio“ wird automatisch gestartet. 
-   + Es ist auch möglich, „imageUseFullArea“ für die Bilder innerhalb von „openingImage“ zu verwenden.
-   
- + Beispiele für unit-definition wurden mit Version 1.8 aktualisiert.
++ PLACE_VALUE: Die Symbole für Einer und Zehner haben jetzt einen weißen Hintergrund (vorher war er transparent).
++ Layout LEFT_CENTER_50: Die Elemente lagen sehr dicht beieinander, es wurde ein Abstand dazwischen eingefügt.
++ Layout LEFT_BOTTOM: Der Abstand zwischen Bild und buttons wurde korrigiert. TALL_RECTANGLE-buttons haben eine Breite von 80 Pixel und eine Höhe von 190 Pixel.
++ buttonType: CIRCLE mit SMILEY-Symbol: Box-Schatten korrigiert.

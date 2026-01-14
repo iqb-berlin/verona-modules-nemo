@@ -57,6 +57,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         this.localParameters.multiSelect = parameters.multiSelect || false;
         this.localParameters.triggerNavigationOnSelect = parameters.triggerNavigationOnSelect || false;
         this.localParameters.buttonType = parameters.buttonType || 'MEDIUM_SQUARE';
+        this.localParameters.buttonAlignment = parameters.buttonAlignment || 'AUTO';
         this.localParameters.text = parameters.text || '';
         this.localParameters.imageUseFullArea = parameters.imageUseFullArea || false;
         this.useFullArea = this.localParameters.imageUseFullArea;
@@ -111,6 +112,23 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         }
       }
     });
+  }
+
+  /** Returns the layout class name for the container based on the current layout parameter. */
+  getLayoutClass(): string {
+    const layout = this.localParameters?.layout;
+    switch (layout) {
+      case 'TOP_CENTER':
+        return 'layout--top-center';
+      case 'LEFT_CENTER':
+        return 'layout--left-center';
+      case 'LEFT_CENTER_50':
+        return 'layout--left-center-50';
+      case 'LEFT_BOTTOM':
+        return 'layout--left-bottom';
+      default:
+        return '';
+    }
   }
 
   private resetSelection(): void {
@@ -364,7 +382,8 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       multiSelect: false,
       triggerNavigationOnSelect: false,
       numberOfRows: 1,
-      buttonType: 'MEDIUM_SQUARE'
+      buttonType: 'MEDIUM_SQUARE',
+      buttonAlignment: 'AUTO'
     };
   }
 }

@@ -5,17 +5,26 @@ import { AudioFeedback } from './feedback';
 // eslint-disable-next-line max-len
 export type ContinueButtonEnum = 'ALWAYS' | 'NO' | 'ON_ANY_RESPONSE' | 'ON_RESPONSES_COMPLETE' |
 'ON_MAIN_AUDIO_COMPLETE' | 'ON_VIDEO_COMPLETE' | 'ON_AUDIO_AND_RESPONSE';
-export type InteractionEnum = 'BUTTONS' | 'POLYGON_BUTTONS' | 'DROP' | 'WRITE' |
-'FIND_ON_IMAGE' | 'VIDEO' | 'IMAGE_ONLY';
+export type InteractionEnum = 'BUTTONS' |
+'POLYGON_BUTTONS' |
+'DROP' |
+'WRITE' |
+'FIND_ON_IMAGE' |
+'VIDEO' |
+'IMAGE_ONLY' |
+'PLACE_VALUE' |
+'NONE';
 export type IconButtonTypeEnum = 'CHECK_GREEN' | 'CLOSE_RED' | 'CLAP_HANDS' | 'SMILEY_1' | 'SMILEY_2' |
-'SMILEY_3' | 'SMILEY_4' | 'SMILEY_5';
+'SMILEY_3' | 'SMILEY_4' | 'SMILEY_5' | 'ONES' | 'TENS';
 export type ButtonTypeEnum = 'MEDIUM_SQUARE' | 'BIG_SQUARE' | 'SMALL_SQUARE' | 'TEXT' | 'CIRCLE' |
 'EXTRA_LARGE_SQUARE' | 'LONG_RECTANGLE' | 'TALL_RECTANGLE';
 export type ImagePositionEnum = 'TOP' | 'LEFT' | 'BOTTOM';
 export type TargetSizeEnum = 'MEDIUM' | 'LARGE' | 'SMALL';
 export type ButtonAlignmentEnum = 'AUTO' | 'ROW_BOTTOM';
-export type LayoutEnum = 'LEFT_CENTER' | 'TOP_CENTER' | 'LEFT_BOTTOM';
+export type LayoutEnum = 'LEFT_CENTER' | 'TOP_CENTER' | 'LEFT_BOTTOM' | 'LEFT_CENTER_50';
 
+export type InteractionParameters = InteractionButtonParams | InteractionWriteParams | InteractionDropParams |
+InteractionVideoParams | InteractionFindOnImageParams | InteractionPolygonButtonsParams | InteractionPlaceValueParams;
 export interface UnitDefinition {
   id: string;
   version?: string;
@@ -27,8 +36,7 @@ export interface UnitDefinition {
   mainAudio?: MainAudio;
   interactionType: InteractionEnum;
   interactionMaxTimeMS: number
-  interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams |
-  InteractionVideoParams | InteractionFindOnImageParams | InteractionPolygonButtonsParams;
+  interactionParameters: InteractionParameters;
   variableInfo: VariableInfo[] | undefined;
   audioFeedback: AudioFeedback | undefined;
 }
@@ -75,6 +83,15 @@ export interface InteractionDropParams {
   imagePosition?: ImagePositionEnum;
   imageLandingXY?: string;
   text?: string;
+  formerState?: Response[];
+}
+
+export interface InteractionPlaceValueParams {
+  variableId?: string;
+  value: number;
+  numberOfRows?: number;
+  maxNumberOfTens?: number;
+  maxNumberOfOnes?: number;
   formerState?: Response[];
 }
 
@@ -130,7 +147,6 @@ export interface OpeningImageParams {
   audioSource?: string;
   imageSource: string;
   presentationDurationMS?: number;
-  imageUseFullArea?: boolean;
 }
 
 export interface AudioOptions extends MainAudio {

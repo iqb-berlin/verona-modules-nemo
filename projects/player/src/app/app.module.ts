@@ -27,6 +27,7 @@ import { InteractionPolygonButtonsComponent }
   from './components/interaction-polygon-buttons/interaction-polygon-buttons.component';
 import { OpeningImageComponent } from './components/opening-image/opening-image.component';
 import { AudioButtonComponent } from './shared/audio-button/audio-button.component';
+import { InteractionPlaceValueComponent } from './components/interaction-place-value/interaction-place-value.component';
 
 @NgModule({
   declarations: [
@@ -52,8 +53,8 @@ import { AudioButtonComponent } from './shared/audio-button/audio-button.compone
     InteractionFindOnImageComponent,
     RibbonBarComponent,
     InteractionPolygonButtonsComponent,
-    RibbonBarComponent,
-    OpeningImageComponent
+    OpeningImageComponent,
+    InteractionPlaceValueComponent
   ],
   providers: [
     provideZonelessChangeDetection(),
