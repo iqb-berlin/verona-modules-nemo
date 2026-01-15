@@ -42,6 +42,14 @@ describe('PLACE_VALUE Interaction E2E Tests', () => {
     });
   });
 
+  it('does not display value when value: 0', () => {
+    setupAndAssert('place_value_value_0_test.json');
+    // check that the value is not displayed as 0
+    cy.get('[data-cy="interaction-place-value"]').within(() => {
+      cy.get('[data-cy="place-value"]').should('exist').and('not.have.text', '0');
+    });
+  });
+
   it('moves icons to upper panel when clicked', () => {
     setupAndAssert(`${defaultTestFile}.json`);
     cy.removeClickLayer();

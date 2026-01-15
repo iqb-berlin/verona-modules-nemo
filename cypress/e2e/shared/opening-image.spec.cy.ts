@@ -5,7 +5,7 @@ export function testOpeningImageFeatures(interactionType: string, configFile: st
       cy.setupTestData(configFile, interactionType);
     });
 
-    it.only('should show and hide opening image correctly', () => {
+    it('should show and hide opening image correctly', () => {
       // Remove click layer to enable interactions
       cy.removeClickLayer();
 
