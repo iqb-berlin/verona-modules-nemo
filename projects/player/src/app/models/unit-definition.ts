@@ -20,7 +20,6 @@ export type ButtonTypeEnum = 'MEDIUM_SQUARE' | 'BIG_SQUARE' | 'SMALL_SQUARE' | '
 'EXTRA_LARGE_SQUARE' | 'LONG_RECTANGLE' | 'TALL_RECTANGLE';
 export type ImagePositionEnum = 'TOP' | 'LEFT' | 'BOTTOM';
 export type TargetSizeEnum = 'MEDIUM' | 'LARGE' | 'SMALL';
-export type ButtonAlignmentEnum = 'AUTO' | 'ROW_BOTTOM';
 export type LayoutEnum = 'LEFT_CENTER' | 'TOP_CENTER' | 'LEFT_BOTTOM' | 'LEFT_CENTER_50';
 
 export type InteractionParameters = InteractionButtonParams | InteractionWriteParams | InteractionDropParams |
@@ -68,7 +67,6 @@ export interface InteractionButtonParams {
   layout?: LayoutEnum;
   imageUseFullArea?: boolean;
   text?: string;
-  buttonAlignment?: ButtonAlignmentEnum;
   multiSelect?: boolean;
   numberOfRows?: number;
   buttonType?: ButtonTypeEnum;
