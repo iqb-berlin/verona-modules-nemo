@@ -12,7 +12,7 @@ import { FeedbackDefinition } from '../models/feedback';
 })
 
 export class ResponsesService {
-  // TODO change to readonly and support function interactionDone
+  // TODO change to readonly and add support function interactionDone
   firstInteractionDone = signal(false);
   unitDefinitionProblem = signal('');
   responseProgress = signal<Progress>('none');

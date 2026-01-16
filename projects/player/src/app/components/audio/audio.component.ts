@@ -51,7 +51,7 @@ export class AudioComponent {
       }
     });
 
-    // TODO separate audio animation to a separate component
+    // TODO separate audio animation into a component
     effect(() => {
       if (this.audioService.isPlaying()) {
         this.animationItem?.play();
@@ -60,6 +60,7 @@ export class AudioComponent {
       }
     });
 
+    // TODO separate firstClickLayer into a component
     // Effect to reactively handle animateButton with a delayed start
     effect(() => {
       // show the firstClickLayer if configured, and no interaction has been done yet
@@ -111,7 +112,6 @@ export class AudioComponent {
 
   layerClicked() {
     this.play();
-    // Hide click layer only when playback is started or scheduled <- TODO don't understand why
     this.showLayer.set(false);
   }
 
