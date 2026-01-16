@@ -54,7 +54,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         this.localParameters.multiSelect = parameters.multiSelect || false;
         this.localParameters.triggerNavigationOnSelect = parameters.triggerNavigationOnSelect || false;
         this.localParameters.buttonType = parameters.buttonType || 'MEDIUM_SQUARE';
-        this.localParameters.buttonAlignment = parameters.buttonAlignment || 'AUTO';
         this.localParameters.text = parameters.text || '';
         this.localParameters.imageUseFullArea = parameters.imageUseFullArea || false;
         this.useFullArea = this.localParameters.imageUseFullArea;
@@ -371,8 +370,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       multiSelect: false,
       triggerNavigationOnSelect: false,
       numberOfRows: 1,
-      buttonType: 'MEDIUM_SQUARE',
-      buttonAlignment: 'AUTO'
+      buttonType: 'MEDIUM_SQUARE'
     };
   }
 }
