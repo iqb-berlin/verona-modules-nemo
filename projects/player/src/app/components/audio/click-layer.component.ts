@@ -7,7 +7,6 @@ import {
   template: `
     <div #starsClickLayer class="layer" data-cy="click-layer"></div>
   `,
-
   styles: `
     .layer {
       position: fixed;
@@ -22,6 +21,7 @@ import {
     }
   `
 })
+
 export class ClickLayerComponent implements OnInit {
   @ViewChild('starsClickLayer') layerElement: HTMLDivElement;
   click = output();

@@ -27,7 +27,7 @@ export class AudioButtonComponent {
           this.isPlaying.set(false);
         }, 200);
         this.audioService.getPlayFinished(this.audio().audioId)
-          .then(resolve => {});
+          .then(() => {});
       });
     }
   }

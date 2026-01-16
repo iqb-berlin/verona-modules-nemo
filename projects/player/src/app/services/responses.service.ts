@@ -12,11 +12,8 @@ import { FeedbackDefinition } from '../models/feedback';
 })
 
 export class ResponsesService {
+  // TODO change to readonly and support function interactionDone
   firstInteractionDone = signal(false);
-  // todo: delete firstResponseGiven; replace usages by responsesGiven
-  // firstResponseGiven = signal(false);
-  // todo: delete maxScoreReached; replace usages by responsesGiven
-  // maxScoreReached = signal(false);
   unitDefinitionProblem = signal('');
   responseProgress = signal<Progress>('none');
   mainAudioComplete = signal(false);
