@@ -101,11 +101,6 @@ export class AudioComponent {
     this.movingButton.set(false);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  disabled() {
-    return false;
-  }
-
   animationCreated(animationItem: AnimationItem): void {
     this.animationItem = animationItem;
   }
