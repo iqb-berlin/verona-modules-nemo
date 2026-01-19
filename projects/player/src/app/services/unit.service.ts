@@ -1,5 +1,4 @@
 import { Injectable, signal } from '@angular/core';
-import { AudioService } from './audio.service';
 
 import {
   AudioOptions,
@@ -43,9 +42,6 @@ export class UnitService {
   /** current audio source for the main audio */
   private _currentAudioSrc = signal<AudioOptions>({} as AudioOptions);
   currentAudioSrc = this._currentAudioSrc.asReadonly();
-
-  constructor(private audioService: AudioService) {
-  }
 
   finishOpeningFlow() {
     this._openingFlowActive.set(false);
@@ -104,6 +100,7 @@ export class UnitService {
       this.disableInteractionUntilComplete.set(def.mainAudio.disableInteractionUntilComplete);
     }
 
+    /** starts opening flow if openingImage is set and imageSource is set */
     if (def.openingImage && def.openingImage.imageSource) {
       this.openingImageParams.set(def.openingImage);
       this._openingFlowActive.set(true);
@@ -122,15 +119,5 @@ export class UnitService {
     } else if (mainAudio?.audioSource) {
       this._currentAudioSrc.set(mainAudio);
     }
-  }
-
-  getCurrentAudioSrc() {
-    if (this.openingImageParams()?.audioSource && this.openingFlowActive()) {
-      return {
-        audioId: 'openingAudio',
-        audioSource: this.openingImageParams()?.audioSource
-      } as AudioOptions;
-    }
-    return this.mainAudio() || undefined;
   }
 }

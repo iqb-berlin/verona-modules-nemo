@@ -150,4 +150,5 @@ export interface OpeningImageParams {
 export interface AudioOptions extends MainAudio {
   audioId: string;
   value?: string;
+  maxPlay?: number;
 }

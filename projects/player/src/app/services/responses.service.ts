@@ -118,8 +118,7 @@ export class ResponsesService {
         }
       }
       // Restore allResponses from former state
-      const deepCopy: Response[] = JSON.parse(JSON.stringify(former));
-      this.allResponses = deepCopy;
+      this.allResponses = JSON.parse(JSON.stringify(former));
       this.lastResponsesString = JSON.stringify(former);
     }
   }
@@ -204,7 +203,7 @@ export class ResponsesService {
           const rangeY1 = Number.parseInt(rangeMatches[1], 10);
           const rangeX2 = Number.parseInt(rangeMatches[2], 10);
           const rangeY2 = Number.parseInt(rangeMatches[3], 10);
-          let compareXOk = false;
+          let compareXOk: boolean;
           if (rangeX1 < rangeX2) {
             compareXOk = responseX >= rangeX1 && responseX <= rangeX2;
           } else {
@@ -286,6 +285,11 @@ export class ResponsesService {
     return newResponse;
   }
 
+  /** returns a response for one specific variableId */
+  getResponseByVariableId(id: string): Response {
+    return this.allResponses.find(r => r.id === id) || {} as Response;
+  }
+
   private getResponsesComplete(): Progress {
     if (this.allResponses.length === 0) return 'none';
     if (!this.variableInfo || this.variableInfo.length === 0) return 'complete';
@@ -351,7 +355,7 @@ export class ResponsesService {
               valueToCompare : valueToCompare.toString();
             return valueToCompareAsString === f.parameter;
           }
-          let valueAsNumber = Number.MIN_VALUE;
+          let valueAsNumber: number;
           if (typeof valueToCompare === 'number') {
             valueAsNumber = valueToCompare;
           } else if (typeof valueToCompare === 'boolean') {
@@ -394,8 +398,7 @@ export class ResponsesService {
           const parsedResponses = JSON.parse(responsesJson as string) as Response[];
           this.formerStateResponses.set(parsedResponses);
 
-          const deepCopy: Response[] = JSON.parse(JSON.stringify(parsedResponses));
-          this.allResponses = deepCopy;
+          this.allResponses = JSON.parse(JSON.stringify(parsedResponses));
           this.lastResponsesString = responsesJson as string;
 
           // Restore mainAudio completion from saved responses

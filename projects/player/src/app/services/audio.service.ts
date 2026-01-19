@@ -43,7 +43,7 @@ export class AudioService {
   private percentElapsed = 0;
 
   /** Player status used to track the current state of the audio player. */
-  playerStatus = new BehaviorSubject<AudioPlayerStatus>(AudioPlayerStatus.EMPTY);
+  private playerStatus = new BehaviorSubject<AudioPlayerStatus>(AudioPlayerStatus.EMPTY);
 
   constructor() {
     this._audioElement = new Audio();
@@ -72,7 +72,6 @@ export class AudioService {
         this.sendPlaybackTimeChanged();
         break;
       case 'ended':
-        this._playCount.update(count => count + 1);
         this._isPlaying.set(false);
         this.playerStatus.next(AudioPlayerStatus.ENDED);
         this.sendPlaybackTimeChanged();
@@ -130,11 +129,13 @@ export class AudioService {
     return new Promise(resolve => {
       // normalize and check for a valid source first
       const source = (audio?.audioSource || '').trim();
+      const variableId = audio.audioId || 'audio';
+      const formerResponse = this.responsesService.getResponseByVariableId(variableId);
 
       // update meta/signals
-      this._audioId.set(audio.audioId || 'audio');
+      this._audioId.set(variableId);
       this._maxPlay.set(audio.maxPlay || 0);
-      this._playCount.set(0);
+      this._playCount.set(formerResponse.value as number || 0);
       this.percentElapsed = 0;
       this.currentTime = 0;
 
