@@ -31,6 +31,8 @@ export class AudioComponent {
 
   movingButton = signal(false);
   showLayer = signal(false);
+  isPlaying = signal(false);
+  isDisabled = signal(false);
 
   // timer reference for delayed animateButton start
   private animateTimer: any = undefined;
@@ -93,7 +95,18 @@ export class AudioComponent {
 
     if (audio && audio.audioId) {
       this.audioService.setAudioSrc(audio).then(() => {
-        this.audioService.getPlayFinished(audio.audioId).then(() => {});
+        this.isPlaying.set(true);
+        this.audioService.getPlayFinished(audio.audioId).then(() => {
+          this.isPlaying.set(false);
+
+          /** check if maxPlay reached */
+          const variableId = audio.audioId;
+          const maxPlay = audio.maxPlay || 0;
+          const currentCount = this.responsesService.getResponseByVariableId(variableId);
+          if (maxPlay !== 0 && currentCount.value as number >= maxPlay) {
+            this.isDisabled.set(true);
+          }
+        });
       });
     }
 
@@ -110,21 +123,7 @@ export class AudioComponent {
     this.showLayer.set(false);
   }
 
-  private getResolvedAudio(): AudioOptions | undefined {
-    const inputAudio = this.audio();
-    if (inputAudio?.audioSource) return inputAudio;
-
-    const loadedSrc = this.audioService.currentSource?.() ?? undefined;
-
-    if (loadedSrc) {
-      return {
-        audioId: this.audioService.audioId(),
-        audioSource: loadedSrc,
-        maxPlay: this.audioService.maxPlay()
-      } as AudioOptions;
-    }
-
-    // Nothing resolved
-    return undefined;
+  disabled() {
+    return this.audioService.isPlaying() || this.isDisabled();
   }
 }

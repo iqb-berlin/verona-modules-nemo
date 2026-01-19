@@ -23,17 +23,14 @@ export class AudioButtonComponent {
     if (this.audio().audioSource && this.audio().audioId) {
       this.audioService.setAudioSrc(this.audio()).then(() => {
         this.isPlaying.set(true);
-        setTimeout(() => {
+        this.audioService.getPlayFinished(this.audio().audioId).then(() => {
           this.isPlaying.set(false);
-        }, 200);
-        this.audioService.getPlayFinished(this.audio().audioId)
-          .then(() => {});
+        });
       });
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
   disabled() {
-    return false;
+    return this.audioService.isPlaying();
   }
 }
