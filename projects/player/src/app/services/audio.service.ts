@@ -209,18 +209,7 @@ export class AudioService {
     });
   }
 
-  setAudioId(id: string) {
-    this._audioId.set(id);
-  }
-
-  setMaxPlay(max: number) {
-    this._maxPlay.set(max);
-  }
-
-  setPlayCount(count: number) {
-    this._playCount.set(count);
-  }
-
+  /** send playback time as a percentage of audio duration as a response */
   sendPlaybackTimeChanged(): void {
     let audioValue = this.percentElapsed || 0;
     audioValue += this.playCount();
