@@ -33,6 +33,7 @@ export class UnitService {
   openingImageParams = signal<OpeningImageParams>({} as OpeningImageParams);
 
   /** To hide the speaker icon when imageSource inside openingImage is being shown */
+  // TODO better hideAudioButton()
   showingOpeningImage = signal<boolean>(false);
 
   /** Opening flow is active: interactions and main audio hidden */
