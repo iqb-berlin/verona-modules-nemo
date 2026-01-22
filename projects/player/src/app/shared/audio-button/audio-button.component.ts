@@ -18,6 +18,8 @@ export class AudioButtonComponent {
   isPlaying = signal(false);
   audioService = inject(AudioService);
 
+  // TODO: Refactoring to be able to use this component and audio.component.html instead of using similar components
+
   play() {
     if (this.audioService.isPlaying()) return;
     if (this.audio().audioSource && this.audio().audioId) {
