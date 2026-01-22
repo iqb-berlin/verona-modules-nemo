@@ -53,6 +53,16 @@ export class AudioComponent {
       }
     });
 
+    effect(() => {
+      // set play style when triggered somewhere else
+      // TODO check if can be done in a more elegant way
+      if (this.audioService.isPlaying() && this.audioService.audioId() === this.audio()?.audioId) {
+        this.isPlaying.set(true);
+      } else {
+        this.isPlaying.set(false);
+      }
+    });
+
     // TODO separate audio animation into a component
     effect(() => {
       if (this.audioService.isPlaying()) {
