@@ -74,6 +74,7 @@ export class AudioService {
       case 'ended':
         this._isPlaying.set(false);
         this._playCount.set(this.playCount() + 1);
+        this.percentElapsed = 0;
         this.playerStatus.next(AudioPlayerStatus.ENDED);
         this.sendPlaybackTimeChanged();
         break;
