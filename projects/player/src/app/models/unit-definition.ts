@@ -20,9 +20,10 @@ export type ButtonTypeEnum = 'MEDIUM_SQUARE' | 'BIG_SQUARE' | 'SMALL_SQUARE' | '
 'EXTRA_LARGE_SQUARE' | 'LONG_RECTANGLE' | 'TALL_RECTANGLE';
 export type ImagePositionEnum = 'TOP' | 'LEFT' | 'BOTTOM';
 export type TargetSizeEnum = 'MEDIUM' | 'LARGE' | 'SMALL';
-export type ButtonAlignmentEnum = 'AUTO' | 'ROW_BOTTOM';
 export type LayoutEnum = 'LEFT_CENTER' | 'TOP_CENTER' | 'LEFT_BOTTOM' | 'LEFT_CENTER_50';
 
+export type InteractionParameters = InteractionButtonParams | InteractionWriteParams | InteractionDropParams |
+InteractionVideoParams | InteractionFindOnImageParams | InteractionPolygonButtonsParams | InteractionPlaceValueParams;
 export interface UnitDefinition {
   id: string;
   version?: string;
@@ -34,8 +35,7 @@ export interface UnitDefinition {
   mainAudio?: MainAudio;
   interactionType: InteractionEnum;
   interactionMaxTimeMS: number
-  interactionParameters: InteractionButtonParams | WriteParams | InteractionDropParams |
-  InteractionVideoParams | InteractionFindOnImageParams | InteractionPolygonButtonsParams | InteractionPlaceValueParams;
+  interactionParameters: InteractionParameters;
   variableInfo: VariableInfo[] | undefined;
   audioFeedback: AudioFeedback | undefined;
 }
@@ -46,8 +46,6 @@ export interface SelectionOption {
   audioSource?: string;
   label?: string;
   icon?: IconButtonTypeEnum;
-  // DELETE THIS IF YOU WONT USE THIS PARAM
-  repeat?: number;
   svgPath?: string;
 }
 
@@ -69,7 +67,6 @@ export interface InteractionButtonParams {
   layout?: LayoutEnum;
   imageUseFullArea?: boolean;
   text?: string;
-  buttonAlignment?: ButtonAlignmentEnum;
   multiSelect?: boolean;
   numberOfRows?: number;
   buttonType?: ButtonTypeEnum;
@@ -134,8 +131,8 @@ export interface InteractionPolygonButtonsParams {
 export interface MainAudio {
   audioSource: string;
   maxPlay?: number;
-  firstClickLayer?: boolean; // TODO: deprecated, use firstAudioOptions.firstClickLayer
-  animateButton?: boolean; // TODO: deprecated, use firstAudioOptions.animateButton
+  firstClickLayer?: boolean; // deprecated, use firstAudioOptions.firstClickLayer
+  animateButton?: boolean; // deprecated, use firstAudioOptions.animateButton
   disableInteractionUntilComplete?: boolean;
 }
 
@@ -148,10 +145,10 @@ export interface OpeningImageParams {
   audioSource?: string;
   imageSource: string;
   presentationDurationMS?: number;
-  imageUseFullArea?: boolean;
 }
 
 export interface AudioOptions extends MainAudio {
   audioId: string;
   value?: string;
+  maxPlay?: number;
 }

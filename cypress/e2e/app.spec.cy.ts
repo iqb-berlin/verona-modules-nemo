@@ -1,7 +1,6 @@
 import { UnitDefinition } from '../../projects/player/src/app/models/unit-definition';
 
 describe('App component', () => {
-  const subject = 'deutsch';
   const configFile = 'buttons_test.json';
   const interactionType = 'buttons';
 
@@ -48,7 +47,7 @@ describe('App component', () => {
     .filter((parsed): parsed is ResponseItem[] => Array.isArray(parsed));
 
   beforeEach(() => {
-    cy.setupTestDataWithPostMessageMock(subject, configFile, interactionType);
+    cy.setupTestDataWithPostMessageMock(configFile, interactionType);
   });
 
   it('1. Should send vopReadyNotification on initialization from child', () => {
@@ -94,8 +93,9 @@ describe('App component', () => {
 
       const parsedResponsesArrays = parseDataPartsResponses(latestMessage.data.unitState.dataParts);
 
-      const hasDisplayedStatus = parsedResponsesArrays.some(responseArray => responseArray.some(response => response.status === 'DISPLAYED')
-      );
+      const hasDisplayedStatus =
+        parsedResponsesArrays.some(responseArray => responseArray.some(response => response.status === 'DISPLAYED')
+        );
 
       expect(hasDisplayedStatus, 'Should have DISPLAYED status').to.equal(true);
     });
@@ -130,8 +130,9 @@ describe('App component', () => {
 
       const parsedResponsesArrays = parseDataPartsResponses(latestMessage.data.unitState.dataParts);
 
-      const hasValueChanged = parsedResponsesArrays.some(responseArray => responseArray.some(response => response.status === 'VALUE_CHANGED')
-      );
+      const hasValueChanged =
+        parsedResponsesArrays.some(responseArray => responseArray.some(response => response.status === 'VALUE_CHANGED')
+        );
 
       expect(hasValueChanged, 'Should have VALUE_CHANGED status').to.equal(true);
     });
@@ -179,12 +180,13 @@ describe('App component', () => {
 
       const parsedResponsesArrays = parseDataPartsResponses(latestMessage.data.unitState.dataParts);
 
-      const hasCodingComplete = parsedResponsesArrays.some(responses => responses.some(response => response.id === 'BUTTONS' &&
+      const hasCodingComplete =
+        parsedResponsesArrays.some(responses => responses.some(response => response.id === 'BUTTONS' &&
           response.status === 'CODING_COMPLETE' &&
           response.score === 1 &&
           response.code === 1
-      )
-      );
+        )
+        );
 
       expect(hasCodingComplete, 'Should have CODING_COMPLETE for BUTTONS with score=1 and code=1').to.equal(true);
     });

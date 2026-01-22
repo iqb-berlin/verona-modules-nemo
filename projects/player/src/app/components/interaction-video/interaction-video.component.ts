@@ -18,10 +18,13 @@ import { InteractionVideoParams } from '../../models/unit-definition';
 
 export class InteractionVideoComponent extends InteractionComponentDirective implements AfterViewInit {
   localParameters!: InteractionVideoParams;
-  playing = signal(false);
+  private _isPlaying = signal(false);
+  isPlaying = this._isPlaying.asReadonly();
 
   playCount = 0;
-  currentTime = 0;
+  private currentTime = 0;
+  private percentElapsed = 0;
+
   @ViewChild('videoPlayer', { static: false }) videoPlayerRef!: ElementRef<HTMLVideoElement>;
   private ngUnsubscribe = new Subject();
 
@@ -44,7 +47,7 @@ export class InteractionVideoComponent extends InteractionComponentDirective imp
           relevantForResponsesProgress: false
         }]);
 
-        this.playing.set(false);
+        this._isPlaying.set(false);
       }
     });
   }
@@ -55,7 +58,7 @@ export class InteractionVideoComponent extends InteractionComponentDirective imp
         .pipe(
           takeUntil(this.ngUnsubscribe),
           tap(() => {
-            this.currentTime = this.videoPlayerRef.nativeElement.currentTime;
+            this.calculateTime();
           }),
           throttleTime(100)
         )
@@ -63,17 +66,30 @@ export class InteractionVideoComponent extends InteractionComponentDirective imp
     }
   }
 
+  private calculateTime() {
+    if (this.videoPlayerRef) {
+      this.currentTime = this.videoPlayerRef.nativeElement.currentTime;
+      this.setPercentElapsed(this.videoPlayerRef.nativeElement.duration, this.currentTime);
+      this.sendPlaybackTimeChanged();
+    }
+  }
+
+  private setPercentElapsed(d: number, ct: number) {
+    if (d === 0) return;
+    this.percentElapsed = (ct / d);
+  }
+
   play() {
     this.videoPlayerRef.nativeElement
       .play()
       .then(() => {
-        this.playing.set(true);
+        this._isPlaying.set(true);
       });
   }
 
   ended() {
-    this.playing.set(false);
-
+    this._isPlaying.set(false);
+    this.percentElapsed = 0;
     this.playCount += 1;
 
     this.sendPlaybackTimeChanged();
@@ -85,11 +101,7 @@ export class InteractionVideoComponent extends InteractionComponentDirective imp
   }
 
   sendPlaybackTimeChanged(): void {
-    let videoValue = 0;
-    if (this.videoPlayerRef.nativeElement.duration) {
-      videoValue = this.currentTime / this.videoPlayerRef.nativeElement.duration;
-    }
-
+    let videoValue = this.percentElapsed || 0;
     videoValue += this.playCount;
 
     const response: StarsResponse = {

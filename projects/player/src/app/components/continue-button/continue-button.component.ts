@@ -37,7 +37,7 @@ export class ContinueButtonComponent {
           audioId: 'AudioFeedback'
         }).then(() => {
           this.audioService.getPlayFinished('AudioFeedback').then(() => {
-            // TODO function when audio finished
+            // TODO add here automatic function when audio finished aka navigation next
           });
         });
         this.lastAudioSource = newAudioSource;

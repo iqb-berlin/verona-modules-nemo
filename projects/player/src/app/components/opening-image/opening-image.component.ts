@@ -19,8 +19,6 @@ export class OpeningImageComponent extends InteractionComponentDirective {
 
   /** local flag to show the image during the opening sequence */
   showImage = signal<boolean>(false);
-  /** Flag to mark images useFullArea: true. */
-  useFullArea = false;
 
   unitService = inject(UnitService);
   audioService = inject(AudioService);
@@ -29,6 +27,7 @@ export class OpeningImageComponent extends InteractionComponentDirective {
     super();
     // When opening flow starts
     effect(() => {
+      // TODO avoid using two signals in effect
       if (!this.unitService.openingFlowActive()) return;
       const params = this.parameters() as OpeningImageParams;
       this.localParameters = this.createDefaultParameters();
@@ -36,12 +35,13 @@ export class OpeningImageComponent extends InteractionComponentDirective {
         this.localParameters.audioSource = params.audioSource || '';
         this.localParameters.imageSource = params.imageSource || '';
         this.localParameters.presentationDurationMS = params.presentationDurationMS || 0;
-        this.localParameters.imageUseFullArea = params.imageUseFullArea || false;
-        this.useFullArea = this.localParameters.imageUseFullArea;
 
         // If there is no opening audio, show image immediately and schedule finish based on duration
         if (params.audioSource === '') {
-          if (!this.showImage()) this.showImage.set(true);
+          if (!this.showImage()) {
+            this.showImage.set(true);
+            this.unitService.showingOpeningImage.set(true);
+          }
           this.scheduleFinishAfterDuration();
         }
       }
@@ -58,7 +58,10 @@ export class OpeningImageComponent extends InteractionComponentDirective {
 
       // When opening audio finished, show image and schedule finish
       if (currentAudioId === 'openingAudio' && !isPlaying && playCount >= 1) {
-        if (!this.showImage()) this.showImage.set(true);
+        if (!this.showImage()) {
+          this.showImage.set(true);
+          this.unitService.showingOpeningImage.set(true);
+        }
         this.scheduleFinishAfterDuration();
       }
     });
@@ -77,6 +80,7 @@ export class OpeningImageComponent extends InteractionComponentDirective {
 
   private finishOpeningFlowAndStartMainAudio() {
     // Close opening flow
+    this.unitService.showingOpeningImage.set(false);
     this.unitService.finishOpeningFlow();
     // After opening flow, disable the first click layer for the main audio
     const currentOpts = this.unitService.firstAudioOptions() || {};
@@ -104,8 +108,7 @@ export class OpeningImageComponent extends InteractionComponentDirective {
     return {
       audioSource: '',
       imageSource: '',
-      presentationDurationMS: 0,
-      imageUseFullArea: false
+      presentationDurationMS: 0
     };
   }
 }

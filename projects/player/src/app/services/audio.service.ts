@@ -43,7 +43,7 @@ export class AudioService {
   private percentElapsed = 0;
 
   /** Player status used to track the current state of the audio player. */
-  playerStatus = new BehaviorSubject<AudioPlayerStatus>(AudioPlayerStatus.EMPTY);
+  private playerStatus = new BehaviorSubject<AudioPlayerStatus>(AudioPlayerStatus.EMPTY);
 
   constructor() {
     this._audioElement = new Audio();
@@ -69,11 +69,14 @@ export class AudioService {
       case 'pause':
         this._isPlaying.set(false);
         this.playerStatus.next(AudioPlayerStatus.PAUSED);
+        this.sendPlaybackTimeChanged();
         break;
       case 'ended':
-        this._playCount.update(count => count + 1);
         this._isPlaying.set(false);
+        this._playCount.set(this.playCount() + 1);
+        this.percentElapsed = 0;
         this.playerStatus.next(AudioPlayerStatus.ENDED);
+        this.sendPlaybackTimeChanged();
         break;
       case 'canplay':
       case 'loadedmetadata':
@@ -128,11 +131,13 @@ export class AudioService {
     return new Promise(resolve => {
       // normalize and check for a valid source first
       const source = (audio?.audioSource || '').trim();
+      const variableId = audio.audioId || 'audio';
+      const formerResponse = this.responsesService.getResponseByVariableId(variableId);
 
       // update meta/signals
-      this._audioId.set(audio.audioId || 'audio');
+      this._audioId.set(variableId);
       this._maxPlay.set(audio.maxPlay || 0);
-      this._playCount.set(0);
+      this._playCount.set(formerResponse.value as number || 0);
       this.percentElapsed = 0;
       this.currentTime = 0;
 
@@ -206,18 +211,7 @@ export class AudioService {
     });
   }
 
-  setAudioId(id: string) {
-    this._audioId.set(id);
-  }
-
-  setMaxPlay(max: number) {
-    this._maxPlay.set(max);
-  }
-
-  setPlayCount(count: number) {
-    this._playCount.set(count);
-  }
-
+  /** send playback time as a percentage of audio duration as a response */
   sendPlaybackTimeChanged(): void {
     let audioValue = this.percentElapsed || 0;
     audioValue += this.playCount();

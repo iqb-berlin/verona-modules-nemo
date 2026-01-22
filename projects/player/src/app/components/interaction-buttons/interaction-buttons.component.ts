@@ -7,16 +7,19 @@ import { StarsResponse } from '../../services/responses.service';
 import { VeronaPostService } from '../../services/verona-post.service';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import {
+  AudioOptions,
   InteractionButtonParams,
   SelectionOption
 } from '../../models/unit-definition';
 import { StandardButtonComponent } from '../../shared/standard-button/standard-button.component';
+import { AudioButtonComponent } from '../../shared/audio-button/audio-button.component';
 
 @Component({
   selector: 'stars-interaction-buttons',
   templateUrl: './interaction-buttons.component.html',
   imports: [
-    StandardButtonComponent
+    StandardButtonComponent,
+    AudioButtonComponent
   ],
   styleUrls: ['./interaction-buttons.component.scss']
 })
@@ -54,7 +57,6 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
         this.localParameters.multiSelect = parameters.multiSelect || false;
         this.localParameters.triggerNavigationOnSelect = parameters.triggerNavigationOnSelect || false;
         this.localParameters.buttonType = parameters.buttonType || 'MEDIUM_SQUARE';
-        this.localParameters.buttonAlignment = parameters.buttonAlignment || 'AUTO';
         this.localParameters.text = parameters.text || '';
         this.localParameters.imageUseFullArea = parameters.imageUseFullArea || false;
         this.useFullArea = this.localParameters.imageUseFullArea;
@@ -166,6 +168,14 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       options = this.localParameters.options?.buttons || [];
     }
     return options;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  createAudioOptions(button: RowOption): AudioOptions {
+    return {
+      audioSource: button.option.audioSource || '',
+      audioId: `${button.id + button.index}_audio`
+    };
   }
 
   getRowsOptions():Array<Array<RowOption>> {
@@ -371,8 +381,7 @@ export class InteractionButtonsComponent extends InteractionComponentDirective {
       multiSelect: false,
       triggerNavigationOnSelect: false,
       numberOfRows: 1,
-      buttonType: 'MEDIUM_SQUARE',
-      buttonAlignment: 'AUTO'
+      buttonType: 'MEDIUM_SQUARE'
     };
   }
 }

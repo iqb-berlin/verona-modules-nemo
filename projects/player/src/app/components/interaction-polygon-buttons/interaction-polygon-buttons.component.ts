@@ -32,7 +32,7 @@ export class InteractionPolygonButtonsComponent extends InteractionComponentDire
 
       if (parameters) {
         this.localParameters.options = parameters.options || [];
-        this.localParameters.variableId = parameters.variableId || 'BUTTONS';
+        this.localParameters.variableId = parameters.variableId || 'POLYGON_BUTTONS';
         this.localParameters.multiSelect = parameters.multiSelect || false;
       }
 

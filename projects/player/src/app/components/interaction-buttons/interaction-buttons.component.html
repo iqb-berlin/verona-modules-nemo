@@ -7,8 +7,8 @@
 >
   @if (localParameters.imageSource || localParameters.text) {
     <div class="stimulus-wrapper"
-         [style.margin-bottom.px]="(localParameters.layout !== 'LEFT_CENTER' && localParameters.layout !== 'LEFT_BOTTOM' && optionRows.length > 0) ? 10 : 0"
-         [style.margin-right.px]="(localParameters.layout === 'LEFT_CENTER' && optionRows.length > 0) ? 10 : 0"
+         [style.margin-bottom.px]="(localParameters.layout !== 'LEFT_CENTER' && localParameters.layout !== 'LEFT_BOTTOM' && optionRows.length > 0 && !useFullArea) ? 10 : 0"
+         [style.margin-right.px]="(localParameters.layout === 'LEFT_CENTER' && optionRows.length > 0 && !useFullArea) ? 10 : 0"
     >
       @if (localParameters.imageSource) {
         <div class="image-wrapper">
@@ -37,18 +37,23 @@
              [class.tall-rectangle-buttons]="localParameters.buttonType === 'TALL_RECTANGLE'"
              [attr.data-cy]="'button-row-' + $index">
           @for (button of row; track $index) {
-            <stars-standard-button
-              [id]="button.id"
-              [value]="button.index"
-              [inputType]="localParameters.multiSelect ? 'checkbox' : 'radio'"
-              [text]="button.option.text"
-              [image]="button.option.imageSource"
-              [icon]="button.option.icon"
-              [selected]="selectedValues()[button.index]"
-              [type]="localParameters.buttonType"
-              [attr.data-cy]="'button-' + button.index"
-              (buttonClick)="onButtonClick(button.index)">
-            </stars-standard-button>
+            <div class="inner-button-wrapper">
+              <stars-standard-button
+                [id]="button.id"
+                [value]="button.index"
+                [inputType]="localParameters.multiSelect ? 'checkbox' : 'radio'"
+                [text]="button.option.text"
+                [image]="button.option.imageSource"
+                [icon]="button.option.icon"
+                [selected]="selectedValues()[button.index]"
+                [type]="localParameters.buttonType"
+                [attr.data-cy]="'button-' + button.index"
+                (buttonClick)="onButtonClick(button.index)">
+              </stars-standard-button>
+              @if (button.option.audioSource) {
+                <stars-audio-button [audio]="createAudioOptions(button)"></stars-audio-button>
+              }
+            </div>
           }
         </div>
       }
