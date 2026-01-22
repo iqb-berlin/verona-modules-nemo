@@ -27,6 +27,7 @@ export class OpeningImageComponent extends InteractionComponentDirective {
     super();
     // When opening flow starts
     effect(() => {
+      // TODO avoid using two signals in effect
       if (!this.unitService.openingFlowActive()) return;
       const params = this.parameters() as OpeningImageParams;
       this.localParameters = this.createDefaultParameters();

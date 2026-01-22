@@ -131,8 +131,8 @@ export interface InteractionPolygonButtonsParams {
 export interface MainAudio {
   audioSource: string;
   maxPlay?: number;
-  firstClickLayer?: boolean; // TODO: deprecated, use firstAudioOptions.firstClickLayer
-  animateButton?: boolean; // TODO: deprecated, use firstAudioOptions.animateButton
+  firstClickLayer?: boolean; // deprecated, use firstAudioOptions.firstClickLayer
+  animateButton?: boolean; // deprecated, use firstAudioOptions.animateButton
   disableInteractionUntilComplete?: boolean;
 }
 
@@ -150,4 +150,5 @@ export interface OpeningImageParams {
 export interface AudioOptions extends MainAudio {
   audioId: string;
   value?: string;
+  maxPlay?: number;
 }

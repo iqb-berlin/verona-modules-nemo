@@ -101,14 +101,10 @@ export function testMainAudioFeatures(interactionType: string, configFile: strin
           cy.waitUntilAudioIsFinishedPlaying();
         }
 
-        // One extra click beyond maxPlay should NOT start playback again
-        cy.get('[data-cy="speaker-icon"]').click();
-
-        // Assert that the audio does not start playing again
-        // Check immediately and after a short delay to ensure it doesn't flip to playing
+        // Ensure it doesn't flip to playing
         cy.get('[data-cy="audio-button-animation"]').should('not.have.class', 'playing');
-        cy.wait(1000);
-        cy.get('[data-cy="audio-button-animation"]').should('not.have.class', 'playing');
+        // Ensure that it is disabled
+        cy.get('[data-cy="audio-button-container-disabled"]').should('exist');
       }
     });
 

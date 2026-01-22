@@ -7,6 +7,19 @@
   align-items: flex-start;
   flex-direction: row;
 
+  &.playing {
+    .custom-audio-button {
+      ::ng-deep .white-circle {
+        fill: #0050E5;
+      }
+      g path {
+        stroke: white;
+        stroke-width: 0;
+        fill: white;
+      }
+    }
+  }
+
   .custom-audio-button {
     width: 80px;
     height: 80px;
