@@ -273,6 +273,7 @@ export class InteractionDropComponent extends InteractionComponentDirective impl
     if (this.selectedValue() !== index) return;
     this.draggingIndex.set(null);
     const transforms = this.preCalculatedTransforms();
+    // eslint-disable-next-line max-len
     const shouldReturnToOrigin = (this.settledButtonIndex() === index && !!this.settledTransform()) && this.lastDragWasFromSettled;
     const targetTransform = shouldReturnToOrigin ? '' : (transforms[index] ?? '');
     const freePos = (event?.source as CdkDrag)?.getFreeDragPosition?.() ?? { x: 0, y: 0 };

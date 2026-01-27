@@ -17,7 +17,7 @@
 
 .icons-upper-panel {
   width: 680px;
-  margin-right: -10px;
+  margin-right: -13px;
   background-color: colors.$white;
   box-sizing: border-box;
   border: 3px solid lightgrey;
@@ -132,7 +132,7 @@
   pointer-events: auto;
 }
 
-/* Remove heavy box-shadows on stacked wrapper items to avoid compounded dark shadow. */
+/* Apply box-shadows only to the bottom wrapper item to give a depth effect. */
 .tens-wrapper .icon-item:first-child:not(.moved),
 .ones-wrapper .icon-item:first-child:not(.moved) {
   @include variables.tens-and-ones-box-shadow;
