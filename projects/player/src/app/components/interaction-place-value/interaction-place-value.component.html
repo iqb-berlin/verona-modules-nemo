@@ -20,12 +20,14 @@
       class="ones-wrapper"
       data-cy="ones-wrapper"
       [class.disabled]="onesWrapperDisabled()"
+      [class.active-drag]="isDraggingOnes()"
       (click)="onItemClick('ones')"
       #onesWrapper
     >
       @for (ones of onesArray(); track ones.id) {
         <div class="icon-item ones"
              [class.animating]="isAnimating(ones.id)"
+             [class.dragging]="draggingIndex() === ones.id"
              [class.moved]="inUpperPanel(ones.id)"
              [class.no-transition]="shouldDisableTransition(ones.id)"
              cdkDrag
@@ -51,12 +53,14 @@
     <div class="tens-wrapper"
          data-cy="tens-wrapper"
          [class.disabled]="tensWrapperDisabled()"
+         [class.active-drag]="isDraggingTens()"
          (click)="onItemClick('tens')"
          #tensWrapper
     >
       @for (tens of tensArray(); track tens.id) {
         <div class="icon-item tens"
              [class.animating]="isAnimating(tens.id)"
+             [class.dragging]="draggingIndex() === tens.id"
              [class.moved]="inUpperPanel(tens.id)"
              [class.no-transition]="shouldDisableTransition(tens.id)"
              cdkDrag

@@ -56,8 +56,32 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
   /** ID of the item currently being dragged */
   readonly draggingIndex = signal<number | null>(null);
 
+  /** Whether the currently dragged item is a 'tens' icon */
+  readonly isDraggingTens = computed(() => {
+    const draggingId = this.draggingIndex();
+    if (draggingId !== null && this.tensArray().some(t => t.id === draggingId)) {
+      return true;
+    }
+    return this.tensArray().some(t => this.isAnimating(t.id));
+  });
+
+  /** Whether the currently dragged item is a 'ones' icon */
+  readonly isDraggingOnes = computed(() => {
+    const draggingId = this.draggingIndex();
+    if (draggingId !== null && this.onesArray().some(o => o.id === draggingId)) {
+      return true;
+    }
+    return this.onesArray().some(o => this.isAnimating(o.id));
+  });
+
   /** Flag to prevent click handler when drag ends */
   private suppressClick = false;
+
+  /** Timestamp of the last successful click to prevent double-click issues */
+  private lastClickTime = 0;
+
+  /** Debounce time for clicks in milliseconds */
+  private static readonly CLICK_DEBOUNCE_MS = 500;
 
   /** Transient selection: ids currently in the middle of a user-triggered move/animation */
   private readonly selectionAnimatingIds: Set<number> = new Set<number>();
@@ -65,7 +89,7 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
   /** Animation control for click/drag animations: reactive map of animating item ids */
   private readonly animatingFlags = signal<Record<number, true>>({});
   /** keep in sync with CSS transition */
-  private static readonly CLICK_ANIMATION_MS = 1100;
+  private static readonly CLICK_ANIMATION_MS = 1000;
   /** Extra vertical gap between tens icons while stacked in the upper panel (in px) */
   private static readonly VERTICAL_GAP_PX = 12;
 
@@ -284,7 +308,15 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
    *                   rather than a direct click.
    */
   onItemClick(source: 'ones' | 'tens', item?: CountItem, event?: Event, isFromDrag = false): void {
-    if (!isFromDrag && this.suppressClick) return;
+    if (!isFromDrag) {
+      if (this.suppressClick) return;
+      const now = Date.now();
+      if (now - this.lastClickTime < InteractionPlaceValueComponent.CLICK_DEBOUNCE_MS) {
+        return;
+      }
+      this.lastClickTime = now;
+    }
+
     if (event) {
       event.stopPropagation();
     }
