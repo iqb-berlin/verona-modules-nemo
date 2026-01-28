@@ -7,6 +7,7 @@ import {
 import { Response } from '@iqbspecs/response/response.interface';
 import { InteractionComponentDirective } from '../../directives/interaction-component.directive';
 import { IconButtonTypeEnum, InteractionPlaceValueParams } from '../../models/unit-definition';
+import { parseTranslate, updateTransitionDisabledSet } from '../../shared/utils/drag-drop.util';
 
 @Component({
   selector: 'stars-interaction-place-value',
@@ -50,7 +51,7 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
   readonly itemTransforms: Record<number, string> = {};
 
   /** Set of item IDs for which CSS transitions should be disabled (used during drag) */
-  private readonly transitionDisabledIds = signal<Set<number>>(new Set());
+  readonly transitionDisabledIds = signal<Set<number>>(new Set());
 
   /** ID of the item currently being dragged */
   readonly draggingIndex = signal<number | null>(null);
@@ -193,7 +194,7 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
   /** Returns the free-drag position for the given item ID, derived from itemTransforms */
   freeDragPositionFor(id: number): { x: number; y: number } {
     const transform = this.itemTransforms[id] ?? '';
-    return this.parseTranslate(transform);
+    return parseTranslate(transform);
   }
 
   onDragStarted(id: number): void {
@@ -205,6 +206,19 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
   // eslint-disable-next-line class-methods-use-this
   onDragReleased(id: number): void {
     this.removeTransitionDisabled(id);
+  }
+
+  /** Returns whether transitions should be disabled for the given item ID */
+  shouldDisableTransition(id: number): boolean {
+    return this.transitionDisabledIds().has(id);
+  }
+
+  private addTransitionDisabled(id: number): void {
+    this.transitionDisabledIds.update(set => updateTransitionDisabledSet(set, id, 'add'));
+  }
+
+  private removeTransitionDisabled(id: number): void {
+    this.transitionDisabledIds.update(set => updateTransitionDisabledSet(set, id, 'remove'));
   }
 
   /** Reset values after drag finishes */
@@ -258,26 +272,25 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
     this.hasRestoredFromFormerState = false;
   }
 
-  /** Helper to parse translate or translate3d string from a CSS transform value */
-  // eslint-disable-next-line class-methods-use-this
-  private parseTranslate(transform: string | undefined | null): { x: number, y: number } {
-    if (!transform) return { x: 0, y: 0 };
-    // Match both translate(x, y) and translate3d(x, y, z)
-    const match = /translate(?:3d)?\(([-\d.]+)px?,\s*([-\d.]+)px?(?:,\s*[-\d.]+px?)?\)/.exec(transform);
-    if (match) {
-      return { x: parseFloat(match[1] ?? '0'), y: parseFloat(match[2] ?? '0') };
-    }
-    return { x: 0, y: 0 };
-  }
-
-  /** Onclick handler */
+  /**
+   * Handles the click or drag-drop interaction for an item (ones or tens).
+   * Moves items between the source wrapper stacks and the upper panel.
+   *
+   * @param source The type of item being interacted with ('ones' or 'tens').
+   * @param item The specific item being moved. If undefined, the next available item
+   *             is picked from the source stack (LIFO order).
+   * @param event The original click event, used to stop propagation.
+   * @param isFromDrag Indicates if this call originated from a drag-end event
+   *                   rather than a direct click.
+   */
   onItemClick(source: 'ones' | 'tens', item?: CountItem, event?: Event, isFromDrag = false): void {
     if (!isFromDrag && this.suppressClick) return;
     if (event) {
       event.stopPropagation();
     }
 
-    // If no specific item provided, select the next available candidate from the wrapper stack
+    // If no specific item provided, select the next available candidate from the wrapper stack.
+    // NOTE: This picks items in LIFO order (from the top of the visual stack).
     const chosen: CountItem | undefined = item ?? this.pickNextCandidate(source);
     if (!chosen) return;
     const movedId = chosen.id;
@@ -286,7 +299,8 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
       // Guard adds when disabled; allow removals regardless of disabled state
       if (!alreadyInPanel && this.tensWrapperDisabled()) return;
       if (!alreadyInPanel) {
-        // remember insertion order for stable FIFO rendering
+        // Remember insertion order for stable FIFO rendering in the upper panel.
+        // This ensures that the first item added to the panel stays in the first visual slot.
         if (!this.addedSequence.has(chosen.id)) {
           this.addedSeqCounter += 1;
           this.addedSequence.set(chosen.id, this.addedSeqCounter);
@@ -308,6 +322,7 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
       const alreadyInPanel = this.onesCountAtTheTopPanel().some(i => i.id === chosen.id);
       if (!alreadyInPanel && this.onesWrapperDisabled()) return;
       if (!alreadyInPanel) {
+        // Remember insertion order for stable FIFO rendering in the upper panel.
         if (!this.addedSequence.has(chosen.id)) {
           this.addedSeqCounter += 1;
           this.addedSequence.set(chosen.id, this.addedSeqCounter);
@@ -327,28 +342,6 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
     // Recompute layout transforms and emit responses
     this.scheduleLayoutUpdate([movedId], isFromDrag);
     this.emitResponses();
-  }
-
-  /** Returns whether transitions should be disabled for the given item ID */
-  shouldDisableTransition(id: number): boolean {
-    return this.transitionDisabledIds().has(id);
-  }
-
-  private addTransitionDisabled(id: number): void {
-    this.transitionDisabledIds.update(set => {
-      const newSet = new Set(set);
-      newSet.add(id);
-      return newSet;
-    });
-  }
-
-  private removeTransitionDisabled(id: number): void {
-    this.transitionDisabledIds.update(set => {
-      if (!set.has(id)) return set;
-      const newSet = new Set(set);
-      newSet.delete(id);
-      return newSet;
-    });
   }
 
   /** Emits responses for the current state of the component */
@@ -375,25 +368,33 @@ export class InteractionPlaceValueComponent extends InteractionComponentDirectiv
   /**
    * Pick the next available stacked icon from a wrapper when the wrapper itself is clicked.
    * Respects disabled state and capacity and never returns an id that is already present in the upper panel.
+   *
+   * This implementation iterates from the end of the array (LIFO order), which corresponds
+   * to picking the "top" icon from the visual stack in the wrapper.
    */
   private pickNextCandidate(source: 'ones' | 'tens'): CountItem | undefined {
     if (source === 'tens') {
       if (this.tensWrapperDisabled()) return undefined;
       const all = this.tensArray();
       const used = new Set(this.tensCountAtTheTopPanel().map(i => i.id));
+      // Start from the end of the array to achieve LIFO (top-of-stack) picking
       for (let i = all.length - 1; i >= 0; i -= 1) {
         const candidate = all[i];
-        if (candidate && !used.has(candidate.id)) return candidate;
+        if (candidate && !used.has(candidate.id)) {
+          return candidate;
+        }
       }
       return undefined;
     }
-    // ones
     if (this.onesWrapperDisabled()) return undefined;
     const all = this.onesArray();
     const used = new Set(this.onesCountAtTheTopPanel().map(i => i.id));
+    // Start from the end of the array to achieve LIFO (top-of-stack) picking
     for (let i = all.length - 1; i >= 0; i -= 1) {
       const candidate = all[i];
-      if (candidate && !used.has(candidate.id)) return candidate;
+      if (candidate && !used.has(candidate.id)) {
+        return candidate;
+      }
     }
     return undefined;
   }
