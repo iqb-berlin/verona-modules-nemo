@@ -1,5 +1,5 @@
 import {
-  Component, OnInit, output, ViewChild
+  AfterViewInit, Component, output, ViewChild
 } from '@angular/core';
 
 @Component({
@@ -22,11 +22,11 @@ import {
   `
 })
 
-export class ClickLayerComponent implements OnInit {
+export class ClickLayerComponent implements AfterViewInit {
   @ViewChild('starsClickLayer') layerElement: HTMLDivElement;
   click = output();
 
-  ngOnInit() {
+  ngAfterViewInit() {
     if (this.layerElement) {
       this.layerElement.addEventListener('click', this.handleClick, { capture: true });
       this.layerElement.addEventListener('touchstart', this.handleClick, { capture: true });
