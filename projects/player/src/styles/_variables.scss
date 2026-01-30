@@ -41,14 +41,6 @@ $square-image-height: 300px;
   box-shadow: 4px 4px 0 3.2px rgba(0, 0, 0, 0.2);
 }
 
-@mixin rounded-box-shadow {
-  box-shadow: 5px 5px 0 4px rgba(0, 0, 0, 0.2);
-}
-
-@mixin tens-and-ones-box-shadow {
-  box-shadow: 4px 4px 0 3.2px rgba(0, 0, 0, 0.2);
-}
-
 @mixin extra-large-button-size {
   width: 353px;
   height: 353px;
