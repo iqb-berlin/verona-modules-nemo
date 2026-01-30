@@ -135,7 +135,7 @@
 /* Remove heavy box-shadows on stacked wrapper items to avoid compounded dark shadow. */
 .tens-wrapper .icon-item:first-child:not(.moved),
 .ones-wrapper .icon-item:first-child:not(.moved) {
-  @include variables.tens-and-ones-box-shadow;
+  @include variables.default-box-shadow;
 }
 
 .tens-wrapper .icon-item:not(.moved),
@@ -144,6 +144,6 @@
 }
 
 .icon-item.moved {
-  @include variables.tens-and-ones-box-shadow;
+  @include variables.default-box-shadow;
 }
 
